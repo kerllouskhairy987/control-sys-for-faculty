@@ -8,4 +8,5 @@ const Loader = () => {
     )
 }
 
-export default Loader
+export { Loader };
+export default Loader;

@@ -16,4 +16,5 @@ const InputMessageError = ({ message }: IProps) => {
     )
 }
 
-export default InputMessageError
+export { InputMessageError };
+export default InputMessageError;
