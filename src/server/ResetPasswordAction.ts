@@ -18,6 +18,8 @@ export async function resetPasswordAction(
     formData: FormData,
 ): Promise<resetPasswordStates> {
     const password = formData.get("password") as string;
+    const userId = formData.get("userId") as string;
+    const code = formData.get("code") as string;
 
     // validation
     const result = ResetPasswordSchema.safeParse({ password });
@@ -31,12 +33,12 @@ export async function resetPasswordAction(
     }
 
     try {
-        const data = await fetch(`${process.env.DOMAIN}/api/accounts/reset-password`, {
+        const data = await fetch(`${process.env.ENDPOINTS_URL}/api/accounts/reset-password`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ password }),
+            body: JSON.stringify({ userId, code, newPassword: password }),
         });
         const response = await data.json();
 

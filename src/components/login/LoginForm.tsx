@@ -8,8 +8,13 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { EyeIcon, EyeOff } from "lucide-react";
 import Link from "next/link";
+import { verifyToken } from "@/utils/verifyToken";
 
-const LoginForm = () => {
+interface IProps {
+    token: string;
+}
+
+const LoginForm = ({ token }: IProps) => {
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
 
@@ -25,12 +30,26 @@ const LoginForm = () => {
     useEffect(() => {
         if (state.success && state.message && !isPending) {
             toast.success(state.message || "Login successful!");
-            router.replace("/dashboard");
+            
+            // verify token and get roles, then set roles state
+            const decodedToken = verifyToken(token);
+            const roles = decodedToken?.roles || "Student";
+
+            // redirect based on its roles
+            if (roles === "Student") {
+                router.replace("/")
+            } else if (roles === "Admin") {
+                router.replace("/admin")
+            } else if (roles === "Teacher") {
+                router.replace("/teacher")
+            } else {
+                router.replace("/")
+            }
         }
         if (!state.success && state.message && !isPending) {
             toast.error(state.message || "Login failed!");
         }
-    }, [state.success, state.message, isPending, router]);
+    }, [state.success, state.message, isPending, router, token]);
 
     return (
         <div className="min-h-screen w-full bg-[url('/login_img.png')] bg-cover bg-center flex items-center justify-center">

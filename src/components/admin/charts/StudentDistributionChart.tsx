@@ -1,53 +1,18 @@
 /**
  * Student Distribution Chart Component
- * Displays pie/bar chart of students by status
+ * Displays pie chart of students by status — static data, no async
  */
 
-'use client';
-
-import { useEffect, useState } from 'react';
-import { StudentStatistics } from '@/types';
-import { getStudentStatisticsAction } from '@/server/studentActions';
+import { dashboardStats } from '@/data/dashboard';
 
 export function StudentDistributionChart() {
-    const [stats, setStats] = useState<StudentStatistics | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                const result = await getStudentStatisticsAction();
-                if (result.success && result.data) {
-                    setStats(result.data);
-                }
-            } catch (error) {
-                console.error('Failed to fetch statistics:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchStats();
-    }, []);
-
-    if (loading) {
-        return (
-            <div className="bg-white p-6 rounded-lg shadow">
-                <div className="h-80 bg-gray-100 rounded animate-pulse" />
-            </div>
-        );
-    }
-
-    if (!stats) {
-        return null;
-    }
-
+    const stats = dashboardStats;
     const total = stats.totalStudents || 1;
+
     const activePercent = ((stats.activeStudents / total) * 100).toFixed(1);
     const warningPercent = ((stats.warningStudents / total) * 100).toFixed(1);
     const dismissedPercent = ((stats.dismissedStudents / total) * 100).toFixed(1);
 
-    // Calculate angles for pie chart
     const activeAngle = (stats.activeStudents / total) * 360;
     const warningAngle = (stats.warningStudents / total) * 360;
     const dismissedAngle = (stats.dismissedStudents / total) * 360;

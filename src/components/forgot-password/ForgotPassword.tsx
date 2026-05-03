@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect } from 'react'
+import { useActionState, useEffect, useState } from 'react'
 import Loader from '../ui/Loader'
 import { forgotPasswordAction, forgotPasswordStates } from '@/server/ForgotPasswordAction'
 import InputMessageError from '../ui/InputMessageError';
@@ -8,6 +8,8 @@ import toast from 'react-hot-toast';
 import { useRouter } from 'next/navigation';
 
 const ForgotPassword = () => {
+    const [email, setEmail] = useState("");
+
     const router = useRouter();
 
     const initialState: forgotPasswordStates = {
@@ -22,13 +24,17 @@ const ForgotPassword = () => {
     // Show toast notifications based on the forgot password state
     useEffect(() => {
         if (state.success && state.message && !isPending) {
-            router.replace("/reset-password");
+            router.replace("/confirmed-done")
             toast.success(state.message || "Password reset link sent!");
         }
         if (!state.success && state.message && !isPending) {
             toast.error(state.message || "Password reset link failed!");
         }
     }, [state.success, state.message, isPending, router]);
+
+    if (state.success && state.message && !isPending) {
+        localStorage.setItem("email", email);
+    }
 
     return (
         <div className="min-h-screen w-full bg-[url('/login_img.png')] bg-cover bg-center flex items-center justify-center">
@@ -53,6 +59,7 @@ const ForgotPassword = () => {
                                     className="w-full p-3 rounded-md bg-white text-gray-700 outline-none"
                                     defaultValue={state.formData.get("email") as string}
                                     autoFocus
+                                    onChange={(e) => setEmail(e.target.value)}
                                 />
                                 {state.error && state.error.email && <InputMessageError message={state.error.email[0]} />}
                             </div>

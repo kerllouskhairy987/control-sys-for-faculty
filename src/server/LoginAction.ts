@@ -1,6 +1,7 @@
 "use server";
 
 import { LoginSchema } from "@/validation/auth/Login";
+import { cookies } from "next/headers";
 
 interface loginError {
     email?: string | null;
@@ -26,7 +27,7 @@ export async function loginAction(
         email,
         password,
     };
-    // Simulate an API call or validation logic here
+
     // make validation using ZOD
     const result = LoginSchema.safeParse(rawData);
     if (!result.success) {
@@ -41,7 +42,7 @@ export async function loginAction(
 
     // integrate with DB
     try {
-        const data = await fetch(`${process.env.DOMAIN}/api/accounts/login`, {
+        const data = await fetch(`${process.env.ENDPOINTS_URL}/api/accounts/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -58,6 +59,11 @@ export async function loginAction(
                 error: null,
             };
         }
+
+        // if logged in successfully, you can set cookies or do any other necessary actions here
+        const cookieStore = await cookies();
+        cookieStore.set("jwt", response.token);
+
 
         return {
             success: true,

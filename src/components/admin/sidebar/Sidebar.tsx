@@ -6,7 +6,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, BarChart3, Users, BookOpen, Menu, X } from 'lucide-react';
+import { ChevronDown, BarChart3, Users, BookOpen, Menu, X, BellElectric, HousePlus } from 'lucide-react';
 import { SidebarItem } from './SidebarItem';
 
 interface SidebarProps {
@@ -79,8 +79,8 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                         <button
                             onClick={handleUserDropdownClick}
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer ${isUserDropdownOpen
-                                    ? 'bg-white/20 text-white'
-                                    : 'text-white/70 hover:bg-white/10 hover:text-white'
+                                ? 'bg-white/20 text-white'
+                                : 'text-white/70 hover:bg-white/10 hover:text-white'
                                 }`}
                         >
                             <Users size={20} />
@@ -134,6 +134,22 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                             </div>
                         )}
                     </div>
+
+                    {/* Department */}
+                    <SidebarItem
+                        label="Departments"
+                        href="/admin/departments"
+                        icon={BellElectric}
+                        isExpanded={isExpanded}
+                    />
+
+                    {/* Programs */}
+                    <SidebarItem
+                        label="Programs"
+                        href="/admin/programs"
+                        icon={HousePlus}
+                        isExpanded={isExpanded}
+                    />
                 </nav>
 
                 {/* Footer */}

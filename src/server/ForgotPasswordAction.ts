@@ -31,20 +31,19 @@ export async function forgotPasswordAction(
     }
 
     try {
-        const data = await fetch(`${process.env.DOMAIN}/api/accounts/forget-password`, {
+        const response = await fetch(`${process.env.ENDPOINTS_URL}/api/accounts/forget-password`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify({ email, baseUrl: `${process.env.DOMAIN}/reset-password` }),
+            body: JSON.stringify({ email, baseUrl: `${process.env.WEBSITE_URL}/reset-password` }),
         });
-        const response = await data.json();
-        console.log("PPPPPPPPPPPPPPPP", response)
+        const data = await response.json();
 
-        if (!data.ok) {
+        if (!response.ok) {
             return {
                 success: false,
-                message: response.name || "Failed to send password reset email",
+                message: data.name || "Failed to send password reset email",
                 formData: formData,
                 error: null
             };
@@ -52,7 +51,7 @@ export async function forgotPasswordAction(
 
         return {
             success: true,
-            message: response.name || "Password reset email sent successfully",
+            message: data.message || "Password reset email sent successfully",
             formData: new FormData(), // Clear form data on success
             error: null
         };

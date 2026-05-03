@@ -6,7 +6,7 @@ import { resetPasswordAction, resetPasswordStates } from '@/server/ResetPassword
 import Loader from '../ui/Loader'
 import InputMessageError from '../ui/InputMessageError';
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 const ResetPasswordForm = () => {
     const [showPassword, setShowPassword] = useState(false);
@@ -31,6 +31,13 @@ const ResetPasswordForm = () => {
         }
     }, [state.success, state.message, isPending, router]);
 
+    // for get userId and code form URL
+    const searchParams = useSearchParams();
+    const userId = searchParams.get('userId');
+    const code = searchParams.get('code');
+    console.log("userId", userId)
+    console.log("code", code)
+
     return (
         <div className="min-h-screen w-full bg-[url('/login_img.png')] bg-cover bg-center flex items-center justify-center">
 
@@ -42,6 +49,9 @@ const ResetPasswordForm = () => {
                         <h2 className="text-white text-center text-2xl font-semibold mb-6">Reset Your Password</h2>
 
                         <form action={action} className="space-y-4">
+                            {/* these inputs for send userId and code form URL */}
+                            <input type="hidden" name='userId' value={userId as string} />
+                            <input type="hidden" name='code' value={code as string} />
 
                             <div className="relative">
                                 <div>

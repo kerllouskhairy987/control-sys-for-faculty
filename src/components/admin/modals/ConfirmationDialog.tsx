@@ -5,12 +5,13 @@
 
 'use client';
 
+import Loader from '@/components/ui/Loader';
 import { AlertCircle, X } from 'lucide-react';
 
 interface ConfirmationDialogProps {
     isOpen: boolean;
     title: string;
-    message: string;
+    message: string | React.ReactNode;
     confirmText?: string;
     cancelText?: string;
     isDangerous?: boolean;
@@ -42,7 +43,7 @@ export function ConfirmationDialog({
             />
 
             {/* Modal */}
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="fixed top-1/2 left-1/2 -translate-1/2 z-50 p-4 overflow-y-auto">
                 <div
                     className="bg-white rounded-lg shadow-xl max-w-sm w-full animate-in fade-in zoom-in-95"
                     onClick={(e) => e.stopPropagation()}
@@ -93,10 +94,7 @@ export function ConfirmationDialog({
                                 }`}
                         >
                             {isLoading ? (
-                                <span className="flex items-center justify-center gap-2">
-                                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    Processing...
-                                </span>
+                                <Loader />
                             ) : (
                                 confirmText
                             )}

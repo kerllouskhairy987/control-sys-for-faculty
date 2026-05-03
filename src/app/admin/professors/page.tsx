@@ -1,6 +1,13 @@
 /**
  * Professors Management Page
+ * Renders static professor data — no fetching, no pagination
  */
+
+import { professors, DEPARTMENTS } from '@/data/professors';
+
+function getDepartmentName(departmentId: string) {
+    return DEPARTMENTS.find((d) => d.id === departmentId)?.name ?? 'Unknown';
+}
 
 export default function ProfessorsPage() {
     return (
@@ -11,23 +18,12 @@ export default function ProfessorsPage() {
                     <h2 className="text-3xl font-bold text-gray-900">Professor Management</h2>
                     <p className="mt-1 text-gray-600">Manage and view all professors in the system</p>
                 </div>
-                {/* "Add New Professor" button will be added here in Phase 4 */}
-                <button className="px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition disabled:opacity-50">
+                <button className="px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition font-medium">
                     Add New Professor
                 </button>
             </div>
 
-            {/* Search and Filter - Placeholder */}
-            <div className="flex flex-col sm:flex-row gap-4">
-                <input
-                    type="text"
-                    placeholder="Search by name, email, or specialization..."
-                    className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent disabled:bg-gray-100"
-                    disabled
-                />
-            </div>
-
-            {/* Professors Table - Placeholder */}
+            {/* Professors Table */}
             <div className="bg-white rounded-lg shadow overflow-hidden">
                 <div className="overflow-x-auto">
                     <table className="w-full">
@@ -37,34 +33,25 @@ export default function ProfessorsPage() {
                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Email</th>
                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Specialization</th>
                                 <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Department</th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Actions</th>
+                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Phone</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
-                            {[...Array(10)].map((_, i) => (
-                                <tr key={i} className="hover:bg-gray-50 animate-pulse">
-                                    <td className="px-6 py-4 h-4 bg-gray-200 rounded" />
-                                    <td className="px-6 py-4 h-4 bg-gray-200 rounded" />
-                                    <td className="px-6 py-4 h-4 bg-gray-200 rounded" />
-                                    <td className="px-6 py-4 h-4 bg-gray-200 rounded" />
-                                    <td className="px-6 py-4 h-4 bg-gray-200 rounded" />
+                        <tbody className="divide-y divide-gray-100">
+                            {professors.map((professor) => (
+                                <tr key={professor.id} className="hover:bg-gray-50 transition">
+                                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                                        {professor.fullName}
+                                    </td>
+                                    <td className="px-6 py-4 text-sm text-gray-600">{professor.email}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-600">{professor.specialization}</td>
+                                    <td className="px-6 py-4 text-sm text-gray-600">
+                                        {getDepartmentName(professor.departmentId)}
+                                    </td>
+                                    <td className="px-6 py-4 text-sm text-gray-600">{professor.phoneNumber}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
-                </div>
-            </div>
-
-            {/* Pagination - Placeholder */}
-            <div className="flex items-center justify-between mt-6">
-                <p className="text-sm text-gray-600">Showing 1 to 10 of loading...</p>
-                <div className="flex gap-2">
-                    <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50" disabled>
-                        Previous
-                    </button>
-                    <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50" disabled>
-                        Next
-                    </button>
                 </div>
             </div>
         </div>

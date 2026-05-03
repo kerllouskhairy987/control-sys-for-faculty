@@ -1,4 +1,18 @@
 /**
+ * @desc    jwt payload type definition
+ */
+export interface JwtPayload {
+    sub: string;
+    jti: string;
+    email: string;
+    uid: string;
+    roles: string;
+    exp: number;
+    iss: string;
+    aud: string;
+}
+
+/**
  * Core Type Definitions for Admin Dashboard
  */
 
@@ -34,6 +48,26 @@ export interface Student {
 }
 
 /**
+ * Department interface
+ */
+export interface Department {
+    id?: string;
+    name: string;
+    description: string;
+    programs?: Program[];
+}
+
+/**
+ * Program interface
+ */
+export interface Program {
+    id: string;
+    name: string;
+    requiredCredits: number;
+    departmentName?: string;
+}
+
+/**
  * Professor interface
  */
 export interface Professor {
@@ -62,6 +96,14 @@ export interface StudentFormData {
     academicNumber: string;
     nationalId: string;
     programId: string;
+}
+
+/**
+ * Department Create/Update Payload
+ */
+export interface DepartmentFormData {
+    name: string;
+    description: string;
 }
 
 /**

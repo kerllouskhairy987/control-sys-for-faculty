@@ -7,9 +7,9 @@
 
 import { useState, useEffect } from 'react';
 import { Student, StudentFormData } from '@/types';
-import { PROGRAMS } from '@/server/mockData';
+import { PROGRAMS } from '@/data/students';
 import { studentFormSchema } from '@/utils/validation';
-import { generatePasswordAction } from '@/server/studentActions';
+import { generatePassword } from '@/utils/passwordGenerator';
 import { Eye, EyeOff, Copy, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { ZodError } from 'zod';
@@ -40,7 +40,6 @@ export function StudentForm({
 
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [showPassword, setShowPassword] = useState(false);
-    const [isGeneratingPassword, setIsGeneratingPassword] = useState(false);
 
     // Initialize form with student data if editing
     useEffect(() => {
@@ -62,11 +61,7 @@ export function StudentForm({
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
     ) => {
         const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-        // Clear error for this field when user starts typing
+        setFormData((prev) => ({ ...prev, [name]: value }));
         if (errors[name]) {
             setErrors((prev) => {
                 const newErrors = { ...prev };
@@ -76,24 +71,10 @@ export function StudentForm({
         }
     };
 
-    const handleGeneratePassword = async () => {
-        setIsGeneratingPassword(true);
-        try {
-            const result = await generatePasswordAction();
-            if (result.success && result.data) {
-                setFormData((prev) => ({
-                    ...prev,
-                    password: result.data.password,
-                }));
-                toast.success('Password generated successfully!');
-            } else {
-                toast.error('Failed to generate password');
-            }
-        } catch (error) {
-            toast.error('Error generating password');
-        } finally {
-            setIsGeneratingPassword(false);
-        }
+    const handleGeneratePassword = () => {
+        const password = generatePassword();
+        setFormData((prev) => ({ ...prev, password }));
+        toast.success('Password generated successfully!');
     };
 
     const handleCopyPassword = () => {
@@ -106,23 +87,21 @@ export function StudentForm({
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validate form
         try {
             studentFormSchema.parse(formData);
             setErrors({});
         } catch (error) {
-            if (error instanceof ZodError) {
-                const newErrors: Record<string, string> = {};
-                error.errors.forEach((err) => {
-                    const path = err.path[0] as string;
-                    newErrors[path] = err.message;
-                });
-                setErrors(newErrors);
-            }
-            return;
+            console.log(error)
+            // if (error instanceof ZodError) {
+            //     const newErrors: Record<string, string> = {};
+            //     error.errors.forEach((err) => {
+            //         const path = err.path[0] as string;
+            //         newErrors[path] = err.message;
+            //     });
+            //     setErrors(newErrors);
+            // }
         }
 
-        // Submit
         try {
             await onSubmit(formData);
         } catch (error) {
@@ -143,8 +122,7 @@ export function StudentForm({
                         name="userName"
                         value={formData.userName}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.userName ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.userName ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder="e.g., john_doe"
                         disabled={isLoading}
                     />
@@ -162,8 +140,7 @@ export function StudentForm({
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.email ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder="e.g., john@university.edu"
                         disabled={isLoading}
                     />
@@ -184,8 +161,7 @@ export function StudentForm({
                         name="fullName"
                         value={formData.fullName}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.fullName ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.fullName ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder="e.g., John Doe"
                         disabled={isLoading}
                     />
@@ -203,8 +179,7 @@ export function StudentForm({
                         name="phoneNumber"
                         value={formData.phoneNumber}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.phoneNumber ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder="e.g., 1234567890"
                         disabled={isLoading}
                     />
@@ -225,8 +200,7 @@ export function StudentForm({
                         name="academicNumber"
                         value={formData.academicNumber}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.academicNumber ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.academicNumber ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder="e.g., STU-2024-001"
                         disabled={isLoading}
                     />
@@ -244,8 +218,7 @@ export function StudentForm({
                         name="nationalId"
                         value={formData.nationalId}
                         onChange={handleInputChange}
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.nationalId ? 'border-red-500' : 'border-gray-300'
-                            }`}
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.nationalId ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder="e.g., NAT-123456"
                         disabled={isLoading}
                     />
@@ -264,8 +237,7 @@ export function StudentForm({
                     name="programId"
                     value={formData.programId}
                     onChange={handleInputChange}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.programId ? 'border-red-500' : 'border-gray-300'
-                        }`}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.programId ? 'border-red-500' : 'border-gray-300'}`}
                     disabled={isLoading}
                 >
                     <option value="">Select a program</option>
@@ -307,7 +279,7 @@ export function StudentForm({
                     <button
                         type="button"
                         onClick={handleCopyPassword}
-                        disabled={!formData.password || isLoading || isGeneratingPassword}
+                        disabled={!formData.password || isLoading}
                         className="px-3 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition"
                         title="Copy password"
                     >
@@ -323,11 +295,11 @@ export function StudentForm({
             <button
                 type="button"
                 onClick={handleGeneratePassword}
-                disabled={isLoading || isGeneratingPassword}
+                disabled={isLoading}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
-                <RefreshCw size={18} className={isGeneratingPassword ? 'animate-spin' : ''} />
-                {isGeneratingPassword ? 'Generating...' : 'Generate Strong Password'}
+                <RefreshCw size={18} />
+                Generate Strong Password
             </button>
 
             {/* Form Actions */}
