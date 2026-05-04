@@ -38,9 +38,6 @@ export default function ConfirmedDonePage() {
 
     const handleResend = async () => {
         setLoading(true);
-        console.log(email)
-        console.log(process.env.NEXT_PUBLIC_ENDPOINTS_URL)
-        console.log(`${process.env.NEXT_PUBLIC_WEBSITE_URLj}/reset-password`)
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_ENDPOINTS_URL}/api/accounts/forget-password`, {
                 method: "POST",

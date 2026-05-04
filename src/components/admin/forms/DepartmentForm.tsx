@@ -9,6 +9,7 @@ import InputMessageError from "@/components/ui/InputMessageError";
 import {
     createNewDepartment,
     departmentStates,
+    updateDepartment,
 } from "@/server/DepartmentActions";
 import { Department } from "@/types";
 import { useRouter } from "next/navigation";
@@ -28,6 +29,7 @@ export function DepartmentForm({
     defaultValuesForEdit,
     onCancel,
 }: StudentFormProps) {
+    const router = useRouter();
 
     const initialState: departmentStates = {
         error: null,
@@ -36,7 +38,7 @@ export function DepartmentForm({
         success: false,
     };
     const [state, action, isPending] = useActionState(
-        createNewDepartment,
+        isEditing ? updateDepartment : createNewDepartment,
         initialState,
     );
 
@@ -44,17 +46,19 @@ export function DepartmentForm({
         if (state.success && state.message && !isPending) {
             toast.success(state.message);
             setIsModalOpen(false);
+            router.refresh();
             window.location.reload();
         }
         if (!state.success && state.message && !isPending) {
             toast.error(state.message);
         }
-    }, [state.success, state.message, isPending, setIsModalOpen]);
+    }, [state.success, state.message, isPending, setIsModalOpen, router]);
 
     return (
         <form action={action} className="space-y-5">
             {/* First Row - Name and Description */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-black">
+                {isEditing && <input type="hidden" value={defaultValuesForEdit?.id} name="id" />}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Name *
@@ -111,9 +115,9 @@ export function DepartmentForm({
                             {isEditing ? "Updating..." : "Creating..."}
                         </span>
                     ) : isEditing ? (
-                        "Update Student"
+                        "Update Department"
                     ) : (
-                        "Create Student"
+                        "Create Department"
                     )}
                 </button>
             </div>

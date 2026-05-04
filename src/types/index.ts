@@ -22,11 +22,11 @@ export type UserRole = 'Admin' | 'Student' | 'Professor';
 /**
  * Program interface
  */
-export interface Program {
-    id: string;
-    name: string;
-    code: string;
-}
+// export interface Program {
+//     id: string;
+//     name: string;
+//     code: string;
+// }
 
 /**
  * Student interface
