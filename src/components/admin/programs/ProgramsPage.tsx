@@ -45,7 +45,6 @@ export default function ProgramsPage() {
     const handleConfirmDelete = async () => {
         setIsLoading(true);
         try {
-            console.log('id For Delete Item', idForDeleteItem)
             const res = await deleteProgram(idForDeleteItem as string);
 
             if (res.success && res.message && res.error === null) {

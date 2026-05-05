@@ -13,13 +13,13 @@ interface StatusColorMap {
 
 export function getStatusColors(status: StudentStatus): StatusColorMap {
     const colorMap: Record<StudentStatus, StatusColorMap> = {
-        Active: {
+        GoodStanding: {
             bg: 'bg-green-50',
             text: 'text-green-700',
             border: 'border-green-200',
             badge: 'bg-green-100 text-green-800',
         },
-        Warning: {
+        string: {
             bg: 'bg-yellow-50',
             text: 'text-yellow-700',
             border: 'border-yellow-200',

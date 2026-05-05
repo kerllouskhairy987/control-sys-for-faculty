@@ -23,8 +23,8 @@ interface ProgramFormProps {
 
 export function ProgramForm({
     isEditing,
-    setIsModalOpen,
     defaultValuesForEdit,
+    setIsModalOpen,
     onCancel,
 }: ProgramFormProps) {
 

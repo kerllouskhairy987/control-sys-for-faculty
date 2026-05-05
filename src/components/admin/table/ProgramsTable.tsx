@@ -1,7 +1,7 @@
 'use client';
 
 import { Edit2, Trash2 } from 'lucide-react';
-import { Department, Program } from '@/types';
+import { Program } from '@/types';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAllPrograms } from '@/server/ProgramsActions';
