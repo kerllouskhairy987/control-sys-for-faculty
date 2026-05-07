@@ -1,0 +1,37 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Pencil } from "lucide-react";
+
+interface ProfileHeaderProps {
+  isEditing: boolean;
+  onEdit: () => void;
+}
+
+export function ProfileHeader({ isEditing, onEdit }: ProfileHeaderProps) {
+  return (
+    <div>
+      <div className="flex justify-between items-start">
+        <div>
+          <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
+            Student Profile
+          </h2>
+          <p className="text-base text-muted-foreground">
+            Manage your personal and academic information
+          </p>
+        </div>
+        {!isEditing && (
+          <Button
+            onClick={onEdit}
+            variant="default"
+            size="lg"
+            className="gap-2"
+          >
+            <Pencil className="h-2 w-2" />
+            Edit
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}

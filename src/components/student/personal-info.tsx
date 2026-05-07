@@ -1,0 +1,68 @@
+"use client";
+
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { User } from "lucide-react";
+
+interface PersonalInfoProps {
+  isEditing: boolean;
+  studentData: any;
+  formData: any;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+export function PersonalInfo({
+  isEditing,
+  studentData,
+  formData,
+  onChange,
+}: PersonalInfoProps) {
+  return (
+    <div className="space-y-4">
+      <h3 className="font-semibold flex items-center gap-2 text-lg">
+        <User className="h-4 w-4 text-primary" />
+        Personal Information
+      </h3>
+      <Separator />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="name" className="flex items-center gap-2">
+            Full Name
+          </Label>
+          {isEditing ? (
+            <Input
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={onChange}
+            />
+          ) : (
+            <div className="p-2.5 bg-muted/50 border rounded-md text-sm">
+              {studentData.name}
+            </div>
+          )}
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="nationalId" className="flex items-center gap-2">
+            National ID
+          </Label>
+          {isEditing ? (
+            <Input
+              id="nationalId"
+              name="nationalId"
+              value={formData.nationalId}
+              onChange={onChange}
+              maxLength={14}
+            />
+          ) : (
+            <div className="p-2.5 bg-muted/50 border rounded-md text-sm">
+              {studentData.nationalId}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
