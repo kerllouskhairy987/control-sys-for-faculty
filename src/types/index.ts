@@ -16,35 +16,39 @@ export interface JwtPayload {
  * Core Type Definitions for Admin Dashboard
  */
 
-export type StudentStatus = 'Active' | 'Warning' | 'Dismissed';
+export type StudentStatus = 'GoodStanding' | 'Dismissed' | string;
 export type UserRole = 'Admin' | 'Student' | 'Professor';
 
 /**
  * Program interface
  */
-export interface Program {
-    id: string;
-    name: string;
-    code: string;
-}
+// export interface Program {
+//     id: string;
+//     name: string;
+//     code: string;
+// }
 
 /**
  * Student interface
  */
 export interface Student {
     id: string;
-    userName: string;
-    email: string;
-    password: string;
-    phoneNumber: string;
+    userName?: string;
+    email?: string;
+    password?: string;
+    phoneNumber?: string;
     fullName: string;
-    academicNumber: string;
-    nationalId: string;
-    programId: string;
-    gpa: number;
-    status: StudentStatus;
-    createdAt: Date;
-    updatedAt: Date;
+    academicNumber?: string;
+    academicStatus?: StudentStatus;
+    academicLevel?: string;
+    nationalId?: string;
+    programId?: string;
+    programName?: string;
+    gpa?: number;
+    cgpa?: number;
+    status?: StudentStatus;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 /**

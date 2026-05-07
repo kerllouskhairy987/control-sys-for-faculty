@@ -6,26 +6,26 @@
 'use client';
 
 import { X } from 'lucide-react';
-import { DepartmentForm } from '../forms/DepartmentForm';
-import { Department } from '@/types';
+import { Program } from '@/types';
+import { ProgramForm } from '../forms/ProgramForm';
 
-interface DepartmentModalProps {
+interface ProgramsModalProps {
     isOpen: boolean;
     setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
     isEditing: boolean;
     onClose: () => void;
     isLoading?: boolean;
-    defaultValuesForEdit: Department | null;
+    defaultValuesForEdit: Program | null;
 }
 
-export function DepartmentsModal({
+export function ProgramsModal({
     isOpen,
     setIsModalOpen,
     isEditing,
     onClose,
     isLoading = false,
     defaultValuesForEdit
-}: DepartmentModalProps) {
+}: ProgramsModalProps) {
     if (!isOpen) return null;
 
     return (
@@ -46,7 +46,7 @@ export function DepartmentsModal({
                     {/* Header */}
                     <div className="flex items-center justify-between p-6 border-b border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-900">
-                            {isEditing ? 'Edit Department' : 'Add New Department'}
+                            {isEditing ? 'Edit Program' : 'Add New Program'}
                         </h2>
                         <button
                             onClick={onClose}
@@ -60,7 +60,7 @@ export function DepartmentsModal({
 
                     {/* Body */}
                     <div className="p-6 max-h-[70vh] overflow-y-auto">
-                        <DepartmentForm
+                        <ProgramForm
                             setIsModalOpen={setIsModalOpen}
                             isEditing={isEditing}
                             onCancel={onClose}

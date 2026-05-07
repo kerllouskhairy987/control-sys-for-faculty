@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Nunito, Geist } from "next/font/google";
 import { Toaster } from "react-hot-toast";
 import "./globals.css";
+import "@/app/student/style.css";
 import { cn } from "@/lib/utils";
 import { TooltipProvider } from "@/components/ui/tooltip";
 

@@ -5,28 +5,30 @@
 
 'use client';
 
-import { Student, StudentFormData } from '@/types';
+import { Student } from '@/types';
 import { StudentForm } from '../forms/StudentForm';
 import { X } from 'lucide-react';
 
 interface StudentModalProps {
     isOpen: boolean;
-    student?: Student | null;
+    setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
+    isEditing: boolean;
     onClose: () => void;
-    onSubmit: (data: StudentFormData) => Promise<void>;
     isLoading?: boolean;
+    defaultValuesForEdit: Student | null;
 }
 
 export function StudentModal({
     isOpen,
-    student,
+    setIsModalOpen,
+    isEditing,
     onClose,
-    onSubmit,
     isLoading = false,
+    defaultValuesForEdit
 }: StudentModalProps) {
+
     if (!isOpen) return null;
 
-    const isEditing = !!student;
 
     return (
         <>
@@ -61,10 +63,10 @@ export function StudentModal({
                     {/* Body */}
                     <div className="p-6 max-h-[70vh] overflow-y-auto">
                         <StudentForm
-                            student={student || null}
-                            onSubmit={onSubmit}
-                            isLoading={isLoading}
+                            setIsModalOpen={setIsModalOpen}
+                            isEditing={isEditing}
                             onCancel={onClose}
+                            defaultValuesForEdit={defaultValuesForEdit}
                         />
                     </div>
                 </div>

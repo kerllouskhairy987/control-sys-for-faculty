@@ -6,7 +6,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, BarChart3, Users, BookOpen, Menu, X, BellElectric, HousePlus } from 'lucide-react';
+import { ChevronDown, BarChart3, Users, BookOpen, Menu, X, BellElectric, HousePlus, MonitorCog } from 'lucide-react';
 import { SidebarItem } from './SidebarItem';
 
 interface SidebarProps {
@@ -42,7 +42,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
             {/* Sidebar */}
             <aside
-                className={`fixed left-0 top-0 h-screen bg-gradient-to-b from-[#00284d] to-[#003465] text-white shadow-xl transition-all duration-300 z-50 ${isExpanded ? 'w-64 lg:w-64' : 'w-20 lg:w-20'
+                className={`fixed left-0 top-0 h-screen bg-linear-to-b from-[#00284d] to-[#003465] text-white shadow-xl transition-all duration-300 z-50 ${isExpanded ? 'w-64 lg:w-64' : 'w-20 lg:w-20'
                     }`}
             >
                 {/* Header */}
@@ -148,6 +148,14 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                         label="Programs"
                         href="/admin/programs"
                         icon={HousePlus}
+                        isExpanded={isExpanded}
+                    />
+
+                    {/* control engine */}
+                    <SidebarItem
+                        label="Control Engine"
+                        href="/admin/control-engine"
+                        icon={MonitorCog}
                         isExpanded={isExpanded}
                     />
                 </nav>

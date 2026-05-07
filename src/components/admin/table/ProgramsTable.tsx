@@ -1,17 +1,18 @@
 'use client';
 
 import { Edit2, Trash2 } from 'lucide-react';
-import { Department, Program } from '@/types';
+import { Program } from '@/types';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { getAllPrograms } from '@/server/ProgramsActions';
+import Link from 'next/link';
 
 interface StudentsTableProps {
-    onEdit?: (department: Department) => void;
+    onEdit?: (program: Program) => void;
     setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     setIdForDeleteItem: React.Dispatch<React.SetStateAction<string | null>>;
     setIsEditing: React.Dispatch<React.SetStateAction<boolean>>;
-    onDelete?: (department: Department) => void;
+    onDelete?: (program: Program) => void;
 }
 
 export function ProgramsTable({ onEdit, setIsModalOpen, setIdForDeleteItem, setIsEditing, onDelete }: StudentsTableProps) {
@@ -20,6 +21,7 @@ export function ProgramsTable({ onEdit, setIsModalOpen, setIdForDeleteItem, setI
     const [programsData, setProgramsData] = useState<Program[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
+    // get all programs
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -92,18 +94,18 @@ export function ProgramsTable({ onEdit, setIsModalOpen, setIdForDeleteItem, setI
                                     </td>
                                     <td className="px-6 py-4 text-sm">
                                         <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={() => {
-                                                    setIsEditing(true);
-                                                    setIsModalOpen(true);
-                                                    // onEdit?.(program)
-                                                }}
+                                            <Link href={`/admin/programs/${program.id}`}
+                                                // onClick={() => {
+                                                //     setIsEditing(true);
+                                                //     setIsModalOpen(true);
+                                                //     onEdit?.(program)
+                                                // }}
                                                 className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition">
                                                 <Edit2 size={16} />
-                                            </button>
+                                            </Link>
                                             <button
                                                 onClick={() => {
-                                                    // onDelete?.(program);
+                                                    onDelete?.(program);
                                                     setIdForDeleteItem(program.id as string);
                                                 }}
                                                 className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition">

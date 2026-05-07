@@ -7,58 +7,66 @@
 
 import { useState } from 'react';
 import { ConfirmationDialog } from '@/components/admin/modals/ConfirmationDialog';
-import { Department } from '@/types';
+import { Program } from '@/types';
 import toast from 'react-hot-toast';
-import { DepartmentsModal } from '../modals/DepartmentsModal';
-import { deleteDepartment } from '@/server/DepartmentActions';
 import { ProgramsTable } from '../table/ProgramsTable';
+import { ProgramsModal } from '../modals/ProrgramsModal';
+import { deleteProgram } from '@/server/ProgramsActions';
+import { useRouter } from 'next/navigation';
 
 export default function ProgramsPage() {
+    const router = useRouter()
 
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedDepartment, setSelectedDepartment] = useState<Department | null>(null);
+    const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
     const [idForDeleteItem, setIdForDeleteItem] = useState<string | null>(null);
-    const [isDeleting, setIsDeleting] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [deleteConfirmation, setDeleteConfirmation] = useState<{
         isOpen: boolean;
-        department: Department | null;
-    }>({ isOpen: false, department: null });
+        program: Program | null;
+    }>({ isOpen: false, program: null });
 
     const handleAddNew = () => {
         setIsEditing(false);
-        setSelectedDepartment(null);
+        setSelectedProgram(null);
         setIsModalOpen(true);
     };
 
-    const handleEdit = (department: Department) => {
-        setSelectedDepartment(department);
+    const handleEdit = (program: Program) => {
+        setSelectedProgram(program);
         setIsModalOpen(true);
     };
 
-    const handleDelete = (department: Department) => {
-        setDeleteConfirmation({ isOpen: true, department });
+    const handleDelete = (program: Program) => {
+        setDeleteConfirmation({ isOpen: true, program });
     };
 
     const handleConfirmDelete = async () => {
-        setIsDeleting(true);
+        setIsLoading(true);
         try {
-            const res = await deleteDepartment(idForDeleteItem as string);
-            toast.success(res.message);
+            const res = await deleteProgram(idForDeleteItem as string);
+
+            if (res.success && res.message && res.error === null) {
+                toast.success(res.message);
+            } else {
+                toast.error(res.message || "INTERNAL Server Error!");
+            }
             window.location.reload();
         } catch {
             toast.error("Delete failed");
         } finally {
-            setIsDeleting(false);
-            setDeleteConfirmation({ isOpen: false, department: null });
+            setIsLoading(false);
+            setDeleteConfirmation({ isOpen: false, program: null });
         }
+        router.refresh();
     };
 
 
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        setSelectedDepartment(null);
+        setSelectedProgram(null);
     };
 
     return (
@@ -90,12 +98,12 @@ export default function ProgramsPage() {
             {/* Department Modal */}
             {
                 isModalOpen && (
-                    <DepartmentsModal
+                    <ProgramsModal
                         setIsModalOpen={setIsModalOpen}
                         isEditing={isEditing}
                         isOpen={isModalOpen}
                         onClose={handleCloseModal}
-                        defaultValuesForEdit={selectedDepartment}
+                        defaultValuesForEdit={selectedProgram}
                     />
                 )
             }
@@ -103,22 +111,22 @@ export default function ProgramsPage() {
             {/* Delete Confirmation Dialog */}
             <ConfirmationDialog
                 isOpen={deleteConfirmation.isOpen}
-                title="Delete Department"
+                title="Delete Program"
                 message={
                     <>
                         Are you sure you want to delete{" "}
                         <span className="font-semibold text-red-500">
-                            {deleteConfirmation.department?.name}?
+                            {deleteConfirmation.program?.name}?
                         </span>{" "}
                         This action cannot be undone.
                     </>
                 }
-                isLoading={isDeleting}
+                isLoading={isLoading}
                 confirmText="Delete"
                 cancelText="Cancel"
                 isDangerous={true}
                 onConfirm={handleConfirmDelete}
-                onCancel={() => setDeleteConfirmation({ isOpen: false, department: null })}
+                onCancel={() => setDeleteConfirmation({ isOpen: false, program: null })}
             />
         </div>
     );

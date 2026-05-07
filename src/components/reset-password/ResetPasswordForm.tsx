@@ -35,9 +35,6 @@ const ResetPasswordForm = () => {
     const searchParams = useSearchParams();
     const userId = searchParams.get('userId');
     const code = searchParams.get('code');
-    console.log("userId", userId)
-    console.log("code", code)
-
     return (
         <div className="min-h-screen w-full bg-[url('/login_img.png')] bg-cover bg-center flex items-center justify-center">
 

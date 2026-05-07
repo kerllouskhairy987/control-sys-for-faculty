@@ -2,12 +2,8 @@
 
 import getTokenFromCookie from "@/utils/getCookie";
 import { CreateDepartmentSchema } from "@/validation/department";
-import { revalidatePath, revalidateTag } from 'next/cache'
+import { revalidatePath } from 'next/cache'
 
-/**
- * @desc     create new department
- * @access   admin
-*/
 interface departmentError {
     name?: string;
     description?: string;
@@ -20,6 +16,10 @@ export interface departmentStates {
     error: departmentError | null
 }
 
+/**
+ * @desc     create new department
+ * @access   admin
+*/
 export async function createNewDepartment(prevState: unknown, formData: FormData): Promise<departmentStates> {
     // get raw data
     const name = formData.get("name") as string;
@@ -155,4 +155,77 @@ export async function deleteDepartment(id: string) {
     }
 }
 
-// TODO: Update Department
+/**
+ * @desc     update specific department
+ * @access   admin
+*/
+export async function updateDepartment(prevState: unknown, formData: FormData): Promise<departmentStates> {
+    // get raw data
+    const name = formData.get("name") as string;
+    const description = formData.get("description") as string;
+    const id = formData.get("id") as string;
+    console.log("ID FOR TEST", id)
+
+    // validation with zod
+    const result = CreateDepartmentSchema.safeParse({ name, description });
+    if (!result.success) {
+        return {
+            success: false,
+            message: "Invalid department format",
+            formData: formData,
+            error: result.error.flatten().fieldErrors as departmentError,
+        };
+    }
+
+    // integrate with DB
+    try {
+        // get token from cookies
+        const token = await getTokenFromCookie();
+
+        if (!token) {
+            return {
+                success: false,
+                message: "Unauthorized, Please Login First!",
+                formData: formData,
+                error: null,
+            }
+        }
+
+        const res = await fetch(`${process.env.ENDPOINTS_URL}/api/departments/${id}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`,
+            },
+            body: JSON.stringify({ name, description })
+        });
+
+        if (!res.ok) {
+            return {
+                success: false,
+                message: "Failed to create new department",
+                formData: formData,
+                error: null,
+            }
+        }
+
+        // revalidate path after create new department
+        revalidatePath('/admin/departments', 'page')
+
+        return {
+            success: true,
+            message: "Department created successfully",
+            formData: new FormData(), // Clear form data on success
+            error: null,
+        }
+
+    } catch (error) {
+        console.log(error)
+        return {
+            success: false,
+            message: "internal server error",
+            formData: formData,
+            error: null,
+        }
+    }
+}
