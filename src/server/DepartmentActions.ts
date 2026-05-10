@@ -93,12 +93,35 @@ export async function createNewDepartment(prevState: unknown, formData: FormData
  * @desc     get All department
  * @access   admin
 */
-export async function getAllDepartment() {
+export async function getAllDepartment({ page, pageSize, search }: { page?: number, pageSize?: number, search?: string }) {
     try {
         // get token form cookies
         const token = await getTokenFromCookie();
 
-        const res = await fetch(`${process.env.ENDPOINTS_URL}/api/departments`, {
+        // create params
+        const params = new URLSearchParams();
+
+        if (page) {
+            params.append("page", String(page));
+        }
+
+        if (pageSize) {
+            params.append("pageSize", String(pageSize));
+        }
+
+        if (search) {
+            params.append("search", search);
+        }
+
+        // final url
+        let url;
+        if (page || pageSize || search) {
+            url = `${process.env.ENDPOINTS_URL}/api/departments?${params.toString()}`;
+        } else {
+            url = `${process.env.ENDPOINTS_URL}/api/departments`;
+        }
+
+        const res = await fetch(url, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`

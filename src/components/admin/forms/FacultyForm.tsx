@@ -6,38 +6,44 @@
 'use client';
 
 import { useState, useEffect, useActionState } from 'react';
-import { Program, Student } from '@/types';
+import { Department, Student } from '@/types';
 import { generatePassword } from '@/utils/passwordGenerator';
 import { Eye, EyeOff, Copy, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { createNewStudent, studentStates } from '@/server/StudentsAction';
 import Loader from '@/components/ui/Loader';
-import { getAllPrograms } from '@/server/ProgramsActions';
 import Link from 'next/link';
 import InputMessageError from '@/components/ui/InputMessageError';
+import { getAllDepartment } from '@/server/DepartmentActions';
+import { FacultyDegree } from '@/enums';
+import { createNewFacultyMember } from '@/server/FacultyAction';
 
-interface StudentFormProps {
+// const degree
+
+interface FacultyMemberProps {
     isEditing: boolean;
-    defaultValuesForEdit: Student | null;
+    // defaultValuesForEdit: Faculty | null;
     setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     onCancel?: () => void;
 }
 
-export function StudentForm({
+export function FacultyMemberForm({
     isEditing,
-    defaultValuesForEdit,
+    // defaultValuesForEdit,
     setIsModalOpen,
     onCancel,
-}: StudentFormProps) {
+}: FacultyMemberProps) {
 
-    const [studentData, setStudentData] = useState<Student[] | null>(null);
-    const [programData, setProgramData] = useState<Program[] | null>([]);
+    const [departmentData, setDepartmentData] = useState<Department[] | null>([]);
 
     const [password, setPassword] = useState<string>('');
     const [showPassword, setShowPassword] = useState(false);
 
-    const [selectedStudentId, setSelectedStudentId] = useState<string>(defaultValuesForEdit?.id || "");
+    const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>("");
+    const [selectedDegree, setSelectedDegree] = useState<FacultyDegree | null>(null);
+
     const [isLoading, setIsLoading] = useState(false);
+    const [isAdvisor, setIsAdvisor] = useState(false);
 
     const initialState: studentStates = {
         error: null,
@@ -45,15 +51,20 @@ export function StudentForm({
         message: "",
         success: false,
     };
-    const [state, action, isPending] = useActionState(createNewStudent, initialState);
+    const [state, action, isPending] = useActionState(createNewFacultyMember, initialState);
+
+    // get isAdvisor from server when error occurred
+    useEffect(() => {
+        setIsAdvisor(Boolean(state.formData.get("isAdvisor")));
+    }, [state.formData]);
 
     // get all programs to show in select
     useEffect(() => {
         const fetchData = async () => {
             try {
                 if (setIsLoading) setIsLoading(true);
-                const data = await getAllPrograms();
-                setProgramData(data);
+                const data = await getAllDepartment({ pageSize: 100000 });
+                setDepartmentData(data.items);
             } catch (error) {
                 console.error(error);
                 if (setIsLoading) setIsLoading(false);
@@ -88,36 +99,12 @@ export function StudentForm({
             toast.success('Password copied to clipboard!');
         }
     };
-    //     e.preventDefault();
-
-    //     try {
-    //         studentFormSchema.parse(formData);
-    //         setErrors({});
-    //     } catch (error) {
-    //         console.log(error)
-    //         // if (error instanceof ZodError) {
-    //         //     const newErrors: Record<string, string> = {};
-    //         //     error.errors.forEach((err) => {
-    //         //         const path = err.path[0] as string;
-    //         //         newErrors[path] = err.message;
-    //         //     });
-    //         //     setErrors(newErrors);
-    //         // }
-    //     }
-
-    //     try {
-    //         await onSubmit(formData);
-    //     } catch (error) {
-    //         console.error('Form submission error:', error);
-    //     }
-    // };
 
     return (
         <form action={action} className="space-y-5">
             {/* First Row - Username and Email */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* input for programId */}
-                <input type="hidden" name="programId" value={selectedStudentId} />
+                {/* userName */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         userName *
@@ -127,7 +114,7 @@ export function StudentForm({
                         name="userName"
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${state.error && state.error.userName ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder="e.g., john_doe"
-                        defaultValue={defaultValuesForEdit?.userName || state.formData.get("userName") as string}
+                        defaultValue={state.formData.get("userName") as string}
                         autoFocus
                         disabled={isLoading}
                     />
@@ -136,6 +123,7 @@ export function StudentForm({
                     )}
                 </div>
 
+                {/* Email */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Email *
@@ -145,7 +133,7 @@ export function StudentForm({
                         name="email"
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${state.error && state.error.email ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder="e.g., john@university.edu"
-                        defaultValue={defaultValuesForEdit?.email || state.formData.get("email") as string}
+                        defaultValue={state.formData.get("email") as string}
                         disabled={isLoading}
                     />
                     {state.error && state.error.email && (
@@ -154,6 +142,7 @@ export function StudentForm({
                 </div>
             </div>
 
+            {/* Full Name */}
             {/* Second Row - Full Name and Phone */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
@@ -165,7 +154,7 @@ export function StudentForm({
                         name="fullName"
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${state.error && state.error.fullName ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder="e.g., John Doe"
-                        defaultValue={defaultValuesForEdit?.fullName || state.formData.get("fullName") as string}
+                        defaultValue={state.formData.get("fullName") as string}
                         disabled={isLoading}
                     />
                     {state.error && state.error.fullName && (
@@ -173,6 +162,7 @@ export function StudentForm({
                     )}
                 </div>
 
+                {/* Phone Number */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                         Phone Number *
@@ -182,7 +172,7 @@ export function StudentForm({
                         name="phoneNumber"
                         className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${state.error && state.error.phoneNumber ? 'border-red-500' : 'border-gray-300'}`}
                         placeholder="e.g., 1234567890"
-                        defaultValue={defaultValuesForEdit?.phoneNumber || state.formData.get("phoneNumber") as string}
+                        defaultValue={state.formData.get("phoneNumber") as string}
                         disabled={isLoading}
                     />
                     {state.error && state.error.phoneNumber && (
@@ -191,95 +181,60 @@ export function StudentForm({
                 </div>
             </div>
 
-            {/* Third Row - Academic and National ID */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Degree */}
+            <div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Academic Number *
+                        Degree *
                     </label>
-                    <input
-                        type="text"
-                        name="academicNumber"
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${state.error && state.error.academicNumber ? 'border-red-500' : 'border-gray-300'}`}
-                        placeholder="e.g., STU-2024-001"
-                        defaultValue={defaultValuesForEdit?.academicNumber || state.formData.get("academicNumber") as string}
-                        disabled={isLoading}
-                    />
-                    {state.error && state.error.academicNumber && (
-                        <InputMessageError message={state.error.academicNumber} />
-                    )}
-                </div>
+                    <input type="hidden" name="degree" value={selectedDegree ?? ""} />
+                    <select
+                        id="degree"
+                        value={selectedDegree ?? ""}
+                        onChange={(e) => setSelectedDegree(e.target.value as FacultyDegree)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition"
+                    >
+                        <option value={state.formData.get("degree") ? state.formData.get("degree") as string : ""} disabled>
+                            Select A Degree
+                        </option>
 
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        National ID *
-                    </label>
-                    <input
-                        type="text"
-                        name="nationalId"
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${state.error && state.error.nationalId ? 'border-red-500' : 'border-gray-300'}`}
-                        placeholder="e.g., NAT-123456"
-                        defaultValue={defaultValuesForEdit?.nationalId || state.formData.get("nationalId") as string}
-                        disabled={isLoading}
-                    />
-                    {state.error && state.error.nationalId && (
-                        <InputMessageError message={state.error.nationalId} />
+                        {Object.values(FacultyDegree).map((degree, idx) => (
+                            <option key={degree} value={idx}>
+                                {degree}
+                            </option>
+                        ))}
+                    </select>
+                    {state.error && state.error.degree && (
+                        <InputMessageError message={state.error.degree} />
                     )}
                 </div>
             </div>
 
-            {/* Program Selection */}
-            {/* <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Program *
-                </label>
-                <select
-                    name="programId"
-                    // value={formData.programId}
-                    // onChange={handleInputChange}
-                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 ${errors.programId ? 'border-red-500' : 'border-gray-300'}`}
-                    disabled={isLoading}
-                >
-                    <option value="">Select a program</option>
-                    {PROGRAMS.map((program) => (
-                        <option key={program.id} value={program.id}>
-                            {program.name}
-                        </option>
-                    ))}
-                </select>
-                {errors.programId && (
-                    <p className="mt-1 text-xs text-red-600">{errors.programId}</p>
-                )}
-            </div> */}
-
-
+            {/* Department */}
             {!isEditing && (
                 <div className="flex flex-col text-gray-700 gap-2">
-                    <label htmlFor="">Program</label>
+                    <label htmlFor="">Department</label>
+                    <input type="hidden" value={selectedDepartmentId} name='departmentId' />
                     {
                         isLoading
                             ? <Loader />
                             : (
-                                programData
+                                departmentData
                                     ? (
                                         <select
                                             name="departments"
                                             id="departments"
-                                            value={selectedStudentId}
-                                            onChange={(e) => setSelectedStudentId(e.target.value)}
+                                            value={selectedDepartmentId}
+                                            onChange={(e) => setSelectedDepartmentId(e.target.value)}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition"
                                         >
-                                            {/* default value for selection */}
-                                            {/* <option value={defaultValuesForEdit ? defaultValuesForEdit.id : ""} disabled>
-                                                {isEditing && defaultValuesForEdit ? defaultValuesForEdit.departmentName : "Select a department"}
-                                            </option> */}
-
-                                            <option value={defaultValuesForEdit ? defaultValuesForEdit.id : state.formData.get("programId") ? state.formData.get("programId") as string : ""} disabled>
-                                                {isEditing && defaultValuesForEdit ? defaultValuesForEdit.programName : state.formData.get("programId") ? state.formData.get("programId") as string : "Select a department"}
+                                            <option value={state.formData.get("departmentId") ? state.formData.get("departmentId") as string : ""} disabled>
+                                                Select a department
                                             </option>
 
-                                            {programData.map((program: Program) => (
-                                                <option key={program.id} value={program.id}>
-                                                    {program.name}
+                                            {departmentData.map((department: Department) => (
+                                                <option key={department.id} value={department.id}>
+                                                    {department.name}
                                                 </option>
                                             ))}
                                         </select>
@@ -302,15 +257,12 @@ export function StudentForm({
                                     )
                             )
                     }
-                    {state.error && state.error.programId && (
-                        <InputMessageError message={state.error.programId} />
+                    {state.error && state.error.departmentId && (
+                        <InputMessageError message={state.error.departmentId} />
                     )}
                 </div>
             )
             }
-
-
-
 
             {/* Password Field */}
             <div>
@@ -362,20 +314,38 @@ export function StudentForm({
                 Generate Strong Password
             </button>
 
+            {/* isAdvisor */}
+            <div className='flex items-center justify-start gap-2 cursor-pointer w-fit'>
+                <input
+                    type="checkbox"
+                    name="isAdvisor"
+                    id="isAdvisor"
+                    className={`px-4 py-2 border-none outline-none accent-[#00284d] w-5 h-5 rounded-lg transition disabled:bg-gray-100 cursor-pointer`}
+                    placeholder="e.g., NAT-123456"
+                    // checked={isAdvisor}
+                    defaultChecked={isAdvisor}
+                    onChange={(e) => setIsAdvisor(e.target.checked)}
+                    disabled={isLoading}
+                />
+                <label className="block text-sm font-medium text-gray-700 select-none cursor-pointer" htmlFor='isAdvisor'>
+                    Is Advisor
+                </label>
+            </div>
+
             {/* Form Actions */}
-            <div className="flex gap-3 pt-4">
+            <div className="flex flex-col sm:flex-row items-center gap-3 pt-4">
                 <button
                     type="button"
                     onClick={onCancel}
                     disabled={isLoading}
-                    className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                    className="order-1 sm:order-0 w-full flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
                     Cancel
                 </button>
                 <button
                     type="submit"
                     disabled={isLoading || isPending}
-                    className="flex-1 px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                    className="order-0 sm:order-1 whitespace-nowrap flex-1 px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
                     {
                         isPending
@@ -383,12 +353,12 @@ export function StudentForm({
                             : isLoading ? (
                                 <span className="flex items-center justify-center gap-2">
                                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    {isEditing ? 'Updating...' : 'Creating...'}
+                                    {isPending ? 'Creating...' : isEditing ? "Updating..." : ""}
                                 </span>
                             ) : isEditing ? (
-                                'Update Student'
+                                'Update Faculty Member'
                             ) : (
-                                'Create Student'
+                                'Create Faculty Member'
                             )
                     }
                 </button>

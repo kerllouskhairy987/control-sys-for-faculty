@@ -6,7 +6,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, BarChart3, Users, BookOpen, Menu, X, BellElectric, HousePlus, MonitorCog } from 'lucide-react';
+import { ChevronDown, BarChart3, Users, BookOpen, Menu, X, BellElectric, HousePlus, MonitorCog, Warehouse } from 'lucide-react';
 import { SidebarItem } from './SidebarItem';
 
 interface SidebarProps {
@@ -156,6 +156,14 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                         label="Control Engine"
                         href="/admin/control-engine"
                         icon={MonitorCog}
+                        isExpanded={isExpanded}
+                    />
+
+                    {/* Faculty */}
+                    <SidebarItem
+                        label="Faculty"
+                        href="/admin/faculty"
+                        icon={Warehouse}
                         isExpanded={isExpanded}
                     />
                 </nav>

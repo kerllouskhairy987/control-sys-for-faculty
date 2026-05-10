@@ -1,3 +1,5 @@
+import { FacultyStatus } from "@/enums";
+
 /**
  * @desc    jwt payload type definition
  */
@@ -86,6 +88,29 @@ export interface Professor {
     specialization: string;
     createdAt: Date;
     updatedAt: Date;
+}
+
+/**
+ * @desc    faculty interface
+ */
+export interface Faculty {
+    id: string;
+    name: string;
+    degree: string;
+    departmentName: string;
+    status: FacultyStatus;
+}
+/**
+ * @desc    single faculty member interface
+ */
+export interface SingleFacultyMember {
+    id: string;
+    name: string;
+    degree: string;
+    departmentName: string;
+    email: string;
+    appUserId: string;
+    status: FacultyStatus;
 }
 
 /**
