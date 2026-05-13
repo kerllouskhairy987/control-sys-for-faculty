@@ -15,64 +15,63 @@ import Link from "next/link";
 import Pagination from "@/components/ui/Pagination";
 
 interface FacultyTableProps {
-    students: Student[];
     onEdit?: (student: Student) => void;
     onDelete?: (student: Student) => void;
     setIdForDeleteItem: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 export function FacultyTable({
-    students,
     onEdit,
     onDelete,
     setIdForDeleteItem,
 }: FacultyTableProps) {
-    const router = useRouter();
     const [selectedFacultyData, setSelectedFacultyData] = useState<Faculty[]>([]);
     const [departmentsData, setDepartmentData] = useState<Department[]>([]);
 
     const [selectedStatus, selectedSetStatus] = useState<string | undefined>(undefined);
     const [selectedDepartmentId, selectedSetDepartmentId] = useState<string>("");
 
+    // states for pagination and filter
     const [search, setSearch] = useState('');
-    // states for pagination
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
-    console.log("search", search, pageSize, totalPages)
+    const [totalCount, setTotalCount] = useState(0);
 
     const [isLoading, setIsLoading] = useState(true);
 
-    // get all programs
+    // get all faculty member
+    const fetchData = async () => {
+        try {
+            setIsLoading(true);
+            // get all department
+            const allDepartments = await getAllDepartment({});
+            setDepartmentData(allDepartments.items);
+
+            const allFacultyMember = await getAllFacultyMember({
+                departmentId: selectedDepartmentId,
+                status: selectedStatus,
+                search,
+                page,
+                pageSize
+            });
+
+            setSelectedFacultyData(allFacultyMember.items);
+
+            // for pagination
+            setTotalPages(allFacultyMember.totalPages);
+            setPage(allFacultyMember.page);
+            setTotalCount(allFacultyMember.totalCount)
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setIsLoading(true);
-                // get all department
-                const allDepartments = await getAllDepartment({});
-                setDepartmentData(allDepartments.items);
-
-                const allFacultyMember = await getAllFacultyMember({
-                    departmentId: selectedDepartmentId,
-                    status: selectedStatus,
-                    search,
-                    page,
-                    pageSize
-                });
-                setSelectedFacultyData(allFacultyMember.items);
-                // for pagination
-                setPage(allFacultyMember.page)
-                setTotalPages(allDepartments.totalPages);
-                router.refresh();
-            } catch (error) {
-                console.error(error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
         fetchData();
-    }, [router, selectedStatus, selectedDepartmentId, search, page, pageSize]);
+    }, [page, pageSize, selectedStatus, selectedDepartmentId, search]);
 
     return (
         <>
@@ -320,6 +319,7 @@ export function FacultyTable({
 
             {/* Pagination */}
             <Pagination
+                totalCount={totalCount}
                 currentPage={page}
                 totalPages={totalPages}
                 pageSize={pageSize}

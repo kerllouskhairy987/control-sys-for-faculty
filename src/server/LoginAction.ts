@@ -42,19 +42,20 @@ export async function loginAction(
 
     // integrate with DB
     try {
-        const data = await fetch(`${process.env.ENDPOINTS_URL}/api/accounts/login`, {
+        const res = await fetch(`${process.env.ENDPOINTS_URL}/api/accounts/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(rawData),
         });
-        const response = await data.json();
+        const data = await res.json();
+        console.log("Login data",data)
 
-        if (!data.ok) {
+        if (!res.ok) {
             return {
                 success: false,
-                message: response.name || "Invalid email or password",
+                message: data.name || "Invalid email or password",
                 formData,
                 error: null,
             };
@@ -62,7 +63,9 @@ export async function loginAction(
 
         // if logged in successfully, you can set cookies or do any other necessary actions here
         const cookieStore = await cookies();
-        cookieStore.set("jwt", response.token);
+        cookieStore.set("jwt", data.token);
+        cookieStore.set("refreshToken", data.refreshToken);
+        cookieStore.set("refreshTokenExpiresOn", data.refreshTokenExpiresOn);
 
 
         return {

@@ -5,13 +5,12 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { StudentModal } from '@/components/admin/modals/StudentModal';
 import { ConfirmationDialog } from '@/components/admin/modals/ConfirmationDialog';
 import { Student } from '@/types';
-import { students } from '@/data/students';
 import toast from 'react-hot-toast';
-import { dismissStudent } from '@/server/StudentsAction';
+import { dismissStudent, getAllStudents } from '@/server/StudentsAction';
 import { useRouter } from 'next/navigation';
 import { FacultyTable } from '../table/FacultyTable';
 import { FacultyModal } from '../modals/FacultyModal';
@@ -43,6 +42,20 @@ export default function FacultyPage() {
     const handleDelete = (student: Student) => {
         setDeleteConfirmation({ isOpen: true, student });
     };
+
+    // get all students 
+    useEffect(() => {
+            // Fetch students from the server and update the state
+            const fetchStudents = async () => {
+                try {
+                    // const data = await getAllStudents()
+                } catch (error) {
+                    console.log(error)
+                } finally {
+                    router.refresh()
+                }
+            }
+    }, [])
 
     const handleConfirmDelete = async () => {
         setIsLoading(true);
@@ -87,7 +100,6 @@ export default function FacultyPage() {
 
             {/* Faculty Table */}
             <FacultyTable
-                students={students}
                 setIdForDeleteItem={setIdForDeleteItem}
                 onEdit={handleEdit}
                 onDelete={handleDelete}

@@ -53,6 +53,18 @@ export interface Student {
     updatedAt?: Date;
 }
 
+
+/**
+ * @desc    advisor interface
+ */
+export interface Advisor {
+    id: string,
+    name: string,
+    degree: string,
+    departmentName: string,
+    email: string
+}
+
 /**
  * Department interface
  */

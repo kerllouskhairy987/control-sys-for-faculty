@@ -19,12 +19,57 @@ export interface studentStates {
  * @desc     get All department
  * @access   admin
 */
-export async function getAllStudents() {
+interface IGetAllStudents {
+    search?: string;
+    programId?: string;
+    advisorId?: string;
+    status?: string;
+    minCGPA?: number;
+    maxCGPA?: number;
+    page?: number;
+    pageSize?: number;
+}
+export async function getAllStudents({search, programId, advisorId, status, minCGPA, maxCGPA, page, pageSize}: IGetAllStudents) {
     try {
         // get token form cookies
         const token = await getTokenFromCookie();
 
-        const res = await fetch(`${process.env.ENDPOINTS_URL}/api/Students`, {
+         // create params
+        const params = new URLSearchParams();
+
+        if (page) {
+            params.append("page", String(page));
+        }
+
+        if (pageSize) {
+            params.append("pageSize", String(pageSize));
+        }
+
+        if (search) {
+            params.append("search", search);
+        }
+
+        if (programId) {
+            params.append("programId", programId);
+        }
+
+        if (advisorId) {
+            params.append("advisorId", advisorId);
+        }
+
+        if (minCGPA !== undefined) {
+            params.append("minCGPA", minCGPA.toString());
+        }
+
+        if (maxCGPA !== undefined) {
+            params.append("maxCGPA", maxCGPA.toString());
+        }
+
+        if (status !== undefined) {
+            params.append("status", status.toString());
+        }
+
+        const res = await fetch(`${process.env.ENDPOINTS_URL}/api/Students?${params.toString()}`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`

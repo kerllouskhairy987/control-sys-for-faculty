@@ -49,10 +49,10 @@ export default function ProgramsPage() {
 
             if (res.success && res.message && res.error === null) {
                 toast.success(res.message);
+                window.location.reload();
             } else {
                 toast.error(res.message || "INTERNAL Server Error!");
             }
-            window.location.reload();
         } catch {
             toast.error("Delete failed");
         } finally {

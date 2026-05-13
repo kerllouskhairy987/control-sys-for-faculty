@@ -56,8 +56,8 @@ export function ProgramForm({
         const fetchData = async () => {
             try {
                 if (setIsLoading) setIsLoading(true);
-                const data = await getAllDepartment();
-                setDepartmentData(data);
+                const data = await getAllDepartment({});
+                setDepartmentData(data.items);
             } catch (error) {
                 console.error(error);
                 if (setIsLoading) setIsLoading(false);

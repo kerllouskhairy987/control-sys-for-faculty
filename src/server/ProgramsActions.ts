@@ -18,12 +18,45 @@ export interface programStates {
  * @desc     get All programs
  * @access   admin
 */
-export async function getAllPrograms() {
+interface IGetAllPrograms {
+    search?: string;
+    departmentId?: string;
+    page?: number;
+    pageSize?: number;
+}
+export async function getAllPrograms({search, departmentId, page, pageSize}: IGetAllPrograms) {
     try {
         // get token form cookies
         const token = await getTokenFromCookie();
 
-        const res = await fetch(`${process.env.ENDPOINTS_URL}/api/departments/programs`, {
+        // create params
+        const params = new URLSearchParams();
+
+        if (page) {
+            params.append("page", String(page));
+        }
+
+        if (pageSize) {
+            params.append("pageSize", String(pageSize));
+        }
+
+        if (search) {
+            params.append("search", search);
+        }
+
+        if(departmentId) {
+            params.append("departmentId", departmentId)
+        }
+
+        // final url
+        let url;
+        if (page || pageSize || search) {
+            url = `${process.env.ENDPOINTS_URL}/api/departments/programs?${params.toString()}`;
+        } else {
+            url = `${process.env.ENDPOINTS_URL}/api/departments/programs`;
+        }
+
+        const res = await fetch(url, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -266,7 +299,6 @@ export async function deleteProgram(id: string) {
         // get token form cookies
         const token = await getTokenFromCookie();
 
-
         const res = await fetch(`${process.env.ENDPOINTS_URL}/api/departments/programs/${id}`, {
             method: "DELETE",
             headers: {
@@ -275,10 +307,11 @@ export async function deleteProgram(id: string) {
             }
         })
 
+        const data = await res.json()
         if (!res.ok) {
             return {
                 success: false,
-                message: "An Error Occurred, Please Try Again!",
+                message: data.name || "An Error Occurred, Please Try Again!",
                 error: null
             }
         }

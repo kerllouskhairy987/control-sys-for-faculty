@@ -2,6 +2,7 @@ import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface PaginationProps {
+    totalCount: number;
     currentPage: number;
     totalPages: number;
     pageSize: number;
@@ -10,12 +11,14 @@ interface PaginationProps {
 }
 
 export default function Pagination({
+    totalCount,
     currentPage,
     totalPages,
     pageSize,
     onPageChange,
     onPageSizeChange,
 }: PaginationProps) {
+
     const generatePages = () => {
         const pages: (number | string)[] = [];
 
@@ -64,6 +67,10 @@ export default function Pagination({
                     <option value={20}>20</option>
                     <option value={50}>50</option>
                 </select>
+                {
+                    totalCount !== 0
+                    && <span className="flex items-center gap-2">all items are <span className="text-xl font-bold">[ {totalCount} ]</span></span>
+                }
             </div>
 
             {/* Pagination */}

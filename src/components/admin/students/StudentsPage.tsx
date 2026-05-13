@@ -10,7 +10,7 @@ import { StudentsTable } from '@/components/admin/table/StudentsTable';
 import { StudentModal } from '@/components/admin/modals/StudentModal';
 import { ConfirmationDialog } from '@/components/admin/modals/ConfirmationDialog';
 import { Student } from '@/types';
-import { students } from '@/data/students';
+// import { students } from '@/data/students';
 import toast from 'react-hot-toast';
 import { dismissStudent } from '@/server/StudentsAction';
 import { useRouter } from 'next/navigation';
@@ -86,7 +86,7 @@ export default function StudentsPage() {
 
             {/* Students Table */}
             <StudentsTable
-                students={students}
+                // students={students}
                 setIdForDeleteItem={setIdForDeleteItem}
                 onEdit={handleEdit}
                 onDelete={handleDelete}

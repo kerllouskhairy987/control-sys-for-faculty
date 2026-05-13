@@ -16,7 +16,80 @@ export interface facultyStates {
 }
 
 /**
- * @desc     get All department
+ * @desc     get All advisor
+ * @access   admin
+*/
+interface IGetAllAdvisors {
+    search?: string;
+    departmentId?: string;
+    page?: number;
+    pageSize?: number;
+}
+export async function getAllAdvisors({ departmentId, search, page, pageSize }: IGetAllAdvisors) {
+    try {
+        // get token form cookies
+        const token = await getTokenFromCookie();
+
+        // create params
+        const params = new URLSearchParams();
+
+        if (page) {
+            params.append("page", String(page));
+        }
+
+        if (pageSize) {
+            params.append("pageSize", String(pageSize));
+        }
+
+        if (search) {
+            params.append("search", search);
+        }
+
+        if (departmentId) {
+            params.append("departmentId", departmentId);
+        }
+
+        // final url
+        let url;
+        if (page || pageSize || search || departmentId || status !== undefined) {
+            url = `${process.env.ENDPOINTS_URL}/api/Faculty/advisors?${params.toString()}`;
+        } else {
+            url = `${process.env.ENDPOINTS_URL}/api/Faculty/advisors`;
+        }
+
+        const res = await fetch(url, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            next: { tags: ['facultyMember'] }
+        })
+
+        if (!res.ok) {
+            return {
+                success: false,
+                message: "Failed to load faculty member",
+                formData: null,
+                error: null
+            }
+        }
+
+        const data = await res.json();
+        return data;
+
+    } catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            message: "Internal server error",
+            formData: null,
+            error: null
+        }
+    }
+}
+
+/**
+ * @desc     get All faculty member
  * @access   admin
 */
 interface IGetAllFacultyMember {
@@ -54,7 +127,6 @@ export async function getAllFacultyMember({ departmentId, status, search, page, 
             params.append("status", status.toString());
         }
 
-        console.log('params', params)
         // final url
         let url;
         if (page || pageSize || search || departmentId || status !== undefined) {
@@ -62,7 +134,6 @@ export async function getAllFacultyMember({ departmentId, status, search, page, 
         } else {
             url = `${process.env.ENDPOINTS_URL}/api/Faculty`;
         }
-        console.log("url", url)
 
         const res = await fetch(url, {
             method: "GET",

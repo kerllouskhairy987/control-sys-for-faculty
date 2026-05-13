@@ -19,3 +19,13 @@ export enum FacultyDegree {
     AssociateProfessor = "Associate Professor",
     Professor = "Professor"
 }
+
+/**
+ * @desc    students status start from one
+*/
+export enum StudentsStatus {
+    GoodStanding = "Good Standing",
+    AcademicWarning = "Academic Warning",
+    Dismissed = "Dismissed",
+    Graduated = "Graduated"
+}

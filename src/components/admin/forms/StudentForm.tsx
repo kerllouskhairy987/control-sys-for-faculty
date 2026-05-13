@@ -30,7 +30,7 @@ export function StudentForm({
     onCancel,
 }: StudentFormProps) {
 
-    const [studentData, setStudentData] = useState<Student[] | null>(null);
+    // const [studentData, setStudentData] = useState<Student[] | null>(null);
     const [programData, setProgramData] = useState<Program[] | null>([]);
 
     const [password, setPassword] = useState<string>('');
@@ -52,8 +52,8 @@ export function StudentForm({
         const fetchData = async () => {
             try {
                 if (setIsLoading) setIsLoading(true);
-                const data = await getAllPrograms();
-                setProgramData(data);
+                const data = await getAllPrograms({ pageSize: 100000 });
+                setProgramData(data.items);
             } catch (error) {
                 console.error(error);
                 if (setIsLoading) setIsLoading(false);
