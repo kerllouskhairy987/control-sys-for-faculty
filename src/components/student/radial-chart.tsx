@@ -28,7 +28,7 @@ const chartConfig = {
 };
 
 // تم تعديل استقبال الـ Props ليكون { studentData, progressPercentage }
-export function ChartRadialText({ studentData, progressPercentage }) {
+export function ChartRadialText({ studentData, progressPercentage }: { studentData: { completedCredits: number; requiredCredits: number }; progressPercentage: number }) {
   // حساب الزاوية بناءً على النسبة المئوية
   const chartEndAngle = 90 - progressPercentage * 3.6;
 

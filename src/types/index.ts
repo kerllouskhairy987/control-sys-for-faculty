@@ -199,3 +199,123 @@ export interface TableState {
     search?: string;
     filters?: StudentFilters;
 }
+
+/**
+ * Control Engine - Warning Student DTO
+ */
+export interface WarningStudent {
+    studentId: string;
+    academicNumber: string;
+    studentName: string;
+    programName: string;
+    cgpa: number;
+    consecutiveWarnings: number;
+    academicStatus: 'Warning' | 'Dismissed' | string;
+}
+
+/**
+ * Control Engine - Graduation Candidate DTO
+ */
+export interface GraduationCandidate {
+    studentId: string;
+    academicNumber: string;
+    studentName: string;
+    programName: string;
+    cgpa: number;
+    earnedCredits: number;
+    requiredCredits: number;
+    isEligible: boolean;
+    missingRequirements: string[];
+}
+
+/**
+ * Control Engine - Statistics DTO
+ */
+export interface ControlStatistics {
+    totalStudents: number;
+    activeStudents: number;
+    warningStudents: number;
+    dismissedStudents: number;
+    graduatedStudents: number;
+    totalDepartments: number;
+    totalPrograms: number;
+    totalFaculties: number;
+    totalCourseOfferings: number;
+    averageCGPA: number;
+    activeRegistrations: number;
+}
+
+/**
+ * Control Engine - Run Engine Request
+ */
+export interface RunControlEngineRequest {
+    term: 'Fall' | 'Spring' | 'Summer';
+    year: number;
+}
+
+/**
+ * Course interface
+ */
+export interface Course {
+    id: string;
+    departmentId: string;
+    departmentName?: string;
+    code: string;
+    title: string;
+    description: string;
+    credits: number;
+    lectureHours: number;
+    labHours: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+/**
+ * Course Prerequisites
+ */
+export interface CoursePrerequisite {
+    id: string;
+    courseId: string;
+    prerequisiteCourseId: string;
+    prerequisiteCourseName?: string;
+    prerequisiteCourseCode?: string;
+    code?: string;
+    title?: string;
+}
+
+/**
+ * Course Offering interface
+ */
+export interface CourseOffering {
+    offeringId: string;
+    courseCode: string;
+    courseTitle: string;
+    instructorName: string;
+    capacity: number;
+    enrolled: number;
+    isFull: boolean;
+}
+
+/**
+ * Course Create/Update Payload
+ */
+export interface CourseFormData {
+    departmentId: string;
+    code: string;
+    title: string;
+    description: string;
+    credits: number;
+    lectureHours: number;
+    labHours: number;
+}
+
+/**
+ * Course Offering Create Payload
+ */
+export interface CourseOfferingFormData {
+    courseId: string;
+    instructorId: string;
+    term: 'Fall' | 'Spring' | 'Summer';
+    year: number;
+    capacity: number;
+}

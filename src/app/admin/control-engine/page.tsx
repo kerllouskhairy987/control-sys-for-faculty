@@ -1,5 +1,5 @@
-import ProgramsPage from "@/components/admin/programs/ProgramsPage";
+import ControlEnginePage from "@/components/admin/control-engine/ControlEnginePage";
 
 export default function Page() {
-    return <ProgramsPage />;
+    return <ControlEnginePage />;
 }

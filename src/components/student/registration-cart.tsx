@@ -10,7 +10,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { ListChecks, BookOpen, Trash2, Send } from "lucide-react";
-import { Course } from "./CourseCatalog"; // استيراد الـ Interface
+import { Course } from "./course-catalog"; // استيراد الـ Interface
 
 interface RegistrationCartProps {
   selectedCourses: Course[];
@@ -58,9 +58,8 @@ export function RegistrationCart({
             </div>
             <Progress
               value={(currentCredits / maxCredits) * 100}
-              className={`h-2 ${
-                currentCredits === maxCredits ? "[&>div]:bg-orange-500" : ""
-              }`}
+              className={`h-2 ${currentCredits === maxCredits ? "[&>div]:bg-orange-500" : ""
+                }`}
             />
           </div>
 
