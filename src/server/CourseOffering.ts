@@ -1,7 +1,6 @@
 'use server';
 
 import getTokenFromCookie from '@/utils/getCookie';
-import { CourseOffering } from '@/types';
 
 /**
  * @desc     Get all course offerings
@@ -273,7 +272,7 @@ export async function updateCourseOfferingInstructor(
  */
 export async function updateCourseOffering(
     id: string,
-    data: { newCapacity?: number; newInstructorId?: string }
+    data: { newCapacity: number; newInstructorId: string }
 ) {
     try {
         const token = await getTokenFromCookie();

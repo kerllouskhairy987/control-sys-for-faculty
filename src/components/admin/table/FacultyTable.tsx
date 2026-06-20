@@ -7,7 +7,6 @@
 
 import { useEffect, useState } from "react";
 import { Department, Faculty, Student } from "@/types";
-import { useRouter } from "next/navigation";
 import { getAllFacultyMember } from "@/server/FacultyAction";
 import { getAllDepartment } from "@/server/DepartmentActions";
 import { Edit2 } from "lucide-react";

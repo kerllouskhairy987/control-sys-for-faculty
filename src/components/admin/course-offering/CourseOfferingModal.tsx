@@ -4,34 +4,25 @@ import { X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import Loader from '@/components/ui/Loader';
-import { Course, CourseOffering, Faculty } from '@/types';
-import {
-    createCourseOffering,
-    updateCourseOffering,
-} from '@/server/CourseOffering';
+import { Course, Faculty } from '@/types';
+import { createCourseOffering } from '@/server/CourseOffering';
 import { CreateCourseOfferingSchema } from '@/validation/course-offering';
-import { getAllCourses, getSingleCourse } from '@/server/Courses';
+import { getAllCourses } from '@/server/Courses';
 import { getAllFacultyMember } from '@/server/FacultyAction';
 
 interface CourseOfferingModalProps {
     isOpen: boolean;
     onClose: () => void;
-    isEditing: boolean;
-    defaultValuesForEdit: CourseOffering | null;
     onSuccess: () => void;
 }
 
 export function CourseOfferingModal({
     isOpen,
     onClose,
-    isEditing,
-    defaultValuesForEdit,
     onSuccess,
 }: CourseOfferingModalProps) {
-    console.log("defaultValuesForEdit", defaultValuesForEdit)
     const [courseId, setCourseId] = useState('');
     const [instructorId, setInstructorId] = useState('');
-    const [DefaultnstructorName, setDefaultInstructorName] = useState('');
     const [term, setTerm] = useState<'Fall' | 'Spring' | 'Summer'>('Fall');
     const [year, setYear] = useState(new Date().getFullYear());
     const [capacity, setCapacity] = useState('');
@@ -43,16 +34,6 @@ export function CourseOfferingModal({
     const [courses, setCourses] = useState<Course[]>([]);
 
     const [selectedFacultyData, setSelectedFacultyData] = useState<Faculty[]>([]);
-
-    useEffect(() => {
-        if (isEditing && defaultValuesForEdit) {
-            setCourseId(defaultValuesForEdit.offeringId);
-            setDefaultInstructorName(defaultValuesForEdit.instructorName);
-            setTerm(defaultValuesForEdit.capacity);
-            setYear(defaultValuesForEdit.year);
-            setCapacity(String(defaultValuesForEdit.capacity));
-        }
-    }, [isEditing, defaultValuesForEdit]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -82,21 +63,13 @@ export function CourseOfferingModal({
                 return;
             }
 
-            let res;
-            if (isEditing && defaultValuesForEdit) {
-                res = await updateCourseOffering(defaultValuesForEdit.id, {
-                    newCapacity: parseInt(capacity),
-                    newInstructorId: instructorId,
-                });
-            } else {
-                res = await createCourseOffering({
-                    courseId,
-                    instructorId,
-                    term,
-                    year,
-                    capacity: parseInt(capacity),
-                });
-            }
+            const res = await createCourseOffering({
+                courseId,
+                instructorId,
+                term,
+                year,
+                capacity: parseInt(capacity),
+            });
 
             if (res.success) {
                 toast.success(res.message);
@@ -125,20 +98,6 @@ export function CourseOfferingModal({
         }
     };
 
-    // fetch single course
-    const fetchSingleCourse = async () => {
-        try {
-            setIsLoadingCourses(true);
-            const data = await getSingleCourse(courseId);
-            console.log("ddddddddddddd", data)
-            // setDefualtCourse(data)
-        } catch (error) {
-            console.error(error);
-        } finally {
-            setIsLoadingCourses(false);
-        }
-    };
-
     // get all faculty member
     const fetchAllFacultyMember = async () => {
         try {
@@ -160,12 +119,6 @@ export function CourseOfferingModal({
         }
     }, [isOpen]);
 
-    useEffect(() => {
-        if (isEditing) {
-            fetchSingleCourse();
-        }
-    }, [isEditing])
-
     if (!isOpen) return null;
 
     return (
@@ -186,7 +139,7 @@ export function CourseOfferingModal({
                     {/* Header */}
                     <div className="flex items-center justify-between p-6 border-b border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-900">
-                            {isEditing ? 'Edit Course Offering' : 'Add New Course Offering'}
+                            Add New Course Offering
                         </h2>
                         <button
                             onClick={onClose}
@@ -234,7 +187,7 @@ export function CourseOfferingModal({
                                 disabled={isLoading || isLoadingFacultyMember}
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed"
                             >
-                                <option value="">{isEditing ? "" : "Select Instructor"}</option>
+                                <option value="">Select Instructor</option>
                                 {selectedFacultyData.map((member) => (
                                     <option key={member.id} value={member.id}>
                                         {member.name}
@@ -321,7 +274,7 @@ export function CourseOfferingModal({
                                 className="flex-1 px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
                             >
                                 {isLoading && <Loader />}
-                                {isEditing && !isLoading ? 'Update' : 'Create'}
+                                Create
                             </button>
                         </div>
                     </form>

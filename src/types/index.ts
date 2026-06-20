@@ -288,9 +288,13 @@ export interface CoursePrerequisite {
  */
 export interface CourseOffering {
     offeringId: string;
+    courseId: string;
     courseCode: string;
     courseTitle: string;
+    instructorId: string;
     instructorName: string;
+    term: 'Fall' | 'Spring' | 'Summer';
+    year: number;
     capacity: number;
     enrolled: number;
     isFull: boolean;

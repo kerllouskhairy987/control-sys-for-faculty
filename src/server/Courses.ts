@@ -91,8 +91,6 @@ export async function getSingleCourse(id: string): Promise<Course | null> {
     try {
         const token = await getTokenFromCookie();
 
-        console.log("YYYYYYYYYYYYY",id)
-
         if (!token) {
             console.log('No token found');
             return null;
@@ -111,7 +109,6 @@ export async function getSingleCourse(id: string): Promise<Course | null> {
         }
 
         const data = await res.json();
-        console.log("HHHHHHHHHHHHHHHHHHHHHH",data)
         return data;
     } catch (error) {
         console.log(error);
@@ -250,10 +247,15 @@ export async function deleteCourse(id: string) {
             },
         });
 
+        let data;
+        if(res.body) {
+            data = await res.json();
+        }
+
         if (!res.ok) {
             return {
                 success: false,
-                message: 'Failed to delete course',
+                message: data && data.name || 'Failed to delete course',
             };
         }
 

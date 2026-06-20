@@ -2,18 +2,17 @@
 
 import { Edit2, Trash2 } from 'lucide-react';
 import { CourseOffering } from '@/types';
+import Link from 'next/link';
 
 interface CourseOfferingTableProps {
     data: CourseOffering[] | null;
     isLoading: boolean;
-    onEdit: (offering: CourseOffering) => void;
     onDelete: (offering: CourseOffering) => void;
 }
 
 export function CourseOfferingTable({
     data,
     isLoading,
-    onEdit,
     onDelete,
 }: CourseOfferingTableProps) {
     return (
@@ -85,7 +84,7 @@ export function CourseOfferingTable({
                             </tr>
                         ) : (
                             data.map((offering) => (
-                                <tr key={offering.courseCode} className="hover:bg-gray-50 transition">
+                                <tr key={offering.offeringId} className="hover:bg-gray-50 transition">
                                     <td className="px-6 py-4 text-sm font-medium text-gray-900">
                                         {offering.courseTitle} ({offering.courseCode})
                                     </td>
@@ -96,6 +95,9 @@ export function CourseOfferingTable({
                                         {offering.isFull ? "Yes" : "No"}
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-600">
+                                        {offering.year}
+                                    </td>
+                                    <td className="px-6 py-4 text-sm text-gray-600">
                                         {offering.capacity}
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-600">
@@ -103,12 +105,12 @@ export function CourseOfferingTable({
                                     </td>
                                     <td className="px-6 py-4 text-sm">
                                         <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={() => onEdit(offering)}
+                                            <Link
+                                                href={`/admin/course-offering/${offering.offeringId}`}
                                                 className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
                                             >
                                                 <Edit2 size={16} />
-                                            </button>
+                                            </Link>
                                             <button
                                                 onClick={() => onDelete(offering)}
                                                 className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition"

@@ -1,14 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getAllCourseOfferings, deleteCourseOffering } from '@/server/CourseOffering';
-import { CourseOffering } from '@/types';
+import { Course, CourseOffering, Faculty } from '@/types';
 import Pagination from '@/components/ui/Pagination';
 import { ConfirmationDialog } from '@/components/admin/modals/ConfirmationDialog';
 import { CourseOfferingTable } from './CourseOfferingTable';
 import { CourseOfferingModal } from './CourseOfferingModal';
+import { getAllCourses } from '@/server/Courses';
+import { getAllFacultyMember } from '@/server/FacultyAction';
 
 export default function CourseOfferingPage() {
     const [courseOfferingsData, setCourseOfferingsData] = useState<CourseOffering[]>([]);
@@ -17,6 +19,9 @@ export default function CourseOfferingPage() {
     const [pageSize, setPageSize] = useState(10);
     const [totalPages, setTotalPages] = useState(1);
     const [totalCount, setTotalCount] = useState(0);
+    const [courses, setCourses] = useState<Course[]>([]);
+    const [instructors, setInstructors] = useState<Faculty[]>([]);
+    const [isLoadingFilterOptions, setIsLoadingFilterOptions] = useState(true);
 
     // Filters
     const [term, setTerm] = useState<'' | 'Fall' | 'Spring' | 'Summer'>('');
@@ -26,8 +31,6 @@ export default function CourseOfferingPage() {
 
     // Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isEditing, setIsEditing] = useState(false);
-    const [selectedCourseOffering, setSelectedCourseOffering] = useState<CourseOffering | null>(null);
 
     // Delete confirmation
     const [deleteConfirmation, setDeleteConfirmation] = useState<{
@@ -37,7 +40,7 @@ export default function CourseOfferingPage() {
     const [isDeleteLoading, setIsDeleteLoading] = useState(false);
 
     // Fetch data
-    const fetchData = async () => {
+    const fetchData = useCallback(async () => {
         try {
             setIsLoading(true);
             const data = await getAllCourseOfferings({
@@ -63,21 +66,38 @@ export default function CourseOfferingPage() {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [courseId, instructorId, page, pageSize, term, year]);
 
     useEffect(() => {
         fetchData();
-    }, [page, pageSize, term, year, courseId, instructorId]);
+    }, [fetchData]);
+
+    useEffect(() => {
+        const fetchFilterOptions = async () => {
+            try {
+                setIsLoadingFilterOptions(true);
+
+                const [coursesData, facultyData] = await Promise.all([
+                    getAllCourses({ pageSize: 100000 }),
+                    getAllFacultyMember({ pageSize: 1000 }),
+                ]);
+
+                setCourses(coursesData?.items || []);
+                setInstructors(
+                    facultyData && 'items' in facultyData ? facultyData.items || [] : []
+                );
+            } catch (error) {
+                console.error(error);
+                toast.error('Failed to load filter options');
+            } finally {
+                setIsLoadingFilterOptions(false);
+            }
+        };
+
+        fetchFilterOptions();
+    }, []);
 
     const handleAddNew = () => {
-        setIsEditing(false);
-        setSelectedCourseOffering(null);
-        setIsModalOpen(true);
-    };
-
-    const handleEdit = (offering: CourseOffering) => {
-        setSelectedCourseOffering(offering);
-        setIsEditing(true);
         setIsModalOpen(true);
     };
 
@@ -90,7 +110,7 @@ export default function CourseOfferingPage() {
 
         setIsDeleteLoading(true);
         try {
-            const res = await deleteCourseOffering(deleteConfirmation.offering.id);
+            const res = await deleteCourseOffering(deleteConfirmation.offering.offeringId);
 
             if (res.success) {
                 toast.success(res.message);
@@ -109,8 +129,6 @@ export default function CourseOfferingPage() {
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
-        setSelectedCourseOffering(null);
-        setIsEditing(false);
     };
 
     const handleSuccessfulAction = () => {
@@ -181,35 +199,51 @@ export default function CourseOfferingPage() {
                     {/* Course Filter */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Course ID
+                            Course
                         </label>
-                        <input
-                            type="text"
-                            placeholder="Filter by course"
+                        <select
                             value={courseId}
                             onChange={(e) => {
                                 setCourseId(e.target.value);
                                 setPage(1);
                             }}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition"
-                        />
+                            disabled={isLoadingFilterOptions}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        >
+                            <option value="">
+                                {isLoadingFilterOptions ? 'Loading courses...' : 'All Courses'}
+                            </option>
+                            {courses.map((course) => (
+                                <option key={course.id} value={course.id}>
+                                    {course.title}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     {/* Instructor Filter */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Instructor ID
+                            Instructor
                         </label>
-                        <input
-                            type="text"
-                            placeholder="Filter by instructor"
+                        <select
                             value={instructorId}
                             onChange={(e) => {
                                 setInstructorId(e.target.value);
                                 setPage(1);
                             }}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition"
-                        />
+                            disabled={isLoadingFilterOptions}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed"
+                        >
+                            <option value="">
+                                {isLoadingFilterOptions ? 'Loading instructors...' : 'All Instructors'}
+                            </option>
+                            {instructors.map((instructor) => (
+                                <option key={instructor.id} value={instructor.id}>
+                                    {instructor.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
                 </div>
             </div>
@@ -218,7 +252,6 @@ export default function CourseOfferingPage() {
             <CourseOfferingTable
                 data={courseOfferingsData}
                 isLoading={isLoading}
-                onEdit={handleEdit}
                 onDelete={handleDelete}
             />
 
@@ -239,8 +272,6 @@ export default function CourseOfferingPage() {
                 <CourseOfferingModal
                     isOpen={isModalOpen}
                     onClose={handleCloseModal}
-                    isEditing={isEditing}
-                    defaultValuesForEdit={selectedCourseOffering}
                     onSuccess={handleSuccessfulAction}
                 />
             )}
@@ -253,7 +284,7 @@ export default function CourseOfferingPage() {
                     <>
                         Are you sure you want to delete this course offering for{' '}
                         <span className="font-semibold text-red-500">
-                            {deleteConfirmation.offering?.courseName}
+                            {deleteConfirmation.offering?.courseTitle}
                         </span>
                         ? This action cannot be undone.
                     </>

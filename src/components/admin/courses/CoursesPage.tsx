@@ -55,7 +55,7 @@ export default function CoursesPage() {
             setIsLoadingDepts(true);
             const dataDeparts = await getAllDepartment({});
             setDepartments(dataDeparts.items || []);
-
+            
             if (data) {
                 setCoursesData(data.items || []);
                 setTotalPages(data.totalPages || 1);
@@ -69,6 +69,7 @@ export default function CoursesPage() {
             toast.error('Failed to fetch courses');
         } finally {
             setIsLoading(false);
+            setIsLoadingDepts(false);
         }
     }, [page, pageSize, search, departmentId, minCredits, maxCredits]);
 
