@@ -6,7 +6,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, BarChart3, Users, BookOpen, Menu, X, BellElectric, HousePlus, MonitorCog, Warehouse, Book, List } from 'lucide-react';
+import { ChevronDown, BarChart3, Users, BookOpen, Menu, X, BellElectric, HousePlus, MonitorCog, Warehouse, Book, List, CalendarRange } from 'lucide-react';
 import { SidebarItem } from './SidebarItem';
 
 interface SidebarProps {
@@ -164,6 +164,14 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                         label="Course Offerings"
                         href="/admin/course-offering"
                         icon={List}
+                        isExpanded={isExpanded}
+                    />
+
+                    {/* Registration Periods */}
+                    <SidebarItem
+                        label="Registration Periods"
+                        href="/admin/registration-periods"
+                        icon={CalendarRange}
                         isExpanded={isExpanded}
                     />
 

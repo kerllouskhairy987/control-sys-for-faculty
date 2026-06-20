@@ -323,3 +323,28 @@ export interface CourseOfferingFormData {
     year: number;
     capacity: number;
 }
+
+/**
+ * Registration Period interface
+ */
+export interface RegistrationPeriod {
+    id: string;
+    name: string;
+    startDateUtc: string;
+    endDateUtc: string;
+    isActive: boolean;
+    term: string;
+    year: number;
+}
+
+/**
+ * Registration Period Create/Update Payload
+ */
+export interface RegistrationPeriodFormData {
+    name: string;
+    startDateUtc: string;
+    endDateUtc: string;
+    isActive: boolean;
+    term: string;
+    year: number;
+}
