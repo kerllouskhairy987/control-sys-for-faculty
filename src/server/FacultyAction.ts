@@ -179,12 +179,10 @@ export async function createNewFacultyMember(prevState: unknown, formData: FormD
     const fullName = formData.get("fullName") as string;
     const departmentId = formData.get("departmentId") as string;
     const degree = Number(formData.get("degree"))
-    const isAdvisor = Boolean(formData.get("isAdvisor")) || false;
-    console.log({ userName, email, password, phoneNumber, fullName, departmentId, degree, isAdvisor })
+    const isAdvisor = formData.get("isAdvisor") === "on";
 
     // validation with zod
     const result = facultyMemberSchema.safeParse({ userName, email, password, phoneNumber, fullName, departmentId, degree, isAdvisor });
-    console.log("result", result)
     if (!result.success) {
         return {
             success: false,
@@ -198,7 +196,6 @@ export async function createNewFacultyMember(prevState: unknown, formData: FormD
     try {
         // get token from cookies
         const token = await getTokenFromCookie();
-        console.log("token", token)
 
         if (!token) {
             return {
@@ -217,15 +214,18 @@ export async function createNewFacultyMember(prevState: unknown, formData: FormD
             },
             body: JSON.stringify({ userName, email, password, phoneNumber, fullName, departmentId, degree, isAdvisor }),
         });
-        console.log("res", res)
 
-        const data = await res.json();
-        console.log("data", data)
+        let data;
+        try {
+            data = await res.json();
+        } catch {
+            data = null;
+        }
 
         if (!res.ok) {
             return {
                 success: false,
-                message: data.name || "Failed to create new faculty member",
+                message: data?.message || data?.title || data?.name || "Failed to create new faculty member",
                 formData: formData,
                 error: null,
             }

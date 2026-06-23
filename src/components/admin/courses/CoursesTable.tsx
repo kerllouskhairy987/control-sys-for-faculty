@@ -3,6 +3,7 @@
 import { Trash2, Edit2 } from 'lucide-react';
 import { Course } from '@/types';
 import Link from 'next/link';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 interface CoursesTableProps {
     data: Course[] | null;
@@ -11,29 +12,32 @@ interface CoursesTableProps {
 }
 
 export function CoursesTable({ data, isLoading, onDelete }: CoursesTableProps) {
+    const t = useTranslations('Courses');
+    const tc = useTranslations('Common');
+
     return (
         <div className="bg-white rounded-lg shadow overflow-hidden">
             <div className="overflow-x-auto">
                 <table className="w-full">
                     <thead className="bg-gray-50 border-b border-gray-200">
                         <tr>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                Code
+                            <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                {t('colCode')}
                             </th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                Title
+                            <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                {t('colTitle')}
                             </th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                Department
+                            <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                {t('colDepartment')}
                             </th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                Credits
+                            <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                {t('colCredits')}
                             </th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                Hours
+                            <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                {t('colHours')}
                             </th>
-                            <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                Actions
+                            <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                {tc('actions')}
                             </th>
                         </tr>
                     </thead>
@@ -69,7 +73,7 @@ export function CoursesTable({ data, isLoading, onDelete }: CoursesTableProps) {
                         ) : !data || data.length === 0 ? (
                             <tr>
                                 <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                                    No courses found.
+                                    {t('noCourses')}
                                 </td>
                             </tr>
                         ) : (
@@ -82,13 +86,13 @@ export function CoursesTable({ data, isLoading, onDelete }: CoursesTableProps) {
                                         {course.title}
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-600">
-                                        {course.departmentName || 'N/A'}
+                                        {course.departmentName || tc('na')}
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-600">
                                         {course.credits}
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-600">
-                                        L: {course.lectureHours} / Lab: {course.labHours}
+                                        {t('hoursFormat', { lecture: course.lectureHours, lab: course.labHours })}
                                     </td>
                                     <td className="px-6 py-4 text-sm">
                                         <div className="flex items-center gap-2">

@@ -2,6 +2,7 @@
 
 import { PieChart, Pie, Cell, Legend, Tooltip, ResponsiveContainer } from 'recharts';
 import { ControlStatistics } from '@/types';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 interface StudentStatusChartProps {
     statistics: ControlStatistics | null;
@@ -9,10 +10,12 @@ interface StudentStatusChartProps {
 }
 
 export function StudentStatusChart({ statistics, isLoading }: StudentStatusChartProps) {
+    const t = useTranslations('ControlEngine');
+
     if (isLoading) {
         return (
-            <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Student Status Distribution</h3>
+            <div className="bg-white p-6 rounded-lg shadow text-start">
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('chartStudentStatusDistribution')}</h3>
                 <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg animate-pulse" />
             </div>
         );
@@ -20,25 +23,25 @@ export function StudentStatusChart({ statistics, isLoading }: StudentStatusChart
 
     if (!statistics) {
         return (
-            <div className="bg-white p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Student Status Distribution</h3>
+            <div className="bg-white p-6 rounded-lg shadow text-start">
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('chartStudentStatusDistribution')}</h3>
                 <div className="flex items-center justify-center h-64 text-gray-500">
-                    No data available
+                    {t('chartNoDataAvailable')}
                 </div>
             </div>
         );
     }
 
     const data = [
-        { name: 'Active', value: statistics.activeStudents, fill: '#10b981' },
-        { name: 'Warning', value: statistics.warningStudents, fill: '#f59e0b' },
-        { name: 'Dismissed', value: statistics.dismissedStudents, fill: '#ef4444' },
-        { name: 'Graduated', value: statistics.graduatedStudents, fill: '#3b82f6' },
+        { name: t('activeStudents'), value: statistics.activeStudents, fill: '#10b981' },
+        { name: t('warningStudents'), value: statistics.warningStudents, fill: '#f59e0b' },
+        { name: t('dismissedStudents'), value: statistics.dismissedStudents, fill: '#ef4444' },
+        { name: t('graduatedStudents'), value: statistics.graduatedStudents, fill: '#3b82f6' },
     ];
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Student Status Distribution</h3>
+        <div className="bg-white p-6 rounded-lg shadow text-start">
+            <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('chartStudentStatusDistribution')}</h3>
             <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                     <Pie

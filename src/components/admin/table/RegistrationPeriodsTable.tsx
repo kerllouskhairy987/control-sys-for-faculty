@@ -6,6 +6,7 @@ import { Edit2, Trash2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { RegistrationPeriod } from '@/types';
 import { getAllRegistrationPeriods, getCurrentRegistrationPeriod } from '@/server/RegistrationPeriods';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 interface RegistrationPeriodsTableProps {
     refreshKey: number;
@@ -33,6 +34,9 @@ export function RegistrationPeriodsTable({ refreshKey, onDelete }: RegistrationP
     const [periods, setPeriods] = useState<RegistrationPeriod[]>([]);
     const [view, setView] = useState<'all' | 'current'>('all');
     const [isLoading, setIsLoading] = useState(true);
+
+    const t = useTranslations('RegistrationPeriods');
+    const tc = useTranslations('Common');
 
     const fetchData = useCallback(async () => {
         setIsLoading(true);
@@ -62,15 +66,15 @@ export function RegistrationPeriodsTable({ refreshKey, onDelete }: RegistrationP
     return (
         <div className="space-y-6">
             <div className="rounded-lg border border-gray-200 bg-white p-6 shadow">
-                <label className="mb-3 block text-sm font-semibold text-gray-700">View</label>
+                <label className="mb-3 block text-sm font-semibold text-gray-700">{t('labelView')}</label>
                 <select
                     value={view}
                     onChange={(event) => setView(event.target.value as 'all' | 'current')}
                     disabled={isLoading}
                     className="w-full rounded-lg border border-gray-300 px-4 py-2 transition focus:border-transparent focus:outline-none focus:ring-2 focus:ring-[#00284d] disabled:opacity-50"
                 >
-                    <option value="all">All Registration Periods</option>
-                    <option value="current">Current Registration Period</option>
+                    <option value="all">{t('optionAll')}</option>
+                    <option value="current">{t('optionCurrent')}</option>
                 </select>
             </div>
 
@@ -79,9 +83,13 @@ export function RegistrationPeriodsTable({ refreshKey, onDelete }: RegistrationP
                     <table className="w-full">
                         <thead className="border-b border-gray-200 bg-gray-50">
                             <tr>
-                                {['Name', 'Term', 'Year', 'Is Active', 'Start Date', 'End Date', 'Actions'].map((column) => (
-                                    <th key={column} className="px-6 py-3 text-left text-sm font-semibold text-gray-900">{column}</th>
-                                ))}
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('colName')}</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('colTerm')}</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('colYear')}</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('colActive')}</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('colStart')}</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('colEnd')}</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('colActions')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -97,7 +105,7 @@ export function RegistrationPeriodsTable({ refreshKey, onDelete }: RegistrationP
                                 ))
                             ) : periods.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">No Registration Periods found.</td>
+                                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">{t('noPeriods')}</td>
                                 </tr>
                             ) : periods.map((period) => (
                                 <tr key={period.id} className="transition hover:bg-gray-50">
@@ -106,7 +114,7 @@ export function RegistrationPeriodsTable({ refreshKey, onDelete }: RegistrationP
                                     <td className="px-6 py-4 text-sm text-gray-600">{period.year}</td>
                                     <td className="px-6 py-4 text-sm">
                                         <span className={`rounded-full px-2.5 py-1 text-xs font-medium ${period.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                                            {period.isActive ? 'Active' : 'Inactive'}
+                                            {period.isActive ? t('active') : t('inactive')}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 text-sm text-gray-600">{formatDate(period.startDateUtc)}</td>

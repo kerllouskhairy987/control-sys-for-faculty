@@ -1,25 +1,41 @@
-/**
- * Student Distribution Chart Component
- * Displays pie chart of students by status — static data, no async
- */
+'use client';
 
-import { dashboardStats } from '@/data/dashboard';
+import { ControlStatistics } from '@/types';
+import { useTranslations } from '@/i18n/IntlProvider';
 
-export function StudentDistributionChart() {
-    const stats = dashboardStats;
-    const total = stats.totalStudents || 1;
+interface StudentDistributionChartProps {
+    statistics: ControlStatistics | null;
+    isLoading: boolean;
+}
 
-    const activePercent = ((stats.activeStudents / total) * 100).toFixed(1);
-    const warningPercent = ((stats.warningStudents / total) * 100).toFixed(1);
-    const dismissedPercent = ((stats.dismissedStudents / total) * 100).toFixed(1);
+export function StudentDistributionChart({ statistics, isLoading }: StudentDistributionChartProps) {
+    const t = useTranslations('Dashboard');
 
-    const activeAngle = (stats.activeStudents / total) * 360;
-    const warningAngle = (stats.warningStudents / total) * 360;
-    const dismissedAngle = (stats.dismissedStudents / total) * 360;
+    if (isLoading) {
+        return (
+            <div className="bg-white p-6 rounded-lg shadow">
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('studentDistribution')}</h3>
+                <div className="flex items-center justify-center h-64 bg-gray-100 rounded-lg animate-pulse" />
+            </div>
+        );
+    }
+
+    const total = statistics?.totalStudents || 1;
+    const activeStudents = statistics?.activeStudents ?? 0;
+    const warningStudents = statistics?.warningStudents ?? 0;
+    const dismissedStudents = statistics?.dismissedStudents ?? 0;
+
+    const activePercent = ((activeStudents / total) * 100).toFixed(1);
+    const warningPercent = ((warningStudents / total) * 100).toFixed(1);
+    const dismissedPercent = ((dismissedStudents / total) * 100).toFixed(1);
+
+    const activeAngle = (activeStudents / total) * 360;
+    const warningAngle = (warningStudents / total) * 360;
+    const dismissedAngle = (dismissedStudents / total) * 360;
 
     return (
         <div className="bg-white p-6 rounded-lg shadow">
-            <h3 className="text-lg font-semibold text-gray-900 mb-6">Student Distribution</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('studentDistribution')}</h3>
 
             <div className="flex flex-col lg:flex-row items-center justify-between gap-8">
                 {/* Pie Chart SVG */}
@@ -69,7 +85,7 @@ export function StudentDistributionChart() {
                             className="text-2xl font-bold"
                             fill="#1f2937"
                         >
-                            {total}
+                            {statistics?.totalStudents ?? 0}
                         </text>
                     </svg>
                 </div>
@@ -79,9 +95,9 @@ export function StudentDistributionChart() {
                     <div className="flex items-center gap-3">
                         <div className="w-4 h-4 bg-green-500 rounded-full" />
                         <div>
-                            <p className="text-sm font-medium text-gray-900">Active</p>
+                            <p className="text-sm font-medium text-gray-900">{t('active')}</p>
                             <p className="text-lg font-bold text-gray-900">
-                                {stats.activeStudents} ({activePercent}%)
+                                {activeStudents} ({activePercent}%)
                             </p>
                         </div>
                     </div>
@@ -89,9 +105,9 @@ export function StudentDistributionChart() {
                     <div className="flex items-center gap-3">
                         <div className="w-4 h-4 bg-yellow-500 rounded-full" />
                         <div>
-                            <p className="text-sm font-medium text-gray-900">Warning</p>
+                            <p className="text-sm font-medium text-gray-900">{t('warning')}</p>
                             <p className="text-lg font-bold text-gray-900">
-                                {stats.warningStudents} ({warningPercent}%)
+                                {warningStudents} ({warningPercent}%)
                             </p>
                         </div>
                     </div>
@@ -99,9 +115,9 @@ export function StudentDistributionChart() {
                     <div className="flex items-center gap-3">
                         <div className="w-4 h-4 bg-red-500 rounded-full" />
                         <div>
-                            <p className="text-sm font-medium text-gray-900">Dismissed</p>
+                            <p className="text-sm font-medium text-gray-900">{t('dismissed')}</p>
                             <p className="text-lg font-bold text-gray-900">
-                                {stats.dismissedStudents} ({dismissedPercent}%)
+                                {dismissedStudents} ({dismissedPercent}%)
                             </p>
                         </div>
                     </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { WarningStudent, GraduationCandidate } from '@/types';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 interface ControlEngineTableProps {
     data: WarningStudent[] | GraduationCandidate[] | null;
@@ -8,15 +9,13 @@ interface ControlEngineTableProps {
     isLoading: boolean;
 }
 
-function isWarningStudent(item: WarningStudent | GraduationCandidate): item is WarningStudent {
-    return 'consecutiveWarnings' in item;
-}
-
 export function ControlEngineTable({
     data,
     selectedView,
     isLoading,
 }: ControlEngineTableProps) {
+    const t = useTranslations('ControlEngine');
+    const tc = useTranslations('Common');
     const skeletonRows = Array.from({ length: 8 });
 
     if (isLoading) {
@@ -28,47 +27,47 @@ export function ControlEngineTable({
                             <tr>
                                 {selectedView === 'warnings' ? (
                                     <>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                            Academic Number
+                                        <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                            {t('colAcademicNumber')}
                                         </th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                            Student Name
+                                        <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                            {t('colStudentName')}
                                         </th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                            Program Name
+                                        <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                            {t('colProgramName')}
                                         </th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                            CGPA
+                                        <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                            {t('colCgpa')}
                                         </th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                            Consecutive Warnings
+                                        <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                            {t('colConsecutiveWarnings')}
                                         </th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                            Academic Status
+                                        <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                            {t('colAcademicStatus')}
                                         </th>
                                     </>
                                 ) : (
                                     <>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                            Academic Number
+                                        <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                            {t('colAcademicNumber')}
                                         </th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                            Student Name
+                                        <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                            {t('colStudentName')}
                                         </th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                            Program Name
+                                        <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                            {t('colProgramName')}
                                         </th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                            CGPA
+                                        <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                            {t('colCgpa')}
                                         </th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                            Earned / Required
+                                        <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                            {t('colEarnedRequired')}
                                         </th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                            Eligible
+                                        <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                            {t('colEligible')}
                                         </th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                            Missing Requirements
+                                        <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                            {t('colMissingRequirements')}
                                         </th>
                                     </>
                                 )}
@@ -139,7 +138,7 @@ export function ControlEngineTable({
         return (
             <div className="bg-white rounded-lg shadow overflow-hidden">
                 <div className="px-6 py-8 text-center text-gray-500">
-                    <p>No {selectedView === 'warnings' ? 'warnings' : 'graduates'} found.</p>
+                    <p>{selectedView === 'warnings' ? t('noWarnings') : t('noGraduatesFound')}</p>
                 </div>
             </div>
         );
@@ -153,47 +152,47 @@ export function ControlEngineTable({
                         <tr>
                             {selectedView === 'warnings' ? (
                                 <>
-                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                        Academic Number
+                                    <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                        {t('colAcademicNumber')}
                                     </th>
-                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                        Student Name
+                                    <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                        {t('colStudentName')}
                                     </th>
-                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                        Program Name
+                                    <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                        {t('colProgramName')}
                                     </th>
-                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                        CGPA
+                                    <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                        {t('colCgpa')}
                                     </th>
-                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                        Consecutive Warnings
+                                    <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                        {t('colConsecutiveWarnings')}
                                     </th>
-                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                        Academic Status
+                                    <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                        {t('colAcademicStatus')}
                                     </th>
                                 </>
                             ) : (
                                 <>
-                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                        Academic Number
+                                    <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                        {t('colAcademicNumber')}
                                     </th>
-                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                        Student Name
+                                    <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                        {t('colStudentName')}
                                     </th>
-                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                        Program Name
+                                    <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                        {t('colProgramName')}
                                     </th>
-                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                        CGPA
+                                    <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                        {t('colCgpa')}
                                     </th>
-                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                        Earned / Required
+                                    <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                        {t('colEarnedRequired')}
                                     </th>
-                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                        Eligible
+                                    <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                        {t('colEligible')}
                                     </th>
-                                    <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                        Missing Requirements
+                                    <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                        {t('colMissingRequirements')}
                                     </th>
                                 </>
                             )}
@@ -203,62 +202,62 @@ export function ControlEngineTable({
                         {selectedView === 'warnings'
                             ? (data as WarningStudent[]).map((student) => (
                                 <tr key={student.studentId} className="hover:bg-gray-50 transition">
-                                    <td className="px-6 py-4 text-sm text-gray-900">
+                                    <td className="px-6 py-4 text-sm text-gray-900 text-start">
                                         {student.academicNumber}
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-900">
+                                    <td className="px-6 py-4 text-sm text-gray-900 text-start">
                                         {student.studentName}
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
+                                    <td className="px-6 py-4 text-sm text-gray-600 text-start">
                                         {student.programName}
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
+                                    <td className="px-6 py-4 text-sm text-gray-600 text-start">
                                         {student.cgpa.toFixed(2)}
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
+                                    <td className="px-6 py-4 text-sm text-gray-600 text-start">
                                         {student.consecutiveWarnings}
                                     </td>
-                                    <td className="px-6 py-4 text-sm">
+                                    <td className="px-6 py-4 text-sm text-start">
                                         <span
                                             className={`px-3 py-1 rounded-full text-xs font-medium ${student.academicStatus === 'Dismissed'
                                                     ? 'bg-red-100 text-red-800'
                                                     : 'bg-amber-100 text-amber-800'
                                                 }`}
                                         >
-                                            {student.academicStatus}
+                                            {student.academicStatus === 'Dismissed' ? t('dismissedStudents') : t('warningStudents')}
                                         </span>
                                     </td>
                                 </tr>
                             ))
                             : (data as GraduationCandidate[]).map((student) => (
                                 <tr key={student.studentId} className="hover:bg-gray-50 transition">
-                                    <td className="px-6 py-4 text-sm text-gray-900">
+                                    <td className="px-6 py-4 text-sm text-gray-900 text-start">
                                         {student.academicNumber}
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-900">
+                                    <td className="px-6 py-4 text-sm text-gray-900 text-start">
                                         {student.studentName}
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
+                                    <td className="px-6 py-4 text-sm text-gray-600 text-start">
                                         {student.programName}
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
+                                    <td className="px-6 py-4 text-sm text-gray-600 text-start">
                                         {student.cgpa.toFixed(2)}
                                     </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
+                                    <td className="px-6 py-4 text-sm text-gray-600 text-start">
                                         {student.earnedCredits} / {student.requiredCredits}
                                     </td>
-                                    <td className="px-6 py-4 text-sm">
+                                    <td className="px-6 py-4 text-sm text-start">
                                         <span
                                             className={`px-3 py-1 rounded-full text-xs font-medium ${student.isEligible
                                                     ? 'bg-green-100 text-green-800'
                                                     : 'bg-red-100 text-red-800'
                                                 }`}
                                         >
-                                            {student.isEligible ? 'Yes' : 'No'}
+                                            {student.isEligible ? tc('yes') : tc('no')}
                                         </span>
                                     </td>
-                                    <td className="px-6 py-4 text-sm">
-                                        <div className="flex flex-wrap gap-2">
+                                    <td className="px-6 py-4 text-sm text-start">
+                                        <div className="flex flex-wrap gap-2 justify-start">
                                             {student.missingRequirements && student.missingRequirements.length > 0 ? (
                                                 student.missingRequirements.map((req, idx) => (
                                                     <span

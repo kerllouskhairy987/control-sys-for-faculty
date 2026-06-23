@@ -1,38 +1,37 @@
 /**
- * Student Form Component
- * Form for creating and editing students with validation
+ * Faculty Form Component
+ * Form for creating and editing faculty members with validation
  */
 
 'use client';
 
 import { useState, useEffect, useActionState } from 'react';
-import { Department, Student } from '@/types';
+import { Department } from '@/types';
 import { generatePassword } from '@/utils/passwordGenerator';
 import { Eye, EyeOff, Copy, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { createNewStudent, studentStates } from '@/server/StudentsAction';
 import Loader from '@/components/ui/Loader';
 import Link from 'next/link';
 import InputMessageError from '@/components/ui/InputMessageError';
 import { getAllDepartment } from '@/server/DepartmentActions';
 import { FacultyDegree } from '@/enums';
-import { createNewFacultyMember } from '@/server/FacultyAction';
-
-// const degree
+import { createNewFacultyMember, facultyStates } from '@/server/FacultyAction';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 interface FacultyMemberProps {
     isEditing: boolean;
-    // defaultValuesForEdit: Faculty | null;
     setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
     onCancel?: () => void;
 }
 
 export function FacultyMemberForm({
     isEditing,
-    // defaultValuesForEdit,
     setIsModalOpen,
     onCancel,
 }: FacultyMemberProps) {
+    const t = useTranslations('Forms');
+    const tc = useTranslations('Common');
+    const tf = useTranslations('Faculty');
 
     const [departmentData, setDepartmentData] = useState<Department[] | null>([]);
 
@@ -40,12 +39,12 @@ export function FacultyMemberForm({
     const [showPassword, setShowPassword] = useState(false);
 
     const [selectedDepartmentId, setSelectedDepartmentId] = useState<string>("");
-    const [selectedDegree, setSelectedDegree] = useState<FacultyDegree | null>(null);
+    const [selectedDegree, setSelectedDegree] = useState<string>("");
 
     const [isLoading, setIsLoading] = useState(false);
     const [isAdvisor, setIsAdvisor] = useState(false);
 
-    const initialState: studentStates = {
+    const initialState: facultyStates = {
         error: null,
         formData: new FormData(),
         message: "",
@@ -53,28 +52,42 @@ export function FacultyMemberForm({
     };
     const [state, action, isPending] = useActionState(createNewFacultyMember, initialState);
 
-    // get isAdvisor from server when error occurred
+    // get isAdvisor and other fields from server when error occurred
     useEffect(() => {
-        setIsAdvisor(Boolean(state.formData.get("isAdvisor")));
+        setIsAdvisor(state.formData.get("isAdvisor") === "on");
+
+        const deg = state.formData.get("degree");
+        if (deg) {
+            setSelectedDegree(deg as string);
+        }
+
+        const deptId = state.formData.get("departmentId");
+        if (deptId) {
+            setSelectedDepartmentId(deptId as string);
+        }
+
+        const pass = state.formData.get("password");
+        if (pass) {
+            setPassword(pass as string);
+        }
     }, [state.formData]);
 
     // get all programs to show in select
     useEffect(() => {
         const fetchData = async () => {
             try {
-                if (setIsLoading) setIsLoading(true);
+                setIsLoading(true);
                 const data = await getAllDepartment({ pageSize: 100000 });
                 setDepartmentData(data.items);
             } catch (error) {
                 console.error(error);
-                if (setIsLoading) setIsLoading(false);
             } finally {
-                if (setIsLoading) setIsLoading(false);
+                setIsLoading(false);
             }
         };
 
         fetchData();
-    }, [setIsLoading]);
+    }, []);
 
     useEffect(() => {
         if (state.success && state.message && !isPending) {
@@ -89,25 +102,43 @@ export function FacultyMemberForm({
 
     const handleGeneratePassword = () => {
         const password = generatePassword();
-        setPassword(password)
-        toast.success('Password generated successfully!');
+        setPassword(password);
+        toast.success(t('passwordGenerated'));
     };
 
     const handleCopyPassword = () => {
         if (password) {
             navigator.clipboard.writeText(password);
-            toast.success('Password copied to clipboard!');
+            toast.success(t('passwordCopied'));
+        }
+    };
+
+    // Helper to get localized degree labels
+    const getDegreeLabel = (deg: string) => {
+        switch (deg) {
+            case "Teaching Assistant":
+                return tf("degreeTA");
+            case "Assistant Lecturer":
+                return tf("degreeAL");
+            case "Lecturer":
+                return tf("degreeL");
+            case "Associate Professor":
+                return tf("degreeAP");
+            case "Professor":
+                return tf("degreeP");
+            default:
+                return deg;
         }
     };
 
     return (
-        <form action={action} className="space-y-5">
+        <form action={action} className="space-y-5 text-start">
             {/* First Row - Username and Email */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* userName */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        userName *
+                        {t('labelUsername')} *
                     </label>
                     <input
                         type="text"
@@ -126,7 +157,7 @@ export function FacultyMemberForm({
                 {/* Email */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Email *
+                        {t('labelEmail')} *
                     </label>
                     <input
                         type="email"
@@ -142,12 +173,12 @@ export function FacultyMemberForm({
                 </div>
             </div>
 
-            {/* Full Name */}
             {/* Second Row - Full Name and Phone */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Full Name */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Full Name *
+                        {t('labelFullName')} *
                     </label>
                     <input
                         type="text"
@@ -165,7 +196,7 @@ export function FacultyMemberForm({
                 {/* Phone Number */}
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Phone Number *
+                        {t('labelPhone')} *
                     </label>
                     <input
                         type="tel"
@@ -183,38 +214,35 @@ export function FacultyMemberForm({
 
             {/* Degree */}
             <div>
-                <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Degree *
-                    </label>
-                    <input type="hidden" name="degree" value={selectedDegree ?? ""} />
-                    <select
-                        id="degree"
-                        value={selectedDegree ?? ""}
-                        onChange={(e) => setSelectedDegree(e.target.value as FacultyDegree)}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition"
-                    >
-                        <option value={state.formData.get("degree") ? state.formData.get("degree") as string : ""} disabled>
-                            Select A Degree
-                        </option>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t('labelDegree')} *
+                </label>
+                <select
+                    id="degree"
+                    name="degree"
+                    value={selectedDegree}
+                    onChange={(e) => setSelectedDegree(e.target.value)}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition"
+                >
+                    <option value="" disabled>
+                        {t('selectDegree')}
+                    </option>
 
-                        {Object.values(FacultyDegree).map((degree, idx) => (
-                            <option key={degree} value={idx}>
-                                {degree}
-                            </option>
-                        ))}
-                    </select>
-                    {state.error && state.error.degree && (
-                        <InputMessageError message={state.error.degree} />
-                    )}
-                </div>
+                    {Object.values(FacultyDegree).map((degree, idx) => (
+                        <option key={degree} value={idx + 1}>
+                            {getDegreeLabel(degree)}
+                        </option>
+                    ))}
+                </select>
+                {state.error && state.error.degree && (
+                    <InputMessageError message={state.error.degree} />
+                )}
             </div>
 
             {/* Department */}
             {!isEditing && (
                 <div className="flex flex-col text-gray-700 gap-2">
-                    <label htmlFor="">Department</label>
-                    <input type="hidden" value={selectedDepartmentId} name='departmentId' />
+                    <label htmlFor="departmentId" className="text-sm font-medium text-gray-700">{t('labelDepartment')}</label>
                     {
                         isLoading
                             ? <Loader />
@@ -222,14 +250,14 @@ export function FacultyMemberForm({
                                 departmentData
                                     ? (
                                         <select
-                                            name="departments"
-                                            id="departments"
+                                            name="departmentId"
+                                            id="departmentId"
                                             value={selectedDepartmentId}
                                             onChange={(e) => setSelectedDepartmentId(e.target.value)}
                                             className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition"
                                         >
-                                            <option value={state.formData.get("departmentId") ? state.formData.get("departmentId") as string : ""} disabled>
-                                                Select a department
+                                            <option value="" disabled>
+                                                {t('selectDepartment')}
                                             </option>
 
                                             {departmentData.map((department: Department) => (
@@ -240,18 +268,21 @@ export function FacultyMemberForm({
                                         </select>
                                     )
                                     : (
-                                        <div >
-                                            <p className="font-bold text-sm text-red-500">no program found please try again, or create new program</p>
+                                        <div>
+                                            <p className="font-bold text-sm text-red-500">{tf('departmentRequiredDesc')}</p>
                                             <div className="text-black mt-3 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                                <Link href={"/admin/programs"}
-                                                    className="px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition font-medium w-full"
-                                                >Create New Program</Link>
-
+                                                <Link href={"/admin/departments"}
+                                                    className="px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition font-medium w-full text-center"
+                                                >
+                                                    {tf('goToDepartments')}
+                                                </Link>
                                                 <button
                                                     type="button"
                                                     onClick={() => window.location.reload()}
                                                     className="px-4 py-2 border text-black rounded-lg transition font-medium w-full"
-                                                >Refresh</button>
+                                                >
+                                                    {tc('refresh')}
+                                                </button>
                                             </div>
                                         </div>
                                     )
@@ -261,13 +292,12 @@ export function FacultyMemberForm({
                         <InputMessageError message={state.error.departmentId} />
                     )}
                 </div>
-            )
-            }
+            )}
 
             {/* Password Field */}
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Password * (Read-only)
+                    {t('passwordReadOnly')}
                 </label>
                 <div className="flex gap-2">
                     <div className="flex-1 relative">
@@ -277,7 +307,7 @@ export function FacultyMemberForm({
                             value={password}
                             readOnly
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition cursor-not-allowed"
-                            placeholder="Generated password will appear here"
+                            placeholder={t('passwordPlaceholder')}
                         />
                         <button
                             type="button"
@@ -311,7 +341,7 @@ export function FacultyMemberForm({
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 <RefreshCw size={18} />
-                Generate Strong Password
+                {t('generatePassword')}
             </button>
 
             {/* isAdvisor */}
@@ -321,14 +351,12 @@ export function FacultyMemberForm({
                     name="isAdvisor"
                     id="isAdvisor"
                     className={`px-4 py-2 border-none outline-none accent-[#00284d] w-5 h-5 rounded-lg transition disabled:bg-gray-100 cursor-pointer`}
-                    placeholder="e.g., NAT-123456"
-                    // checked={isAdvisor}
                     defaultChecked={isAdvisor}
                     onChange={(e) => setIsAdvisor(e.target.checked)}
                     disabled={isLoading}
                 />
                 <label className="block text-sm font-medium text-gray-700 select-none cursor-pointer" htmlFor='isAdvisor'>
-                    Is Advisor
+                    {t('labelIsAdvisor')}
                 </label>
             </div>
 
@@ -340,7 +368,7 @@ export function FacultyMemberForm({
                     disabled={isLoading}
                     className="order-1 sm:order-0 w-full flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
-                    Cancel
+                    {tc('cancel')}
                 </button>
                 <button
                     type="submit"
@@ -353,12 +381,12 @@ export function FacultyMemberForm({
                             : isLoading ? (
                                 <span className="flex items-center justify-center gap-2">
                                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    {isPending ? 'Creating...' : isEditing ? "Updating..." : ""}
+                                    {isPending ? t('creating') : isEditing ? t('updating') : ""}
                                 </span>
                             ) : isEditing ? (
-                                'Update Faculty Member'
+                                tf('updateFaculty')
                             ) : (
-                                'Create Faculty Member'
+                                tf('createFaculty')
                             )
                     }
                 </button>

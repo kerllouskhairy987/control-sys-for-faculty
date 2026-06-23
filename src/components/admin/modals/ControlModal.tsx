@@ -4,6 +4,7 @@ import { X } from 'lucide-react';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { runControlEngine } from '@/server/ControlEngine';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 interface ControlModalProps {
     isOpen: boolean;
@@ -12,6 +13,10 @@ interface ControlModalProps {
 }
 
 export function ControlModal({ isOpen, onClose, onSuccess }: ControlModalProps) {
+    const t = useTranslations('ControlEngine');
+    const tc = useTranslations('Common');
+    const tf = useTranslations('Forms');
+
     const [term, setTerm] = useState<'Fall' | 'Spring' | 'Summer'>('Fall');
     const [year, setYear] = useState<number>(new Date().getFullYear());
     const [isLoading, setIsLoading] = useState(false);
@@ -26,16 +31,16 @@ export function ControlModal({ isOpen, onClose, onSuccess }: ControlModalProps) 
             const result = await runControlEngine(term, year);
 
             if (result.success) {
-                toast.success(result.message);
+                toast.success(t('successRun'));
                 setTerm('Fall');
                 setYear(new Date().getFullYear());
                 onClose();
                 onSuccess?.();
             } else {
-                toast.error(result.message);
+                toast.error(result.message || t('errorOccurred'));
             }
         } catch (error) {
-            toast.error('An error occurred');
+            toast.error(t('errorOccurred'));
             console.log(error);
         } finally {
             setIsLoading(false);
@@ -52,21 +57,21 @@ export function ControlModal({ isOpen, onClose, onSuccess }: ControlModalProps) 
             />
 
             {/* Modal */}
-            <div className="fixed top-1/2 left-1/2 -translate-1/2 z-50 p-4 overflow-y-auto w-auto sm:w-100">
+            <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-50 p-4 overflow-y-auto w-auto sm:w-100">
                 <div
-                    className="bg-white rounded-lg shadow-xl max-w-md w-full animate-in fade-in zoom-in-95 my-8"
+                    className="bg-white rounded-lg shadow-xl max-w-md w-full animate-in fade-in zoom-in-95 my-8 text-start"
                     onClick={(e) => e.stopPropagation()}
                 >
                     {/* Header */}
                     <div className="flex items-center justify-between p-6 border-b border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-900">
-                            Run Control Engine
+                            {t('runEngineTitle')}
                         </h2>
                         <button
                             onClick={onClose}
                             disabled={isLoading}
                             className="p-1 hover:bg-gray-100 rounded-lg transition disabled:opacity-50"
-                            aria-label="Close"
+                            aria-label={tc('close')}
                         >
                             <X size={24} className="text-gray-500" />
                         </button>
@@ -77,7 +82,7 @@ export function ControlModal({ isOpen, onClose, onSuccess }: ControlModalProps) 
                         {/* Term Field */}
                         <div>
                             <label htmlFor="term" className="block text-sm font-semibold text-gray-900 mb-2">
-                                Term <span className="text-red-500">*</span>
+                                {tf('labelTerm')} <span className="text-red-500">*</span>
                             </label>
                             <select
                                 id="term"
@@ -95,7 +100,7 @@ export function ControlModal({ isOpen, onClose, onSuccess }: ControlModalProps) 
                         {/* Year Field */}
                         <div>
                             <label htmlFor="year" className="block text-sm font-semibold text-gray-900 mb-2">
-                                Year <span className="text-red-500">*</span>
+                                {tf('labelYear')} <span className="text-red-500">*</span>
                             </label>
                             <input
                                 id="year"
@@ -117,7 +122,7 @@ export function ControlModal({ isOpen, onClose, onSuccess }: ControlModalProps) 
                                 disabled={isLoading}
                                 className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 font-medium"
                             >
-                                Cancel
+                                {tc('cancel')}
                             </button>
                             <button
                                 type="submit"
@@ -127,10 +132,10 @@ export function ControlModal({ isOpen, onClose, onSuccess }: ControlModalProps) 
                                 {isLoading ? (
                                     <>
                                         <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                                        Running...
+                                        {t('running')}
                                     </>
                                 ) : (
-                                    'Run Engine'
+                                    t('runEngineBtn')
                                 )}
                             </button>
                         </div>

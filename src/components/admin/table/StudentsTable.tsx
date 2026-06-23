@@ -16,6 +16,7 @@ import Link from "next/link";
 import { StudentsStatus } from "@/enums";
 import Pagination from "@/components/ui/Pagination";
 import { getAllAdvisors } from "@/server/FacultyAction";
+import { useTranslations } from "@/i18n/IntlProvider";
 
 interface StudentsTableProps {
     // students: Student[];
@@ -30,6 +31,8 @@ export function StudentsTable({
     onDelete,
     setIdForDeleteItem
 }: StudentsTableProps) {
+    const t = useTranslations("Students");
+    const tc = useTranslations("Common");
 
     const [studentsData, setStudentsData] = useState<Student[]>([]);
     const [programData, setProgramData] = useState<Program[]>([]);
@@ -172,11 +175,11 @@ export function StudentsTable({
                         <div className="mb-6 flex items-center justify-between">
                             <div>
                                 <h2 className="text-2xl font-bold text-slate-800">
-                                    Students Filters
+                                    {t("filtersTitle")}
                                 </h2>
 
                                 <p className="mt-1 text-sm text-slate-500">
-                                    Filter students by program, advisor, status, and CGPA
+                                    {t("filtersSubtitle")}
                                 </p>
                             </div>
                         </div>
@@ -188,7 +191,7 @@ export function StudentsTable({
                                 {/* Search */}
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                        Search
+                                        {tc("search")}
                                     </label>
 
                                     <div className="relative">
@@ -200,7 +203,7 @@ export function StudentsTable({
                                         <input
                                             name="search"
                                             type="text"
-                                            placeholder="Search by student name..."
+                                            placeholder={t("searchPlaceholder")}
                                             className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-11 pr-4 text-sm outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                                         />
                                     </div>
@@ -209,7 +212,7 @@ export function StudentsTable({
                                 {/* Program ID */}
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                        Program
+                                        {t("colProgram")}
                                     </label>
 
                                     {
@@ -223,10 +226,10 @@ export function StudentsTable({
                                                         className="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                                                     >
                                                         <option value="" disabled>
-                                                            Select a department
+                                                            {t("selectProgram")}
                                                         </option>
                                                         <option value="">
-                                                            ALL
+                                                            {tc("all")}
                                                         </option>
 
                                                         {programData.map((program: Program) => (
@@ -241,8 +244,7 @@ export function StudentsTable({
                                                 ) : (
                                                     <div>
                                                         <p className="font-bold text-sm text-red-500">
-                                                            no programs found please try again,
-                                                            or create new programs
+                                                            {t("noProgramsFound")}
                                                         </p>
 
                                                         <div className="text-black mt-3 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -250,7 +252,7 @@ export function StudentsTable({
                                                                 href={"/admin/programs"}
                                                                 className="px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition font-medium w-full whitespace-nowrap"
                                                             >
-                                                                Create New Program
+                                                                {t("createProgramBtn") || "Create Program"}
                                                             </Link>
 
                                                             <button
@@ -258,7 +260,7 @@ export function StudentsTable({
                                                                 onClick={() => window.location.reload()}
                                                                 className="px-4 py-2 border text-black rounded-lg transition font-medium w-full"
                                                             >
-                                                                Refresh
+                                                                {tc("refresh")}
                                                             </button>
                                                         </div>
                                                     </div>
@@ -270,7 +272,7 @@ export function StudentsTable({
                                 {/* Advisor ID */}
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                        Advisor
+                                        {t("allAdvisors")}
                                     </label>
 
                                     {
@@ -284,10 +286,10 @@ export function StudentsTable({
                                                         className="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                                                     >
                                                         <option value="" disabled>
-                                                            Select an Advisor
+                                                            {t("allAdvisors")}
                                                         </option>
                                                         <option value="">
-                                                            ALL
+                                                            {tc("all")}
                                                         </option>
 
                                                         {advisorData.map((advisor: Advisor) => (
@@ -302,8 +304,7 @@ export function StudentsTable({
                                                 ) : (
                                                     <div>
                                                         <p className="font-bold text-sm text-red-500">
-                                                            no advisors found please try again,
-                                                            or create new advisors
+                                                            {t("noAdvisorsFound")}
                                                         </p>
 
                                                         <div className="text-black mt-3 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -311,7 +312,7 @@ export function StudentsTable({
                                                                 href={"/admin/faculty"}
                                                                 className="px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition font-medium w-full whitespace-nowrap"
                                                             >
-                                                                Create New Advisor
+                                                                {t("createAdvisorBtn") || "Create Advisor"}
                                                             </Link>
                                                         </div>
                                                     </div>
@@ -323,7 +324,7 @@ export function StudentsTable({
                                 {/* Status */}
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                        Status
+                                        {t("colStatus")}
                                     </label>
 
                                     <select
@@ -332,7 +333,7 @@ export function StudentsTable({
                                         className="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                                     >
                                         <option value="">
-                                            ALL
+                                            {tc("all")}
                                         </option>
 
                                         {Object.values(StudentsStatus).map((status, idx) => (
@@ -349,14 +350,14 @@ export function StudentsTable({
                                 {/* Min CGPA */}
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                        Min CGPA
+                                        {t("minCgpa")}
                                     </label>
 
                                     <input
                                         name="minCGPA"
                                         type="number"
                                         step="0.01"
-                                        placeholder="Enter minimum CGPA"
+                                        placeholder={t("minCgpaPlaceholder")}
                                         className="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                                     />
                                 </div>
@@ -364,14 +365,14 @@ export function StudentsTable({
                                 {/* Max CGPA */}
                                 <div>
                                     <label className="mb-2 block text-sm font-semibold text-slate-700">
-                                        Max CGPA
+                                        {t("maxCgpa")}
                                     </label>
 
                                     <input
                                         name="maxCGPA"
                                         type="number"
                                         step="0.01"
-                                        placeholder="Enter maximum CGPA"
+                                        placeholder={t("maxCgpaPlaceholder")}
                                         className="h-12 w-full rounded-xl border border-slate-300 bg-white px-4 text-sm outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                                     />
                                 </div>
@@ -385,7 +386,7 @@ export function StudentsTable({
                                     className="h-11 rounded-xl border border-slate-300 bg-white px-6 text-sm font-medium text-slate-700 transition-all hover:bg-slate-100"
                                     onClick={() => getAllStudentsData()}
                                 >
-                                    Clear
+                                    {t("clear")}
                                 </button>
 
                                 <button
@@ -396,7 +397,7 @@ export function StudentsTable({
                                         ? <Loader className="text-white" />
                                         : <>
                                             <Search size={18} />
-                                            Search
+                                            {tc("search")}
                                         </>
                                     }
                                 </button>
@@ -409,26 +410,32 @@ export function StudentsTable({
                         {/* Head */}
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                    fullName
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                    {t("colName")}
                                 </th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                    academic Number
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                    {t("colAcademicNumber")}
                                 </th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                    program Name #
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                    {t("colProgram")}
                                 </th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                    cgpa
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                    {t("colCgpa")}
                                 </th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                    academic Status
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                    {t("colStatus")}
                                 </th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                    academic Level
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                    {t("colAcademicLevel")}
                                 </th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                    Actions
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                    {t("colSchedule")}
+                                </th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                    {t("colAvailableCourses")}
+                                </th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                    {t("colActions")}
                                 </th>
                             </tr>
                         </thead>
@@ -467,6 +474,16 @@ export function StudentsTable({
                                             <div className="h-4 w-20 bg-gray-200 rounded"></div>
                                         </td>
 
+                                        {/* Schedule */}
+                                        <td className="px-6 py-4">
+                                            <div className="h-8 w-24 bg-gray-200 rounded-lg"></div>
+                                        </td>
+
+                                        {/* Available Courses */}
+                                        <td className="px-6 py-4">
+                                            <div className="h-8 w-32 bg-gray-200 rounded-lg"></div>
+                                        </td>
+
                                         {/* Actions */}
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
@@ -478,8 +495,8 @@ export function StudentsTable({
                                 ))
                             ) : studentsData.length === 0 ? (
                                 <tr>
-                                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">
-                                        No students found.
+                                    <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
+                                        {t('noStudents')}
                                     </td>
                                 </tr>
                             ) : (
@@ -508,6 +525,22 @@ export function StudentsTable({
                                             {student.academicLevel}
                                         </td>
                                         <td className="px-6 py-4 text-sm">
+                                            <Link
+                                                href={`/admin/registration/schedule/${student.id}`}
+                                                className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-100 hover:bg-blue-200 rounded-lg transition"
+                                            >
+                                                {t("viewSchedule")}
+                                            </Link>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm">
+                                            <Link
+                                                href={`/admin/registration/available/${student.id}`}
+                                                className="inline-flex items-center justify-center px-3 py-1.5 text-xs font-medium text-purple-700 bg-purple-100 hover:bg-purple-200 rounded-lg transition"
+                                            >
+                                                {t("viewCourses")}
+                                            </Link>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm">
                                             <div className="flex items-center gap-2">
                                                 {
                                                     student.academicStatus !== "Dismissed"
@@ -516,15 +549,15 @@ export function StudentsTable({
                                                                 onClick={() => {
                                                                     onDelete?.(student)
                                                                     setIdForDeleteItem(student.id)
-                                                                }}
+                                                                 }}
                                                                 className="p-2 text-white bg-red-600 hover:bg-red-800 rounded-lg transition whitespace-nowrap"
-                                                                title="Delete student"
+                                                                title={t("dismissStudent")}
                                                             >
-                                                                Dismiss Student
+                                                                {t("dismissStudent")}
                                                             </button>
                                                         )
                                                         : (
-                                                            <span className="text-red-500">Already Dismissed</span>
+                                                            <span className="text-red-500">{t("alreadyDismissed")}</span>
                                                         )
                                                 }
                                             </div>

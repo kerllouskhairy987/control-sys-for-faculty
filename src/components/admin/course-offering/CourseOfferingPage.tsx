@@ -12,7 +12,11 @@ import { CourseOfferingModal } from './CourseOfferingModal';
 import { getAllCourses } from '@/server/Courses';
 import { getAllFacultyMember } from '@/server/FacultyAction';
 
+import { useTranslations } from '@/i18n/IntlProvider';
+
 export default function CourseOfferingPage() {
+    const t = useTranslations('CourseOfferings');
+    const tc = useTranslations('Common');
     const [courseOfferingsData, setCourseOfferingsData] = useState<CourseOffering[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [page, setPage] = useState(1);
@@ -62,11 +66,11 @@ export default function CourseOfferingPage() {
             }
         } catch (error) {
             console.error(error);
-            toast.error('Failed to fetch course offerings');
+            toast.error(t('errorFetchOfferings'));
         } finally {
             setIsLoading(false);
         }
-    }, [courseId, instructorId, page, pageSize, term, year]);
+    }, [courseId, instructorId, page, pageSize, term, year, t]);
 
     useEffect(() => {
         fetchData();
@@ -88,14 +92,14 @@ export default function CourseOfferingPage() {
                 );
             } catch (error) {
                 console.error(error);
-                toast.error('Failed to load filter options');
+                toast.error(t('errorLoadFilterOptions'));
             } finally {
                 setIsLoadingFilterOptions(false);
             }
         };
 
         fetchFilterOptions();
-    }, []);
+    }, [t]);
 
     const handleAddNew = () => {
         setIsModalOpen(true);
@@ -142,26 +146,26 @@ export default function CourseOfferingPage() {
             {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-900">Course Offerings Management</h2>
-                    <p className="mt-1 text-gray-600">Manage and view all course offerings in the system</p>
+                    <h2 className="text-3xl font-bold text-gray-900">{t('title')}</h2>
+                    <p className="mt-1 text-gray-600">{t('subtitle')}</p>
                 </div>
                 <button
                     onClick={handleAddNew}
                     className="flex items-center gap-2 px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition font-medium"
                 >
                     <Plus size={20} />
-                    Add New Offering
+                    {t('addBtn')}
                 </button>
             </div>
 
             {/* Filters */}
             <div className="bg-white rounded-lg shadow p-6 space-y-4">
-                <h3 className="font-semibold text-gray-900">Filters</h3>
+                <h3 className="font-semibold text-gray-900">{tc('filters')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Term Filter */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Term
+                            {t('labelTerm')}
                         </label>
                         <select
                             value={term}
@@ -181,7 +185,7 @@ export default function CourseOfferingPage() {
                     {/* Year Filter */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Year
+                            {t('labelYear')}
                         </label>
                         <input
                             type="number"
@@ -199,7 +203,7 @@ export default function CourseOfferingPage() {
                     {/* Course Filter */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Course
+                            {t('labelCourse')}
                         </label>
                         <select
                             value={courseId}
@@ -211,7 +215,7 @@ export default function CourseOfferingPage() {
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed"
                         >
                             <option value="">
-                                {isLoadingFilterOptions ? 'Loading courses...' : 'All Courses'}
+                                {isLoadingFilterOptions ? t('loadingCourses') : t('allCourses')}
                             </option>
                             {courses.map((course) => (
                                 <option key={course.id} value={course.id}>
@@ -224,7 +228,7 @@ export default function CourseOfferingPage() {
                     {/* Instructor Filter */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Instructor
+                            {t('labelInstructor')}
                         </label>
                         <select
                             value={instructorId}
@@ -236,7 +240,7 @@ export default function CourseOfferingPage() {
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed"
                         >
                             <option value="">
-                                {isLoadingFilterOptions ? 'Loading instructors...' : 'All Instructors'}
+                                {isLoadingFilterOptions ? t('loadingInstructors') : t('allInstructors')}
                             </option>
                             {instructors.map((instructor) => (
                                 <option key={instructor.id} value={instructor.id}>
@@ -279,7 +283,7 @@ export default function CourseOfferingPage() {
             {/* Delete Confirmation */}
             <ConfirmationDialog
                 isOpen={deleteConfirmation.isOpen}
-                title="Delete Course Offering"
+                title={t('deleteTitle')}
                 message={
                     <>
                         Are you sure you want to delete this course offering for{' '}

@@ -15,6 +15,7 @@ import Loader from '@/components/ui/Loader';
 import { getAllPrograms } from '@/server/ProgramsActions';
 import Link from 'next/link';
 import InputMessageError from '@/components/ui/InputMessageError';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 interface StudentFormProps {
     isEditing: boolean;
@@ -29,6 +30,8 @@ export function StudentForm({
     setIsModalOpen,
     onCancel,
 }: StudentFormProps) {
+    const t = useTranslations('Forms');
+    const tc = useTranslations('Common');
 
     // const [studentData, setStudentData] = useState<Student[] | null>(null);
     const [programData, setProgramData] = useState<Program[] | null>([]);
@@ -79,13 +82,13 @@ export function StudentForm({
     const handleGeneratePassword = () => {
         const password = generatePassword();
         setPassword(password)
-        toast.success('Password generated successfully!');
+        toast.success(t('passwordGenerated') || 'Password generated successfully!');
     };
 
     const handleCopyPassword = () => {
         if (password) {
             navigator.clipboard.writeText(password);
-            toast.success('Password copied to clipboard!');
+            toast.success(t('passwordCopied') || 'Password copied to clipboard!');
         }
     };
     //     e.preventDefault();
@@ -120,7 +123,7 @@ export function StudentForm({
                 <input type="hidden" name="programId" value={selectedStudentId} />
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        userName *
+                        {t('labelUsername')} *
                     </label>
                     <input
                         type="text"
@@ -138,7 +141,7 @@ export function StudentForm({
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Email *
+                        {t('labelEmail')} *
                     </label>
                     <input
                         type="email"
@@ -158,7 +161,7 @@ export function StudentForm({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Full Name *
+                        {t('labelFullName')} *
                     </label>
                     <input
                         type="text"
@@ -175,7 +178,7 @@ export function StudentForm({
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Phone Number *
+                        {t('labelPhone')} *
                     </label>
                     <input
                         type="tel"
@@ -195,7 +198,7 @@ export function StudentForm({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        Academic Number *
+                        {t('labelAcademicNumber')} *
                     </label>
                     <input
                         type="text"
@@ -212,7 +215,7 @@ export function StudentForm({
 
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                        National ID *
+                        {t('labelNationalId')} *
                     </label>
                     <input
                         type="text"
@@ -255,7 +258,7 @@ export function StudentForm({
 
             {!isEditing && (
                 <div className="flex flex-col text-gray-700 gap-2">
-                    <label htmlFor="">Program</label>
+                    <label htmlFor="">{t('labelProgram')}</label>
                     {
                         isLoading
                             ? <Loader />
@@ -274,7 +277,7 @@ export function StudentForm({
                                             </option> */}
 
                                             <option value={defaultValuesForEdit ? defaultValuesForEdit.id : state.formData.get("programId") ? state.formData.get("programId") as string : ""} disabled>
-                                                {isEditing && defaultValuesForEdit ? defaultValuesForEdit.programName : state.formData.get("programId") ? state.formData.get("programId") as string : "Select a department"}
+                                                {isEditing && defaultValuesForEdit ? defaultValuesForEdit.programName : state.formData.get("programId") ? state.formData.get("programId") as string : t('selectProgram')}
                                             </option>
 
                                             {programData.map((program: Program) => (
@@ -286,17 +289,23 @@ export function StudentForm({
                                     )
                                     : (
                                         <div >
-                                            <p className="font-bold text-sm text-red-500">no program found please try again, or create new program</p>
+                                            <p className="font-bold text-sm text-red-500">
+                                                {t('noProgramsFound')}
+                                            </p>
                                             <div className="text-black mt-3 flex flex-col sm:flex-row items-center justify-between gap-4">
                                                 <Link href={"/admin/programs"}
                                                     className="px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition font-medium w-full"
-                                                >Create New Program</Link>
+                                                >
+                                                    {t('createProgramBtn') || 'Create New Program'}
+                                                </Link>
 
                                                 <button
                                                     type="button"
                                                     onClick={() => window.location.reload()}
                                                     className="px-4 py-2 border text-black rounded-lg transition font-medium w-full"
-                                                >Refresh</button>
+                                                >
+                                                    {tc('refresh')}
+                                                </button>
                                             </div>
                                         </div>
                                     )
@@ -315,7 +324,7 @@ export function StudentForm({
             {/* Password Field */}
             <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Password * (Read-only)
+                    {t('passwordReadOnly')}
                 </label>
                 <div className="flex gap-2">
                     <div className="flex-1 relative">
@@ -325,7 +334,7 @@ export function StudentForm({
                             value={password}
                             readOnly
                             className="w-full px-4 py-2 border border-gray-300 rounded-lg bg-gray-50 focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition cursor-not-allowed"
-                            placeholder="Generated password will appear here"
+                            placeholder={t('passwordPlaceholder')}
                         />
                         <button
                             type="button"
@@ -359,7 +368,7 @@ export function StudentForm({
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-blue-50 border border-blue-200 text-blue-700 rounded-lg hover:bg-blue-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
                 <RefreshCw size={18} />
-                Generate Strong Password
+                {t('generatePassword')}
             </button>
 
             {/* Form Actions */}
@@ -370,7 +379,7 @@ export function StudentForm({
                     disabled={isLoading}
                     className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50 transition disabled:opacity-50 disabled:cursor-not-allowed font-medium"
                 >
-                    Cancel
+                    {tc('cancel')}
                 </button>
                 <button
                     type="submit"
@@ -383,12 +392,12 @@ export function StudentForm({
                             : isLoading ? (
                                 <span className="flex items-center justify-center gap-2">
                                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                                    {isEditing ? 'Updating...' : 'Creating...'}
+                                    {isEditing ? t('updating') : t('creating')}
                                 </span>
                             ) : isEditing ? (
-                                'Update Student'
+                                t('updateStudent')
                             ) : (
-                                'Create Student'
+                                t('createStudent')
                             )
                     }
                 </button>

@@ -7,6 +7,7 @@
 
 import { X } from 'lucide-react';
 import { Program } from '@/types';
+import { useTranslations } from '@/i18n/IntlProvider';
 import { ProgramForm } from '../forms/ProgramForm';
 
 interface ProgramsModalProps {
@@ -26,6 +27,9 @@ export function ProgramsModal({
     isLoading = false,
     defaultValuesForEdit
 }: ProgramsModalProps) {
+    const t = useTranslations('Programs');
+    const tc = useTranslations('Common');
+
     if (!isOpen) return null;
 
     return (
@@ -46,13 +50,13 @@ export function ProgramsModal({
                     {/* Header */}
                     <div className="flex items-center justify-between p-6 border-b border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-900">
-                            {isEditing ? 'Edit Program' : 'Add New Program'}
+                            {isEditing ? t('editProgram') : t('addProgram')}
                         </h2>
                         <button
                             onClick={onClose}
                             disabled={isLoading}
                             className="p-1 hover:bg-gray-100 rounded-lg transition disabled:opacity-50"
-                            aria-label="Close"
+                            aria-label={tc('close')}
                         >
                             <X size={24} className="text-gray-500" />
                         </button>

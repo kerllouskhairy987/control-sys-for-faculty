@@ -1,13 +1,29 @@
 /**
  * Sidebar Component
- * Collapsible sidebar with User dropdown menu
+ * Collapsible sidebar with navigation and RTL/LTR support
  */
 
 'use client';
 
 import { useState } from 'react';
-import { ChevronDown, BarChart3, Users, BookOpen, Menu, X, BellElectric, HousePlus, MonitorCog, Warehouse, Book, List, CalendarRange } from 'lucide-react';
+import {
+    ChevronDown,
+    BarChart3,
+    Users,
+    BookOpen,
+    Menu,
+    X,
+    BellElectric,
+    HousePlus,
+    MonitorCog,
+    Warehouse,
+    Book,
+    List,
+    CalendarRange,
+    ClipboardList,
+} from 'lucide-react';
 import { SidebarItem } from './SidebarItem';
+import { useDir, useTranslations } from '@/i18n/IntlProvider';
 
 interface SidebarProps {
     isOpen?: boolean;
@@ -17,6 +33,8 @@ interface SidebarProps {
 export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
     const [isExpanded, setIsExpanded] = useState(isOpen);
     const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+    const dir = useDir();
+    const t = useTranslations('Sidebar');
 
     const toggleSidebar = () => {
         setIsExpanded(!isExpanded);
@@ -26,6 +44,9 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
         e.preventDefault();
         setIsUserDropdownOpen(!isUserDropdownOpen);
     };
+
+    // RTL: sidebar anchors to the right; LTR: anchors to the left
+    const sideAnchor = dir === 'rtl' ? 'right-0' : 'left-0';
 
     return (
         <>
@@ -42,13 +63,14 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
             {/* Sidebar */}
             <aside
-                className={`fixed left-0 top-0 h-screen bg-linear-to-b from-[#00284d] to-[#003465] text-white shadow-xl transition-all duration-300 z-50 ${isExpanded ? 'w-64 lg:w-64' : 'w-20 lg:w-20'
-                    }`}
+                className={`fixed ${sideAnchor} top-0 h-screen bg-linear-to-b from-[#00284d] to-[#003465] text-white shadow-xl transition-all duration-300 z-50 ${
+                    isExpanded ? 'w-64 lg:w-64' : 'w-20 lg:w-20'
+                }`}
             >
                 {/* Header */}
                 <div className="flex items-center justify-between p-4 border-b border-white/20">
                     {isExpanded && (
-                        <h1 className="text-lg font-bold text-white">Admin Panel</h1>
+                        <h1 className="text-lg font-bold text-white">{t('adminPanel')}</h1>
                     )}
                     <button
                         onClick={toggleSidebar}
@@ -68,46 +90,48 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                 <nav className="flex-1 overflow-y-auto p-4 space-y-2">
                     {/* Dashboard */}
                     <SidebarItem
-                        label="Dashboard"
+                        label={t('Dashboard')}
                         href="/admin"
                         icon={BarChart3}
                         isExpanded={isExpanded}
                     />
 
-                    {/* User Dropdown */}
+                    {/* Users dropdown */}
                     <div>
                         <button
                             onClick={handleUserDropdownClick}
-                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer ${isUserDropdownOpen
-                                ? 'bg-white/20 text-white'
-                                : 'text-white/70 hover:bg-white/10 hover:text-white'
-                                }`}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 cursor-pointer ${
+                                isUserDropdownOpen
+                                    ? 'bg-white/20 text-white'
+                                    : 'text-white/70 hover:bg-white/10 hover:text-white'
+                            }`}
                         >
                             <Users size={20} />
                             {isExpanded && (
                                 <>
-                                    <span className="text-sm flex-1 text-left">Users</span>
+                                    <span className="text-sm flex-1 text-start">{t('users')}</span>
                                     <ChevronDown
                                         size={16}
-                                        className={`transition-transform duration-200 ${isUserDropdownOpen ? 'rotate-180' : ''
-                                            }`}
+                                        className={`transition-transform duration-200 ${
+                                            isUserDropdownOpen ? 'rotate-180' : ''
+                                        }`}
                                     />
                                 </>
                             )}
                         </button>
 
-                        {/* Dropdown Menu */}
+                        {/* Dropdown (expanded) */}
                         {isUserDropdownOpen && isExpanded && (
-                            <div className="ml-4 mt-2 space-y-1 border-l-2 border-white/20 pl-2">
+                            <div className="ms-4 mt-2 space-y-1 border-s-2 border-white/20 ps-2">
                                 <SidebarItem
-                                    label="Students"
+                                    label={t('Students')}
                                     href="/admin/students"
                                     icon={BookOpen}
                                     isExpanded={isExpanded}
                                     onClick={() => setIsUserDropdownOpen(false)}
                                 />
                                 <SidebarItem
-                                    label="Professors"
+                                    label={t('Professors')}
                                     href="/admin/professors"
                                     icon={BookOpen}
                                     isExpanded={isExpanded}
@@ -116,17 +140,17 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                             </div>
                         )}
 
-                        {/* Collapsed View - Direct Links */}
+                        {/* Collapsed direct links */}
                         {!isExpanded && isUserDropdownOpen && (
                             <div className="mt-2 space-y-1">
                                 <SidebarItem
-                                    label="Students"
+                                    label={t('Students')}
                                     href="/admin/students"
                                     icon={BookOpen}
                                     isExpanded={false}
                                 />
                                 <SidebarItem
-                                    label="Professors"
+                                    label={t('Professors')}
                                     href="/admin/professors"
                                     icon={BookOpen}
                                     isExpanded={false}
@@ -135,9 +159,9 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
                         )}
                     </div>
 
-                    {/* Department */}
+                    {/* Departments */}
                     <SidebarItem
-                        label="Departments"
+                        label={t('Departments')}
                         href="/admin/departments"
                         icon={BellElectric}
                         isExpanded={isExpanded}
@@ -145,7 +169,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
                     {/* Programs */}
                     <SidebarItem
-                        label="Programs"
+                        label={t('Programs')}
                         href="/admin/programs"
                         icon={HousePlus}
                         isExpanded={isExpanded}
@@ -153,7 +177,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
                     {/* Courses */}
                     <SidebarItem
-                        label="Courses"
+                        label={t('Courses')}
                         href="/admin/courses"
                         icon={Book}
                         isExpanded={isExpanded}
@@ -161,7 +185,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
                     {/* Course Offerings */}
                     <SidebarItem
-                        label="Course Offerings"
+                        label={t('CourseOfferings')}
                         href="/admin/course-offering"
                         icon={List}
                         isExpanded={isExpanded}
@@ -169,15 +193,23 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
                     {/* Registration Periods */}
                     <SidebarItem
-                        label="Registration Periods"
+                        label={t('RegistrationPeriods')}
                         href="/admin/registration-periods"
                         icon={CalendarRange}
                         isExpanded={isExpanded}
                     />
 
-                    {/* control engine */}
+                    {/* Registrations */}
                     <SidebarItem
-                        label="Control Engine"
+                        label={t('Registrations')}
+                        href="/admin/registration"
+                        icon={ClipboardList}
+                        isExpanded={isExpanded}
+                    />
+
+                    {/* Control Engine */}
+                    <SidebarItem
+                        label={t('ControlEngine')}
                         href="/admin/control-engine"
                         icon={MonitorCog}
                         isExpanded={isExpanded}
@@ -185,7 +217,7 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
                     {/* Faculty */}
                     <SidebarItem
-                        label="Faculty"
+                        label={t('Faculty')}
                         href="/admin/faculty"
                         icon={Warehouse}
                         isExpanded={isExpanded}
@@ -194,12 +226,12 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
                 {/* Footer */}
                 <div className="p-4 border-t border-white/20 text-center">
-                    {isExpanded && <p className="text-xs text-white/50">© 2024 SIS Admin</p>}
+                    {isExpanded && <p className="text-xs text-white/50">{t('Copyright')}</p>}
                 </div>
             </aside>
 
             {/* Spacer for main content */}
-            <div className={`transition-all duration-300 ${isExpanded ? 'lg:ml-64' : 'lg:ml-20'}`} />
+            <div className={`transition-all duration-300 ${isExpanded ? 'lg:ms-64' : 'lg:ms-20'}`} />
         </>
     );
 }

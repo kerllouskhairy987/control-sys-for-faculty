@@ -9,6 +9,8 @@ import { Student } from '@/types';
 import { StudentForm } from '../forms/StudentForm';
 import { X } from 'lucide-react';
 
+import { useTranslations } from '@/i18n/IntlProvider';
+
 interface StudentModalProps {
     isOpen: boolean;
     setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>,
@@ -26,6 +28,7 @@ export function StudentModal({
     isLoading = false,
     defaultValuesForEdit
 }: StudentModalProps) {
+    const t = useTranslations('Students');
 
     if (!isOpen) return null;
 
@@ -48,7 +51,7 @@ export function StudentModal({
                     {/* Header */}
                     <div className="flex items-center justify-between p-6 border-b border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-900">
-                            {isEditing ? 'Edit Student' : 'Add New Student'}
+                            {isEditing ? t('editBtn') : t('addBtn')}
                         </h2>
                         <button
                             onClick={onClose}

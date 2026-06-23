@@ -8,9 +8,9 @@ import {
     Award,
     TrendingUp,
 } from 'lucide-react';
-// import { StatisticCard } from '@/components/ui/StatisticCard';
 import { ControlStatistics } from '@/types';
 import { StatisticCard } from '../cards/StatisticCard';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 interface StatisticsSectionProps {
     statistics: ControlStatistics | null;
@@ -18,39 +18,41 @@ interface StatisticsSectionProps {
 }
 
 export function StatisticsSection({ statistics, isLoading }: StatisticsSectionProps) {
+    const t = useTranslations('ControlEngine');
+
     const cards = [
         {
-            title: 'Total Students',
+            title: t('totalStudents'),
             value: statistics?.totalStudents ?? 0,
             icon: Users,
             iconBgColor: 'bg-blue-100',
         },
         {
-            title: 'Active Students',
+            title: t('activeStudents'),
             value: statistics?.activeStudents ?? 0,
             icon: CheckCircle,
             iconBgColor: 'bg-green-100',
         },
         {
-            title: 'Warning Students',
+            title: t('warningStudents'),
             value: statistics?.warningStudents ?? 0,
             icon: AlertCircle,
             iconBgColor: 'bg-amber-100',
         },
         {
-            title: 'Dismissed Students',
+            title: t('dismissedStudents'),
             value: statistics?.dismissedStudents ?? 0,
             icon: XCircle,
             iconBgColor: 'bg-red-100',
         },
         {
-            title: 'Graduated Students',
+            title: t('graduatedStudents'),
             value: statistics?.graduatedStudents ?? 0,
             icon: Award,
             iconBgColor: 'bg-indigo-100',
         },
         {
-            title: 'Average CGPA',
+            title: t('averageCgpa'),
             value: statistics?.averageCGPA?.toFixed(2) ?? '0.00',
             icon: TrendingUp,
             iconBgColor: 'bg-purple-100',

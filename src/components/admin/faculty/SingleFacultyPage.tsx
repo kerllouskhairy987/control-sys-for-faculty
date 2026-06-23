@@ -8,10 +8,13 @@ import { getAllDepartment } from "@/server/DepartmentActions";
 import Loader from "@/components/ui/Loader";
 import { updateDegreeFacultyMember, updateDepartmentFacultyMember, updateStatusFacultyMember } from "@/server/FacultyAction";
 import toast from "react-hot-toast";
+import { useTranslations } from "@/i18n/IntlProvider";
 
 type EditField = "degree" | "status" | "department" | null;
 
 export default function FacultyInlineUpdates({ facultyMember }: { facultyMember: SingleFacultyMember }) {
+    const t = useTranslations('Faculty');
+    const tf = useTranslations('Forms');
 
     // active editing field
     const [activeEdit, setActiveEdit] = useState<EditField>(null);
@@ -117,7 +120,7 @@ export default function FacultyInlineUpdates({ facultyMember }: { facultyMember:
         }
     };
 
-    // get all programs to show in select
+    // get all departments to show in select
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -135,10 +138,28 @@ export default function FacultyInlineUpdates({ facultyMember }: { facultyMember:
         fetchData();
     }, []);
 
-    // toast 
-    useEffect(() => {
+    // Helper to get localized degree labels
+    const getDegreeLabel = (deg: string) => {
+        switch (deg) {
+            case "Teaching Assistant": return t("degreeTA");
+            case "Assistant Lecturer": return t("degreeAL");
+            case "Lecturer": return t("degreeL");
+            case "Associate Professor": return t("degreeAP");
+            case "Professor": return t("degreeP");
+            default: return deg;
+        }
+    };
 
-    }, [])
+    // Helper to get localized status labels
+    const getStatusLabel = (stat: string) => {
+        switch (stat) {
+            case "Active": return t("statusActive");
+            case "Resined": return t("statusSigned");
+            case "Retired": return t("statusRetired");
+            case "Dismissed": return t("statusDismissed");
+            default: return stat;
+        }
+    };
 
     // helper
     const isAnotherEditing =
@@ -146,10 +167,10 @@ export default function FacultyInlineUpdates({ facultyMember }: { facultyMember:
 
     return (
         <section className="flex items-center justify-center min-h-screen bg-gray-100 p-4">
-            <div className="w-full max-w-xl rounded-2xl bg-white shadow-lg border border-gray-200 p-6 space-y-6">
+            <div className="w-full max-w-xl rounded-2xl bg-white shadow-lg border border-gray-200 p-6 space-y-6 text-start">
 
                 <h2 className="text-2xl font-bold text-gray-600">
-                    Faculty Member Updates For <span className="text-[#00284d] text-3xl">{facultyMember.name}</span>
+                    {t('updatesFor', { name: '' })} <span className="text-[#00284d] text-3xl">{facultyMember.name}</span>
                 </h2>
 
                 {/* ========================= */}
@@ -159,7 +180,7 @@ export default function FacultyInlineUpdates({ facultyMember }: { facultyMember:
 
                     <div className="flex-1">
                         <label className="text-sm text-gray-500 mb-1 block">
-                            Degree
+                            {tf('labelDegree')}
                         </label>
 
                         <select
@@ -182,11 +203,11 @@ export default function FacultyInlineUpdates({ facultyMember }: { facultyMember:
                             "
                         >
                             <option value={facultyMember.degree ? facultyMember.degree : ""} hidden disabled>
-                                {facultyMember.degree}
+                                {getDegreeLabel(facultyMember.degree)}
                             </option>
                             {Object.values(FacultyDegree).map((item, idx) => (
                                 <option key={item} value={idx}>
-                                    {item}
+                                    {getDegreeLabel(item)}
                                 </option>
                             ))}
                         </select>
@@ -252,7 +273,7 @@ export default function FacultyInlineUpdates({ facultyMember }: { facultyMember:
 
                     <div className="flex-1">
                         <label className="text-sm text-gray-500 mb-1 block">
-                            Status
+                            {t('colStatus')}
                         </label>
 
                         <select
@@ -275,11 +296,11 @@ export default function FacultyInlineUpdates({ facultyMember }: { facultyMember:
                             "
                         >
                             <option value={facultyMember.status ? facultyMember.status : ""} hidden disabled>
-                                {facultyMember.status}
+                                {getStatusLabel(facultyMember.status)}
                             </option>
                             {Object.values(FacultyStatus).map((item, idx) => (
                                 <option key={item} value={idx}>
-                                    {item}
+                                    {getStatusLabel(item)}
                                 </option>
                             ))}
                         </select>
@@ -345,7 +366,7 @@ export default function FacultyInlineUpdates({ facultyMember }: { facultyMember:
 
                     <div className="flex-1">
                         <label className="text-sm text-gray-500 mb-1 block">
-                            Department
+                            {tf('labelDepartment')}
                         </label>
 
                         {

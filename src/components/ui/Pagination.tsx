@@ -1,5 +1,8 @@
+'use client';
+
 import React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations, useDir } from "@/i18n/IntlProvider";
 
 interface PaginationProps {
     totalCount: number;
@@ -18,6 +21,8 @@ export default function Pagination({
     onPageChange,
     onPageSizeChange,
 }: PaginationProps) {
+    const t = useTranslations('Pagination');
+    const dir = useDir();
 
     const generatePages = () => {
         const pages: (number | string)[] = [];
@@ -50,12 +55,16 @@ export default function Pagination({
         return pages;
     };
 
+    // ChevronLeft/Right direction depends on text direction
+    const PrevIcon = dir === 'rtl' ? ChevronRight : ChevronLeft;
+    const NextIcon = dir === 'rtl' ? ChevronLeft : ChevronRight;
+
     return (
         <div className="flex flex-col md:flex-row items-center justify-between gap-4 mt-6">
 
             {/* Page Size */}
             <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-600">Rows per page:</span>
+                <span className="text-sm text-gray-600">{t('rowsPerPage')}:</span>
 
                 <select
                     value={pageSize}
@@ -67,10 +76,16 @@ export default function Pagination({
                     <option value={20}>20</option>
                     <option value={50}>50</option>
                 </select>
-                {
-                    totalCount !== 0
-                    && <span className="flex items-center gap-2">all items are <span className="text-xl font-bold">[ {totalCount} ]</span></span>
-                }
+
+                {totalCount !== 0 && (
+                    <span className="flex items-center gap-2 text-sm text-gray-600">
+                        {t('showing', {
+                            from: String(((currentPage - 1) * pageSize) + 1),
+                            to: String(Math.min(currentPage * pageSize, totalCount)),
+                            total: String(totalCount),
+                        })}
+                    </span>
+                )}
             </div>
 
             {/* Pagination */}
@@ -80,9 +95,10 @@ export default function Pagination({
                 <button
                     onClick={() => onPageChange(currentPage - 1)}
                     disabled={currentPage === 1}
+                    aria-label={t('previous')}
                     className="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-300 bg-white shadow-sm hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                    <ChevronLeft size={18} />
+                    <PrevIcon size={18} />
                 </button>
 
                 {/* Pages */}
@@ -113,9 +129,10 @@ export default function Pagination({
                 <button
                     onClick={() => onPageChange(currentPage + 1)}
                     disabled={currentPage === totalPages}
+                    aria-label={t('next')}
                     className="flex items-center justify-center w-10 h-10 rounded-xl border border-gray-300 bg-white shadow-sm hover:bg-gray-100 transition disabled:opacity-40 disabled:cursor-not-allowed"
                 >
-                    <ChevronRight size={18} />
+                    <NextIcon size={18} />
                 </button>
             </div>
         </div>

@@ -10,10 +10,12 @@ import { ConfirmationDialog } from '@/components/admin/modals/ConfirmationDialog
 import { CoursesTable } from './CoursesTable';
 import { CourseModal } from './CourseModal';
 import { getAllDepartment } from '@/server/DepartmentActions';
-// import { CoursesTable } from './CoursesTable';
-// import { CourseModal } from './CourseModal';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 export default function CoursesPage() {
+    const t = useTranslations('Courses');
+    const tc = useTranslations('Common');
+
     const [coursesData, setCoursesData] = useState<Course[]>([]);
     const [departments, setDepartments] = useState<Department[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -55,7 +57,7 @@ export default function CoursesPage() {
             setIsLoadingDepts(true);
             const dataDeparts = await getAllDepartment({});
             setDepartments(dataDeparts.items || []);
-            
+
             if (data) {
                 setCoursesData(data.items || []);
                 setTotalPages(data.totalPages || 1);
@@ -66,12 +68,12 @@ export default function CoursesPage() {
             }
         } catch (error) {
             console.error(error);
-            toast.error('Failed to fetch courses');
+            toast.error(t('errorFetchCourses'));
         } finally {
             setIsLoading(false);
             setIsLoadingDepts(false);
         }
-    }, [page, pageSize, search, departmentId, minCredits, maxCredits]);
+    }, [page, pageSize, search, departmentId, minCredits, maxCredits, t]);
 
     useEffect(() => {
         fetchData();
@@ -96,11 +98,11 @@ export default function CoursesPage() {
                 toast.success(res.message);
                 fetchData();
             } else {
-                toast.error(res.message || 'Failed to delete course');
+                toast.error(res.message || t('errorDeleteCourse'));
             }
         } catch (error) {
             console.error(error);
-            toast.error('An error occurred while deleting');
+            toast.error(t('errorDeleting'));
         } finally {
             setIsDeleteLoading(false);
             setDeleteConfirmation({ isOpen: false, course: null });
@@ -122,30 +124,30 @@ export default function CoursesPage() {
             {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-900">Courses Management</h2>
-                    <p className="mt-1 text-gray-600">Manage and view all courses in the system</p>
+                    <h2 className="text-3xl font-bold text-gray-900">{t('title')}</h2>
+                    <p className="mt-1 text-gray-600">{t('subtitle')}</p>
                 </div>
                 <button
                     onClick={handleAddNew}
                     className="flex items-center gap-2 px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition font-medium"
                 >
                     <Plus size={20} />
-                    Add New Course
+                    {t('addBtn')}
                 </button>
             </div>
 
             {/* Filters */}
             <div className="bg-white rounded-lg shadow p-6 space-y-4">
-                <h3 className="font-semibold text-gray-900">Filters</h3>
+                <h3 className="font-semibold text-gray-900">{tc('filters')}</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     {/* Search Filter */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Search
+                            {tc('search')}
                         </label>
                         <input
                             type="text"
-                            placeholder="Search by code or title..."
+                            placeholder={t('searchPlaceholder')}
                             value={search}
                             onChange={(e) => {
                                 setSearch(e.target.value);
@@ -158,7 +160,7 @@ export default function CoursesPage() {
                     {/* Department Filter */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Department *
+                            {t('departmentLabel')}
                         </label>
                         <select
                             value={departmentId}
@@ -166,7 +168,7 @@ export default function CoursesPage() {
                             disabled={isLoading || isLoadingDepts}
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed"
                         >
-                            <option value="">Select Department</option>
+                            <option value="">{t('selectDepartment')}</option>
                             {departments.map((dept) => (
                                 <option key={dept.id} value={dept.id}>
                                     {dept.name}
@@ -178,11 +180,11 @@ export default function CoursesPage() {
                     {/* Min Credits Filter */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Min Credits
+                            {t('minCredits')}
                         </label>
                         <input
                             type="number"
-                            placeholder="Minimum credits"
+                            placeholder={t('minCreditsPlaceholder')}
                             value={minCredits || ''}
                             onChange={(e) => {
                                 setMinCredits(e.target.value ? parseInt(e.target.value) : undefined);
@@ -196,11 +198,11 @@ export default function CoursesPage() {
                     {/* Max Credits Filter */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Max Credits
+                            {t('maxCredits')}
                         </label>
                         <input
                             type="number"
-                            placeholder="Maximum credits"
+                            placeholder={t('maxCreditsPlaceholder')}
                             value={maxCredits || ''}
                             onChange={(e) => {
                                 setMaxCredits(e.target.value ? parseInt(e.target.value) : undefined);
@@ -244,19 +246,15 @@ export default function CoursesPage() {
             {/* Delete Confirmation */}
             <ConfirmationDialog
                 isOpen={deleteConfirmation.isOpen}
-                title="Delete Course"
+                title={t('deleteTitle')}
                 message={
                     <>
-                        Are you sure you want to delete the course{' '}
-                        <span className="font-semibold text-red-500">
-                            {deleteConfirmation.course?.title}
-                        </span>
-                        ? This action cannot be undone.
+                        {t('confirmDelete', { name: deleteConfirmation.course?.title ?? '' })}
                     </>
                 }
                 isLoading={isDeleteLoading}
-                confirmText="Delete"
-                cancelText="Cancel"
+                confirmText={tc('delete')}
+                cancelText={tc('cancel')}
                 isDangerous={true}
                 onConfirm={handleConfirmDelete}
                 onCancel={() => setDeleteConfirmation({ isOpen: false, course: null })}

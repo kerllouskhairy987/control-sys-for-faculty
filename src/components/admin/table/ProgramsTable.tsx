@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { getAllPrograms } from '@/server/ProgramsActions';
 import Link from 'next/link';
 import Pagination from '@/components/ui/Pagination';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 interface StudentsTableProps {
     onEdit?: (program: Program) => void;
@@ -19,6 +20,7 @@ interface StudentsTableProps {
 export function ProgramsTable({ onEdit, setIsModalOpen, setIdForDeleteItem, setIsEditing, onDelete }: StudentsTableProps) {
 
     const router = useRouter();
+    const t = useTranslations('Programs');
     const [programsData, setProgramsData] = useState<Program[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -61,7 +63,7 @@ export function ProgramsTable({ onEdit, setIsModalOpen, setIdForDeleteItem, setI
                     {/* Search */}
                     <div>
                         <label className="mb-2 block text-sm font-semibold text-slate-700">
-                            Search
+                            {t('searchLabel')}
                         </label>
 
                         <div className="relative">
@@ -75,7 +77,7 @@ export function ProgramsTable({ onEdit, setIsModalOpen, setIdForDeleteItem, setI
                                 onChange={(e) => setSearch(e.target.value)}
                                 name="search"
                                 type="search"
-                                placeholder="Search by program name..."
+                                placeholder={t('searchPlaceholder')}
                                 className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-11 pr-4 text-sm outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                             />
                         </div>
@@ -87,10 +89,10 @@ export function ProgramsTable({ onEdit, setIsModalOpen, setIdForDeleteItem, setI
                     <table className="w-full">
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Name</th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Department Name</th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Required Credits</th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Actions</th>
+                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">{t('colName')}</th>
+                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">{t('colDepartment')}</th>
+                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">{t('colCredits')}</th>
+                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">{t('colActions')}</th>
                             </tr>
                         </thead>
 
@@ -119,7 +121,7 @@ export function ProgramsTable({ onEdit, setIsModalOpen, setIdForDeleteItem, setI
                             ) : !programsData || programsData.length === 0 ? (
                                 <tr>
                                     <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
-                                        No Programs found.
+                                                                {t('noPrograms')}
                                     </td>
                                 </tr>
                             ) : (

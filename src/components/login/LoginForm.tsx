@@ -38,7 +38,7 @@ const LoginForm = ({ token }: IProps) => {
             // redirect based on its roles
             if (roles === "Student") {
                 router.replace("/")
-            } else if (roles === "Admin") {
+            } else if (roles === "Admin" || roles === "Advisor") {
                 router.replace("/admin")
             } else if (roles === "Teacher") {
                 router.replace("/teacher")

@@ -10,6 +10,7 @@ import { usePathname } from 'next/navigation';
 import { Sidebar } from './sidebar/Sidebar';
 import { Header } from './header/Header';
 import { MainContent } from './MainContent';
+import { useDir, useTranslations } from '@/i18n/IntlProvider';
 
 interface AdminLayoutProps {
     children: React.ReactNode;
@@ -18,21 +19,31 @@ interface AdminLayoutProps {
 export function AdminLayout({ children }: AdminLayoutProps) {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const pathname = usePathname();
+    const dir = useDir();
+    const t = useTranslations('Sidebar');
 
     // Determine page title based on current route
     const pageTitle = useMemo(() => {
-        if (pathname === '/admin' || pathname === '/admin/') return 'Dashboard';
-        if (pathname.includes('/students')) return 'Student Management';
-        if (pathname.includes('/professors')) return 'Professor Management';
+        if (pathname === '/admin' || pathname === '/admin/') return t('Dashboard');
+        if (pathname.includes('/students')) return t('Students');
+        if (pathname.includes('/professors')) return t('Professors');
+        if (pathname.includes('/faculty')) return t('Faculty');
+        if (pathname.includes('/departments')) return t('Departments');
+        if (pathname.includes('/programs')) return t('Programs');
+        if (pathname.includes('/courses')) return t('Courses');
+        if (pathname.includes('/course-offering')) return t('CourseOfferings');
+        if (pathname.includes('/registration-periods')) return t('RegistrationPeriods');
+        if (pathname.includes('/registration')) return t('Registrations');
+        if (pathname.includes('/control-engine')) return t('ControlEngine');
         return 'Admin Dashboard';
-    }, [pathname]);
+    }, [pathname, t]);
 
     const handleMenuClick = () => {
         setSidebarOpen(!sidebarOpen);
     };
 
     return (
-        <div className="flex min-h-screen">
+        <div className="flex min-h-screen" dir={dir}>
             {/* Sidebar */}
             <Sidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
@@ -47,3 +58,4 @@ export function AdminLayout({ children }: AdminLayoutProps) {
         </div>
     );
 }
+

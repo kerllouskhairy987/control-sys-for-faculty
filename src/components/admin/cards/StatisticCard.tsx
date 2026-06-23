@@ -1,9 +1,7 @@
-/**
- * Statistic Card Component
- * Displays a single statistic with icon and change indicator
- */
+'use client';
 
 import { LucideIcon } from 'lucide-react';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 interface StatisticCardProps {
     title: string;
@@ -25,6 +23,8 @@ export function StatisticCard({
     trend,
     description,
 }: StatisticCardProps) {
+    const t = useTranslations('Dashboard');
+
     return (
         <div className="bg-white p-6 rounded-lg shadow hover:shadow-lg transition-shadow">
             {/* Header */}
@@ -51,7 +51,7 @@ export function StatisticCard({
                         {trend.isPositive ? '+' : '-'}
                         {trend.value}%
                     </span>
-                    <span className="text-gray-500">from last month</span>
+                    <span className="text-gray-500">{t('fromLastMonth')}</span>
                 </div>
             )}
         </div>

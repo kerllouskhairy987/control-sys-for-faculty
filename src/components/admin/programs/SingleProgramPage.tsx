@@ -3,6 +3,7 @@
 import { programError, updateCreditsForSingleProgram, updateNameForSingleProgram } from "@/server/ProgramsActions";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from '@/i18n/IntlProvider';
 import toast from "react-hot-toast";
 import Loader from "@/components/ui/Loader";
 import InputMessageError from "@/components/ui/InputMessageError";
@@ -25,6 +26,8 @@ export interface IResult {
 
 export default function SingleProgramPage({ program }: { program: IProps }) {
     const router = useRouter();
+    const tc = useTranslations('Common');
+    const t = useTranslations('Programs');
 
     const [isLoadingName, setIsLoadingName] = useState<boolean>(false)
     const [isEditingName, setIsEditingName] = useState(false);
@@ -48,7 +51,7 @@ export default function SingleProgramPage({ program }: { program: IProps }) {
             if (result.success && result.message && result.error === null) {
                 toast.success(result.message);
             } else {
-                toast.error(result.message || "Internal Server Error!")
+                toast.error(result.message || tc('error'))
             }
 
             setIsLoadingName(false)
@@ -69,7 +72,7 @@ export default function SingleProgramPage({ program }: { program: IProps }) {
             if (result.success && result.message && result.error === null) {
                 toast.success(result.message);
             } else {
-                toast.error(result.message || "Internal Server Error!")
+                toast.error(result.message || tc('error'))
             }
 
             setIsLoadingCredits(false)
@@ -88,7 +91,7 @@ export default function SingleProgramPage({ program }: { program: IProps }) {
 
                 {/* Name */}
                 <div className="mb-4">
-                    <label className="text-sm text-gray-600">Program Name</label>
+                    <label className="text-sm text-gray-600">{t('labelProgramName')}</label>
 
                     {isEditingName ? (
                         <input
@@ -96,6 +99,7 @@ export default function SingleProgramPage({ program }: { program: IProps }) {
                             value={name}
                             autoFocus={isEditingName}
                             onChange={(e) => setName(e.target.value)}
+                            placeholder={t('placeholderProgramName')}
                             className="w-full mt-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00284d]"
                         />
                     ) : (
@@ -109,7 +113,7 @@ export default function SingleProgramPage({ program }: { program: IProps }) {
 
                 {/* Credits */}
                 <div className="mb-6">
-                    <label className="text-sm text-gray-600">Required Credits</label>
+                    <label className="text-sm text-gray-600">{t('labelRequiredCredits')}</label>
 
                     {isEditingCredits ? (
                         <input
@@ -117,6 +121,7 @@ export default function SingleProgramPage({ program }: { program: IProps }) {
                             type="number"
                             value={credits}
                             onChange={(e) => setCredits(Number(e.target.value))}
+                            placeholder={t('placeholderRequiredCredits')}
                             className={`w-full mt-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#00284d] `}
                         />
                     ) : (
@@ -134,7 +139,7 @@ export default function SingleProgramPage({ program }: { program: IProps }) {
                         onClick={() => handleUpdateName({ id: program.id, name })}
                         className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
                     >
-                        {isLoadingName ? <Loader /> : isEditingName ? "Save Name" : "Update Name"}
+                        {isLoadingName ? <Loader /> : isEditingName ? t('btnSaveName') : t('btnUpdateName')}
                     </button>
 
                     <button
@@ -142,7 +147,7 @@ export default function SingleProgramPage({ program }: { program: IProps }) {
                         onClick={() => handleUpdateCredits({ id: program.id, requiredCredits: String(credits) })}
                         className={`flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition`}
                     >
-                        {isLoadingCredits ? <Loader /> : isEditingCredits ? "Save Credits" : "Update Credits"}
+                        {isLoadingCredits ? <Loader /> : isEditingCredits ? t('btnSaveCredits') : t('btnUpdateCredits')}
                     </button>
                 </div>
             </div>

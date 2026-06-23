@@ -348,3 +348,69 @@ export interface RegistrationPeriodFormData {
     term: string;
     year: number;
 }
+
+/**
+ * Registration interface
+ */
+export interface Registration {
+    id: string;
+    studentId: string;
+    studentName: string;
+    courseOfferingId: string;
+    courseTitle: string;
+    courseCode: string;
+    status: string;
+    semester: string;
+    year: number;
+    advisorId?: string;
+    advisorName?: string;
+}
+
+/**
+ * Student Schedule Item
+ */
+export interface RegistrationScheduleItem {
+    courseTitle: string;
+    courseCode: string;
+    instructorName: string;
+    term: string;
+    year: number;
+    status: string;
+}
+
+/**
+ * Available Course for registration
+ */
+export interface AvailableCourse {
+    offeringId: string;
+    courseTitle: string;
+    courseCode: string;
+    instructorName: string;
+    term: string;
+    year: number;
+    capacity: number;
+    enrolled: number;
+    isFull: boolean;
+}
+
+/**
+ * Grade Submission payload item
+ */
+export interface GradeSubmission {
+    registrationId: string;
+    semesterWork: number;
+    finalExam: number;
+}
+
+/**
+ * Registration Grade details
+ */
+export interface RegistrationGrade {
+    studentName: string;
+    courseTitle: string;
+    courseCode: string;
+    semesterWork: number;
+    finalExam: number;
+    totalGrade: number;
+    letterGrade: string;
+}

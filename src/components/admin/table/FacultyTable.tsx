@@ -1,6 +1,5 @@
 /**
- * Students Table Component
- * Renders a static list of students — no fetching, search, filter, or pagination
+ * Faculty Table Component
  */
 
 "use client";
@@ -12,6 +11,7 @@ import { getAllDepartment } from "@/server/DepartmentActions";
 import { Edit2 } from "lucide-react";
 import Link from "next/link";
 import Pagination from "@/components/ui/Pagination";
+import { useTranslations } from "@/i18n/IntlProvider";
 
 interface FacultyTableProps {
     onEdit?: (student: Student) => void;
@@ -24,6 +24,9 @@ export function FacultyTable({
     onDelete,
     setIdForDeleteItem,
 }: FacultyTableProps) {
+    const t = useTranslations("Faculty");
+    const tc = useTranslations("Common");
+
     const [selectedFacultyData, setSelectedFacultyData] = useState<Faculty[]>([]);
     const [departmentsData, setDepartmentData] = useState<Department[]>([]);
 
@@ -60,7 +63,7 @@ export function FacultyTable({
             // for pagination
             setTotalPages(allFacultyMember.totalPages);
             setPage(allFacultyMember.page);
-            setTotalCount(allFacultyMember.totalCount)
+            setTotalCount(allFacultyMember.totalCount);
         } catch (error) {
             console.error(error);
         } finally {
@@ -75,26 +78,28 @@ export function FacultyTable({
     return (
         <>
             {/* Search And Filter */}
-            <div className="flex flex-col mb-3">
-                <label htmlFor="search">Search</label>
+            <div className="flex flex-col mb-3 text-start">
+                <label htmlFor="search" className="mb-1 text-sm font-semibold text-gray-700">{t('searchLabel')}</label>
                 <input
                     type="search"
                     defaultValue={search}
                     onChange={(e) => setSearch(e.target.value)}
                     id="search"
-                    placeholder="Search By Name"
+                    placeholder={t('searchByName')}
                     className="border p-2 rounded-xl grow"
                 />
             </div>
 
             {/* Select Department and Status */}
-            <div>
+            <div className="text-start">
                 {
                     departmentsData
                         ? (
                             <>
-                                <h2 className={`mb-1 ${selectedDepartmentId ? "text-green-500" : "text-amber-700"} font-bold`}>Select Department And Status</h2>
-                                <div className="flex items-center gap-4 bg-gray-200 p-2 rounded-xl">
+                                <h2 className={`mb-1 ${selectedDepartmentId ? "text-green-500" : "text-amber-700"} font-bold`}>
+                                    {t('selectDepartmentAndStatus')}
+                                </h2>
+                                <div className="flex flex-col sm:flex-row items-center gap-4 bg-gray-200 p-2 rounded-xl">
                                     {/* select department */}
                                     <select
                                         className={`w-full border p-2 rounded-xl ${selectedDepartmentId ? "border-green-500" : "border-amber-700"}`}
@@ -102,9 +107,9 @@ export function FacultyTable({
                                         onChange={(e) => selectedSetDepartmentId(e.target.value)}
                                     >
                                         <option value={""} disabled>
-                                            Select a department
+                                            {t('selectDepartment')}
                                         </option>
-                                        <option value="">ALL</option>
+                                        <option value="">{t('optionAll')}</option>
                                         {departmentsData.length > 0 && (
                                             departmentsData.map((department) => (
                                                 <option key={department.id} value={department.id}>
@@ -121,22 +126,20 @@ export function FacultyTable({
                                         onChange={(e) => selectedSetStatus(e.target.value)}
                                     >
                                         <option value={""} disabled>
-                                            Select a status
+                                            {t('selectStatus')}
                                         </option>
-                                        <option value={""}>ALL</option>
-                                        <option value="0">active</option>
-                                        <option value="1">signed</option>
-                                        <option value="2">retired</option>
-                                        <option value="3">dismissed</option>
+                                        <option value={""}>{t('optionAll')}</option>
+                                        <option value="0">{t('statusActive')}</option>
+                                        <option value="1">{t('statusSigned')}</option>
+                                        <option value="2">{t('statusRetired')}</option>
+                                        <option value="3">{t('statusDismissed')}</option>
                                     </select>
                                 </div>
                             </>
                         )
                         : (
-                            <div className="flex items-center justify-between gap-4 rounded-2xl border border-red-300 bg-red-50 px-5 py-4 text-red-700 shadow-sm">
-
+                            <div className="flex items-center justify-between gap-4 rounded-2xl border border-red-300 bg-red-50 px-5 py-4 text-red-700 shadow-sm text-start">
                                 <div className="flex items-center gap-3">
-
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
                                         fill="none"
@@ -151,23 +154,20 @@ export function FacultyTable({
                                             d="M12 9v3.75m0 3.75h.007v.008H12v-.008Zm0-15.75a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"
                                         />
                                     </svg>
-
                                     <div>
                                         <h2 className="font-semibold text-red-800">
-                                            No Department Found
+                                            {t('noDepartmentFound')}
                                         </h2>
-
                                         <p className="text-sm text-red-600">
-                                            You need to create a department first before adding faculty members.
+                                            {t('noDepartmentFoundDesc')}
                                         </p>
                                     </div>
                                 </div>
-
                                 <Link
                                     href="/admin/departments"
                                     className="rounded-xl bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700"
                                 >
-                                    Go to Departments
+                                    {t('goToDepartments')}
                                 </Link>
                             </div>
                         )
@@ -175,26 +175,26 @@ export function FacultyTable({
             </div>
 
             {/* Table */}
-            <div className="bg-white rounded-lg shadow overflow-hidden">
+            <div className="bg-white rounded-lg shadow overflow-hidden mt-4">
                 <div className="overflow-x-auto">
                     <table className="w-full">
                         {/* Head */}
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                    Name
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                    {t('colName')}
                                 </th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                    Degree
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                    {t('colDegree')}
                                 </th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                    Department Name #
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                    {t('colDepartment')}
                                 </th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                    Status
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                    {t('colStatus')}
                                 </th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                                    Actions
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
+                                    {t('colActions')}
                                 </th>
                             </tr>
                         </thead>
@@ -204,27 +204,18 @@ export function FacultyTable({
                             {isLoading ? (
                                 Array.from({ length: 4 }).map((_, index) => (
                                     <tr key={index} className="animate-pulse">
-                                        {/* Full Name */}
                                         <td className="px-6 py-4">
                                             <div className="h-4 w-32 bg-gray-200 rounded"></div>
                                         </td>
-
-                                        {/* Academic Number */}
                                         <td className="px-6 py-4">
                                             <div className="h-4 w-24 bg-gray-200 rounded"></div>
                                         </td>
-
-                                        {/* Program Name */}
                                         <td className="px-6 py-4">
                                             <div className="h-4 w-28 bg-gray-200 rounded"></div>
                                         </td>
-
-                                        {/* CGPA */}
                                         <td className="px-6 py-4">
                                             <div className="h-4 w-16 bg-gray-200 rounded"></div>
                                         </td>
-
-                                        {/* Actions */}
                                         <td className="px-6 py-4">
                                             <div className="flex items-center gap-2">
                                                 <div className="h-8 w-8 bg-gray-200 rounded-lg"></div>
@@ -237,9 +228,9 @@ export function FacultyTable({
                                     <tr>
                                         <td
                                             colSpan={5}
-                                            className="px-6 py-8 text-center text-gray-500"
+                                            className="px-6 py-8 text-center text-gray-500 text-start"
                                         >
-                                            No Faculty Member Found.
+                                            {t('noFaculty')}
                                         </td>
                                     </tr>
                                 ) : (
@@ -248,27 +239,26 @@ export function FacultyTable({
                                             key={faculty.id}
                                             className="hover:bg-gray-50 transition"
                                         >
-                                            <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                                            <td className="px-6 py-4 text-sm font-medium text-gray-900 text-start">
                                                 {faculty.name}
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">
+                                            <td className="px-6 py-4 text-sm text-gray-600 text-start">
                                                 {faculty.degree}
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">
+                                            <td className="px-6 py-4 text-sm text-gray-600 text-start">
                                                 {faculty.departmentName}
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">
-                                                {faculty.status}
+                                            <td className="px-6 py-4 text-sm text-gray-600 text-start">
+                                                {faculty.status === 'active' ? t('statusActive') :
+                                                 faculty.status === 'signed' ? t('statusSigned') :
+                                                 faculty.status === 'retired' ? t('statusRetired') :
+                                                 faculty.status === 'dismissed' ? t('statusDismissed') :
+                                                 faculty.status}
                                             </td>
-                                            <td className="px-6 py-4 text-sm">
+                                            <td className="px-6 py-4 text-sm text-start">
                                                 <div className="flex items-center gap-2">
                                                     <Link
                                                         href={`/admin/faculty/${faculty.id}`}
-                                                        // onClick={() => {
-                                                        //     setIsEditing(true);
-                                                        //     setIsModalOpen(true);
-                                                        //     onEdit?.(program)
-                                                        // }}
                                                         className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
                                                     >
                                                         <Edit2 size={16} />
@@ -280,9 +270,8 @@ export function FacultyTable({
                                 )
                             ) : (
                                 <tr>
-                                    <td colSpan={5} className="p-4">
+                                    <td colSpan={5} className="p-4 text-start">
                                         <div className="flex items-center gap-3 rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3 text-amber-700 shadow-sm">
-
                                             <svg
                                                 xmlns="http://www.w3.org/2000/svg"
                                                 fill="none"
@@ -297,14 +286,12 @@ export function FacultyTable({
                                                     d="M12 9v3.75m0 3.75h.007v.008H12v-.008ZM10.34 3.94 1.82 18a1.875 1.875 0 0 0 1.605 2.813h17.15A1.875 1.875 0 0 0 22.18 18L13.66 3.94a1.875 1.875 0 0 0-3.32 0Z"
                                                 />
                                             </svg>
-
                                             <div>
                                                 <h2 className="font-semibold">
-                                                    Department Required
+                                                    {t('departmentRequired')}
                                                 </h2>
-
                                                 <p className="text-sm text-amber-600">
-                                                    Please choose a department first from the list above.
+                                                    {t('departmentRequiredDesc')}
                                                 </p>
                                             </div>
                                         </div>

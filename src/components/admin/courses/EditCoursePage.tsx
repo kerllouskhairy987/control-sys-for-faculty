@@ -17,13 +17,17 @@ import { getAllDepartment } from '@/server/DepartmentActions';
 import { Course, CoursePrerequisite, Department } from '@/types';
 import { UpdateCourseSchema } from '@/validation/course';
 import { ConfirmationDialog } from '@/components/admin/modals/ConfirmationDialog';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 interface EditCoursePageProps {
     courseId: string;
 }
 
 export default function EditCoursePage({ courseId }: EditCoursePageProps) {
+    const t = useTranslations('Courses');
+    const tc = useTranslations('Common');
     const router = useRouter();
+
     const [course, setCourse] = useState<Course | null>(null);
     const [departments, setDepartments] = useState<Department[]>([]);
     const [prerequisites, setPrerequisites] = useState<CoursePrerequisite[]>([]);
@@ -51,6 +55,45 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
 
     const [errors, setErrors] = useState<Record<string, string>>({});
 
+    const getLocalizedError = (errMessage: string) => {
+        switch (errMessage) {
+            case 'Department is required':
+                return t('errorDepartmentRequired');
+            case 'Code must be 3 letters followed by 3 digits (e.g. CSC123 or CSC 123)':
+                return t('errorCodeFormat');
+            case 'Title must be at least 2 characters long':
+                return t('errorTitleMin');
+            case 'Title must be at most 100 characters long':
+                return t('errorTitleMax');
+            case 'Description must be at least 5 characters long':
+                return t('errorDescMin');
+            case 'Description must be at most 500 characters long':
+                return t('errorDescMax');
+            case 'Credits must be an integer':
+                return t('errorCreditsInteger');
+            case 'Credits must be at least 1':
+                return t('errorCreditsMin');
+            case 'Credits must be at most 100':
+                return t('errorCreditsMax');
+            case 'Lecture hours must be an integer':
+                return t('errorLectureHoursInteger');
+            case 'Lecture hours cannot be negative':
+                return t('errorLectureHoursMin');
+            case 'Lecture hours must be at most 100':
+                return t('errorLectureHoursMax');
+            case 'Lab hours must be an integer':
+                return t('errorLabHoursInteger');
+            case 'Lab hours cannot be negative':
+                return t('errorLabHoursMin');
+            case 'Lab hours must be at most 100':
+                return t('errorLabHoursMax');
+            case 'Prerequisite course is required':
+                return t('errorPrerequisiteRequired');
+            default:
+                return errMessage;
+        }
+    };
+
     // Fetch initial data
     useEffect(() => {
         fetchData();
@@ -66,7 +109,7 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                 }
             } catch (error) {
                 console.error(error);
-                toast.error('Failed to fetch course prerequisites');
+                toast.error(t('errorFetchPrereqs'));
             }
         };
         fetchPrerequisites();
@@ -107,7 +150,7 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
             }
         } catch (error) {
             console.error(error);
-            toast.error('Failed to fetch course details');
+            toast.error(t('errorFetchDetails'));
         } finally {
             setIsLoadingCourse(false);
         }
@@ -153,11 +196,11 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
             if (res.success) {
                 toast.success(res.message);
             } else {
-                toast.error(res.message || 'Failed to update course');
+                toast.error(res.message || t('errorUpdateCourse'));
             }
         } catch (error) {
             console.error(error);
-            toast.error('An error occurred');
+            toast.error(tc('error'));
         } finally {
             setIsSaving(false);
         }
@@ -165,7 +208,7 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
 
     const handleAddPrerequisite = async () => {
         if (!selectedPrereqCourse) {
-            toast.error('Please select a prerequisite course');
+            toast.error(t('errorSelectPrereq'));
             return;
         }
 
@@ -184,11 +227,11 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                     setPrerequisites(prereqsData);
                 }
             } else {
-                toast.error(res.message || 'Failed to add prerequisite');
+                toast.error(res.message || t('errorAddPrereq'));
             }
         } catch (error) {
             console.error(error);
-            toast.error('An error occurred');
+            toast.error(tc('error'));
         } finally {
             setIsAddingPrereq(false);
         }
@@ -211,11 +254,11 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                     setPrerequisites(prereqsData);
                 }
             } else {
-                toast.error(res.message || 'Failed to delete prerequisite');
+                toast.error(res.message || t('errorDeletePrereq'));
             }
         } catch (error) {
             console.error(error);
-            toast.error('An error occurred');
+            toast.error(tc('error'));
         } finally {
             setIsDeletingPrereq(false);
             setDeleteConfirmation({ isOpen: false, prereqId: null });
@@ -233,12 +276,12 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
     if (!course) {
         return (
             <div className="text-center py-12">
-                <p className="text-gray-600 mb-4">Course not found</p>
+                <p className="text-gray-600 mb-4">{t('courseNotFound')}</p>
                 <button
                     onClick={() => router.push('/admin/courses')}
                     className="px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition"
                 >
-                    Back to Courses
+                    {t('backToCourses')}
                 </button>
             </div>
         );
@@ -255,21 +298,21 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                     <ArrowLeft size={20} />
                 </button>
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-900">Edit Course</h2>
+                    <h2 className="text-3xl font-bold text-gray-900">{t('editTitle')}</h2>
                     <p className="text-gray-600">{course.code} - {course.title}</p>
                 </div>
             </div>
 
             {/* Form Section */}
             <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Course Details</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('courseDetails')}</h3>
 
                 <form onSubmit={handleSaveChanges} className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Department */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Department *
+                                {t('departmentLabel')}
                             </label>
                             <select
                                 value={departmentId}
@@ -284,14 +327,14 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                                 ))}
                             </select>
                             {errors.departmentId && (
-                                <p className="text-red-500 text-sm mt-1">{errors.departmentId}</p>
+                                <p className="text-red-500 text-sm mt-1">{getLocalizedError(errors.departmentId)}</p>
                             )}
                         </div>
 
                         {/* Credits */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Credits *
+                                {t('creditsLabel')}
                             </label>
                             <input
                                 type="number"
@@ -303,7 +346,7 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed"
                             />
                             {errors.credits && (
-                                <p className="text-red-500 text-sm mt-1">{errors.credits}</p>
+                                <p className="text-red-500 text-sm mt-1">{getLocalizedError(errors.credits)}</p>
                             )}
                         </div>
                     </div>
@@ -311,7 +354,7 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                     {/* Title */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Title *
+                            {t('titleLabel')}
                         </label>
                         <input
                             type="text"
@@ -321,14 +364,14 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed"
                         />
                         {errors.title && (
-                            <p className="text-red-500 text-sm mt-1">{errors.title}</p>
+                            <p className="text-red-500 text-sm mt-1">{getLocalizedError(errors.title)}</p>
                         )}
                     </div>
 
                     {/* Description */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Description *
+                            {t('descriptionLabel')}
                         </label>
                         <textarea
                             value={description}
@@ -338,7 +381,7 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                             className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed resize-none"
                         />
                         {errors.description && (
-                            <p className="text-red-500 text-sm mt-1">{errors.description}</p>
+                            <p className="text-red-500 text-sm mt-1">{getLocalizedError(errors.description)}</p>
                         )}
                     </div>
 
@@ -346,7 +389,7 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                         {/* Lecture Hours */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Lecture Hours *
+                                {t('lectureHoursLabel')}
                             </label>
                             <input
                                 type="number"
@@ -358,14 +401,14 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed"
                             />
                             {errors.lectureHours && (
-                                <p className="text-red-500 text-sm mt-1">{errors.lectureHours}</p>
+                                <p className="text-red-500 text-sm mt-1">{getLocalizedError(errors.lectureHours)}</p>
                             )}
                         </div>
 
                         {/* Lab Hours */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Lab Hours *
+                                {t('labHoursLabel')}
                             </label>
                             <input
                                 type="number"
@@ -377,7 +420,7 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed"
                             />
                             {errors.labHours && (
-                                <p className="text-red-500 text-sm mt-1">{errors.labHours}</p>
+                                <p className="text-red-500 text-sm mt-1">{getLocalizedError(errors.labHours)}</p>
                             )}
                         </div>
                     </div>
@@ -390,7 +433,7 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                             disabled={isSaving}
                             className="flex-1 px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
                         >
-                            Cancel
+                            {tc('cancel')}
                         </button>
                         <button
                             type="submit"
@@ -398,7 +441,7 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                             className="flex-1 px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
                         >
                             {isSaving && <Loader />}
-                            Save Changes
+                            {tc('save')}
                         </button>
                     </div>
                 </form>
@@ -406,7 +449,7 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
 
             {/* Prerequisites Section */}
             <div className="bg-white rounded-lg shadow p-6">
-                <h3 className="text-lg font-semibold text-gray-900 mb-6">Prerequisites</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-6">{t('prerequisites')}</h3>
 
                 {/* Add Prerequisite */}
                 <div className="mb-6 pb-6 border-b border-gray-200">
@@ -417,7 +460,7 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                             disabled={isAddingPrereq}
                             className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed"
                         >
-                            <option value="">Select a prerequisite course</option>
+                            <option value="">{t('selectPrereqPlaceholder')}</option>
                             {availableCourses
                                 .filter((c) => c.id !== courseId)
                                 .map((c) => (
@@ -432,7 +475,7 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                             className="px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center gap-2"
                         >
                             <Plus size={18} />
-                            Add
+                            {tc('add')}
                         </button>
                     </div>
                 </div>
@@ -466,18 +509,18 @@ export default function EditCoursePage({ courseId }: EditCoursePageProps) {
                         ))}
                     </div>
                 ) : (
-                    <p className="text-center py-8 text-gray-500">No prerequisites added yet</p>
+                    <p className="text-center py-8 text-gray-500">{t('noPrerequisites')}</p>
                 )}
             </div>
 
             {/* Delete Prerequisite Confirmation */}
             <ConfirmationDialog
                 isOpen={deleteConfirmation.isOpen}
-                title="Remove Prerequisite"
-                message="Are you sure you want to remove this prerequisite? This action cannot be undone."
+                title={t('removePrereqTitle')}
+                message={t('removePrereqMessage')}
                 isLoading={isDeletingPrereq}
-                confirmText="Remove"
-                cancelText="Cancel"
+                confirmText={tc('delete')}
+                cancelText={tc('cancel')}
                 isDangerous={true}
                 onConfirm={handleDeletePrerequisite}
                 onCancel={() => setDeleteConfirmation({ isOpen: false, prereqId: null })}

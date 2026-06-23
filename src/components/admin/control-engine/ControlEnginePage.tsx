@@ -25,8 +25,12 @@ import { AcademicStructureChart } from '@/components/admin/charts/AcademicStruct
 import { AcademicOverviewCards } from '@/components/admin/charts/AcademicOverviewCards';
 import { ViewFilterDropdown } from './ViewFilterDropdown';
 import { ControlEngineTable } from '../table/ControlEngineTable';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 export default function ControlEnginePage() {
+    const t = useTranslations('ControlEngine');
+    const tc = useTranslations('Common');
+
     // State Management
     const [selectedView, setSelectedView] = useState<'warnings' | 'graduates'>('warnings');
     const [statistics, setStatistics] = useState<ControlStatistics | null>(null);
@@ -60,8 +64,8 @@ export default function ControlEnginePage() {
                 setPageError(null);
             } catch (error) {
                 console.error('Error fetching initial data:', error);
-                setPageError('Failed to load data');
-                toast.error('Failed to load statistics and warnings');
+                setPageError(t('errorFailedToLoadData'));
+                toast.error(t('errorFailedToLoadStatsAndWarnings'));
             } finally {
                 setIsLoadingStatistics(false);
                 setIsLoadingTable(false);
@@ -69,7 +73,7 @@ export default function ControlEnginePage() {
         };
 
         fetchInitialData();
-    }, []);
+    }, [t]);
 
     /**
      * Fetch charts data (for skeleton loading purposes)
@@ -97,8 +101,8 @@ export default function ControlEnginePage() {
                 setPageError(null);
             } catch (error) {
                 console.error('Error fetching graduates:', error);
-                setPageError('Failed to load graduates data');
-                toast.error('Failed to load graduates data');
+                setPageError(t('errorFailedToLoadGraduates'));
+                toast.error(t('errorFailedToLoadGraduates'));
             } finally {
                 setIsLoadingTable(false);
             }
@@ -128,7 +132,7 @@ export default function ControlEnginePage() {
             setPageError(null);
         } catch (error) {
             console.error('Error refreshing data:', error);
-            setPageError('Failed to refresh data');
+            setPageError(t('errorRefreshFailed'));
         }
     };
 
@@ -136,10 +140,10 @@ export default function ControlEnginePage() {
         <div className="space-y-6">
             {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h2 className="text-3xl font-bold text-gray-900">Control Engine</h2>
+                <div className="text-start">
+                    <h2 className="text-3xl font-bold text-gray-900">{t('title')}</h2>
                     <p className="mt-1 text-gray-600">
-                        Monitor student status, graduation eligibility, and system analytics
+                        {t('subtitle')}
                     </p>
                 </div>
                 <button
@@ -147,20 +151,20 @@ export default function ControlEnginePage() {
                     className="px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition font-medium flex items-center gap-2 w-fit"
                 >
                     <Play size={18} />
-                    Run Control Engine
+                    {t('btnRunControlEngine')}
                 </button>
             </div>
 
             {/* Error State */}
             {pageError && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-start">
                     {pageError}
                 </div>
             )}
 
             {/* Statistics Section */}
             <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">System Statistics</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4 text-start">{t('systemStatistics')}</h3>
                 <StatisticsSection
                     statistics={statistics}
                     isLoading={isLoadingStatistics}
@@ -169,7 +173,7 @@ export default function ControlEnginePage() {
 
             {/* Charts Section */}
             <div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-4">Analytics Overview</h3>
+                <h3 className="text-xl font-semibold text-gray-900 mb-4 text-start">{t('analyticsOverview')}</h3>
                 <div className="space-y-6">
                     {/* Student Status & Academic Structure */}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -186,8 +190,8 @@ export default function ControlEnginePage() {
                     {/* Academic Overview */}
                     <div>
                         <div className="bg-white p-6 rounded-lg shadow">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-6">
-                                Academic Overview
+                            <h3 className="text-lg font-semibold text-gray-900 mb-6 text-start">
+                                {t('academicOverviewTitle')}
                             </h3>
                             <AcademicOverviewCards
                                 statistics={statistics}

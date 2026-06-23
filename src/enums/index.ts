@@ -29,3 +29,13 @@ export enum StudentsStatus {
     Dismissed = "Dismissed",
     Graduated = "Graduated"
 }
+
+/**
+ * @desc    roles enums
+*/
+export enum Roles {
+    Admin = "Admin",
+    Student = "Student",
+    Teacher = "Teacher",
+    Advisor = "Advisor"
+}

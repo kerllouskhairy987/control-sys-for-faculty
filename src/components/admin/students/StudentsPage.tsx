@@ -10,13 +10,15 @@ import { StudentsTable } from '@/components/admin/table/StudentsTable';
 import { StudentModal } from '@/components/admin/modals/StudentModal';
 import { ConfirmationDialog } from '@/components/admin/modals/ConfirmationDialog';
 import { Student } from '@/types';
-// import { students } from '@/data/students';
 import toast from 'react-hot-toast';
 import { dismissStudent } from '@/server/StudentsAction';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 export default function StudentsPage() {
     const router = useRouter()
+    const t = useTranslations('Students')
+    const tc = useTranslations('Common')
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
@@ -73,14 +75,14 @@ export default function StudentsPage() {
             {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <h2 className="text-3xl font-bold text-gray-900">Student Management</h2>
-                    <p className="mt-1 text-gray-600">Manage and view all students in the system</p>
+                    <h2 className="text-3xl font-bold text-gray-900">{t('title')}</h2>
+                    <p className="mt-1 text-gray-600">{t('subtitle')}</p>
                 </div>
                 <button
                     onClick={handleAddNew}
                     className="px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition font-medium"
                 >
-                    + Add New Student
+                    + {t('addBtn')}
                 </button>
             </div>
 
@@ -104,19 +106,15 @@ export default function StudentsPage() {
             {/* Delete Confirmation Dialog */}
             <ConfirmationDialog
                 isOpen={deleteConfirmation.isOpen}
-                title="Delete Student"
+                title={t('deleteTitle')}
                 message={
                     <>
-                        Are you sure you want to dismiss{" "}
-                        <span className="font-semibold text-red-500">
-                            {deleteConfirmation.student?.fullName}?
-                        </span>{" "}
-                        This action cannot be undone.
+                        {t('confirmDelete', { name: deleteConfirmation.student?.fullName ?? '' })}
                     </>
                 }
                 isLoading={isLoading}
-                confirmText="Dismiss"
-                cancelText="Cancel"
+                confirmText={tc('delete')}
+                cancelText={tc('cancel')}
                 isDangerous={true}
                 onConfirm={handleConfirmDelete}
                 onCancel={() => setDeleteConfirmation({ isOpen: false, student: null })}

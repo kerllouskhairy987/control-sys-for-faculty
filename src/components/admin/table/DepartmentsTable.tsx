@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { getAllDepartment } from '@/server/DepartmentActions';
 import { useRouter } from 'next/navigation';
 import Pagination from '@/components/ui/Pagination';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 interface StudentsTableProps {
     onEdit?: (department: Department) => void;
@@ -16,6 +17,8 @@ interface StudentsTableProps {
 }
 
 export function DepartmentsTable({ onEdit, setIsModalOpen, setIdForDeleteItem, setIsEditing, onDelete }: StudentsTableProps) {
+    const t = useTranslations('Departments');
+    const tc = useTranslations('Common');
 
     const router = useRouter();
     const [departmentsData, setDepartmentData] = useState<Department[]>([]);
@@ -59,7 +62,7 @@ export function DepartmentsTable({ onEdit, setIsModalOpen, setIdForDeleteItem, s
                     {/* Search */}
                     <div>
                         <label className="mb-2 block text-sm font-semibold text-slate-700">
-                            Search
+                            {tc('search')}
                         </label>
 
                         <div className="relative">
@@ -73,7 +76,7 @@ export function DepartmentsTable({ onEdit, setIsModalOpen, setIdForDeleteItem, s
                                 onChange={(e) => setSearch(e.target.value)}
                                 name="search"
                                 type="search"
-                                placeholder="Search by department name..."
+                                placeholder={t('searchPlaceholder')}
                                 className="h-12 w-full rounded-xl border border-slate-300 bg-white pl-11 pr-4 text-sm outline-none transition-all focus:border-blue-500 focus:ring-4 focus:ring-blue-100"
                             />
                         </div>
@@ -85,10 +88,10 @@ export function DepartmentsTable({ onEdit, setIsModalOpen, setIdForDeleteItem, s
                     <table className="w-full">
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Name</th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Description</th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Programs</th>
-                                <th className="px-6 py-3 text-left text-sm font-semibold text-gray-900">Actions</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('colName')}</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('colDescription')}</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('colPrograms')}</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('colActions')}</th>
                             </tr>
                         </thead>
 
@@ -117,7 +120,7 @@ export function DepartmentsTable({ onEdit, setIsModalOpen, setIdForDeleteItem, s
                             ) : !departmentsData || departmentsData.length === 0 ? (
                                 <tr>
                                     <td colSpan={4} className="px-6 py-8 text-center text-gray-500">
-                                        No departments found.
+                                        {t('noDepartments')}
                                     </td>
                                 </tr>
                             ) : (

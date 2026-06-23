@@ -1,6 +1,5 @@
 /**
- * Students Management Page
- * Uses static data — no server actions, no loading states
+ * Programs Management Page
  */
 
 'use client';
@@ -13,9 +12,12 @@ import { ProgramsTable } from '../table/ProgramsTable';
 import { ProgramsModal } from '../modals/ProrgramsModal';
 import { deleteProgram } from '@/server/ProgramsActions';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from '@/i18n/IntlProvider';
 
 export default function ProgramsPage() {
-    const router = useRouter()
+    const router = useRouter();
+    const tc = useTranslations('Common');
+    const t = useTranslations('Programs');
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedProgram, setSelectedProgram] = useState<Program | null>(null);
@@ -51,18 +53,16 @@ export default function ProgramsPage() {
                 toast.success(res.message);
                 window.location.reload();
             } else {
-                toast.error(res.message || "INTERNAL Server Error!");
+                toast.error(res.message || tc('error'));
             }
         } catch {
-            toast.error("Delete failed");
+            toast.error(tc('deleteFailed'));
         } finally {
             setIsLoading(false);
             setDeleteConfirmation({ isOpen: false, program: null });
         }
         router.refresh();
     };
-
-
 
     const handleCloseModal = () => {
         setIsModalOpen(false);
@@ -73,21 +73,20 @@ export default function ProgramsPage() {
         <div className="space-y-6">
             {/* Page Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                <div>
-                    <h2 className="text-3xl font-bold text-gray-900">Programs Management</h2>
-                    <p className="mt-1 text-gray-600">Manage and view all Programs in the system</p>
+                <div className="text-start">
+                    <h2 className="text-3xl font-bold text-gray-900">{t('title')}</h2>
+                    <p className="mt-1 text-gray-600">{t('subtitle')}</p>
                 </div>
                 <button
                     onClick={handleAddNew}
                     className="px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition font-medium"
                 >
-                    + Add New Programs
+                    + {t('addBtn')}
                 </button>
             </div>
 
-            {/* Departments Table */}
+            {/* Programs Table */}
             <ProgramsTable
-                // students={students}
                 onEdit={handleEdit}
                 setIdForDeleteItem={setIdForDeleteItem}
                 onDelete={handleDelete}
@@ -95,7 +94,7 @@ export default function ProgramsPage() {
                 setIsEditing={setIsEditing}
             />
 
-            {/* Department Modal */}
+            {/* Program Modal */}
             {
                 isModalOpen && (
                     <ProgramsModal
@@ -111,19 +110,15 @@ export default function ProgramsPage() {
             {/* Delete Confirmation Dialog */}
             <ConfirmationDialog
                 isOpen={deleteConfirmation.isOpen}
-                title="Delete Program"
+                title={t('deleteTitle')}
                 message={
                     <>
-                        Are you sure you want to delete{" "}
-                        <span className="font-semibold text-red-500">
-                            {deleteConfirmation.program?.name}?
-                        </span>{" "}
-                        This action cannot be undone.
+                        {t('confirmDelete', { name: deleteConfirmation.program?.name ?? '' })}
                     </>
                 }
                 isLoading={isLoading}
-                confirmText="Delete"
-                cancelText="Cancel"
+                confirmText={tc('delete')}
+                cancelText={tc('cancel')}
                 isDangerous={true}
                 onConfirm={handleConfirmDelete}
                 onCancel={() => setDeleteConfirmation({ isOpen: false, program: null })}
