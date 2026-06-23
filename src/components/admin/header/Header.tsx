@@ -7,24 +7,23 @@
 
 import { useState } from 'react';
 import { LogOut, User, Globe } from 'lucide-react';
-import { useRouter } from 'next/navigation';
 import { useLocale, useTranslations } from '@/i18n/IntlProvider';
+import { handleLogout } from '@/utils/handleLogout';
+import { useRouter } from 'next/navigation';
+import { JwtPayload } from '@/types';
 
 interface HeaderProps {
     title?: string;
     onMenuClick?: () => void;
+    decoded: JwtPayload | null;
 }
 
-export function Header({ title = 'Dashboard' }: HeaderProps) {
+export function Header({ title = 'Dashboard', decoded }: HeaderProps) {
     const [isProfileDropdownOpen, setIsProfileDropdownOpen] = useState(false);
-    const router = useRouter();
     const locale = useLocale();
+    const router = useRouter();
     const t = useTranslations('Header');
 
-    const handleLogout = () => {
-        localStorage.removeItem('auth_token');
-        router.push('/login');
-    };
 
     const handleLocaleChange = (newLocale: string) => {
         document.cookie = `NEXT_LOCALE=${newLocale}; path=/; max-age=31536000; SameSite=Lax`;
@@ -73,11 +72,11 @@ export function Header({ title = 'Dashboard' }: HeaderProps) {
                             <div className="absolute end-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                                 <div className="p-3 border-b border-gray-200">
                                     <p className="text-sm font-semibold text-gray-800">{t('administrator')}</p>
-                                    <p className="text-xs text-gray-500">admin@university.edu</p>
+                                    <p className="text-xs text-gray-500">{decoded?.email}</p>
                                 </div>
 
                                 <button
-                                    onClick={handleLogout}
+                                    onClick={() => handleLogout(router)}
                                     className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition"
                                 >
                                     <LogOut size={16} />

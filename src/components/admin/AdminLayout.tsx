@@ -11,12 +11,14 @@ import { Sidebar } from './sidebar/Sidebar';
 import { Header } from './header/Header';
 import { MainContent } from './MainContent';
 import { useDir, useTranslations } from '@/i18n/IntlProvider';
+import { JwtPayload } from '@/types';
 
 interface AdminLayoutProps {
     children: React.ReactNode;
+    decoded: JwtPayload | null;
 }
 
-export function AdminLayout({ children }: AdminLayoutProps) {
+export function AdminLayout({ children, decoded }: AdminLayoutProps) {
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const pathname = usePathname();
     const dir = useDir();
@@ -50,7 +52,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
             {/* Main Content Area */}
             <div className={`flex grow flex-col overflow-x-auto ${sidebarOpen ? 'ms-20 lg:ms-0' : ''}`}>
                 {/* Header */}
-                <Header title={pageTitle} onMenuClick={handleMenuClick} />
+                <Header decoded={decoded} title={pageTitle} onMenuClick={handleMenuClick} />
 
                 {/* Page Content */}
                 <MainContent>{children}</MainContent>

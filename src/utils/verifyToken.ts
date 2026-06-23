@@ -9,6 +9,7 @@ import { jwtDecode } from "jwt-decode";
 export function verifyToken(token: string): JwtPayload | null {
     try {
         const decoded = jwtDecode(token) as JwtPayload;
+        console.log("decoded",decoded)
         return decoded;
     } catch (error) {
         console.log(error)

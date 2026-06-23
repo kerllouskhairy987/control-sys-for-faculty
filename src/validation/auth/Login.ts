@@ -6,6 +6,6 @@ import * as z from "zod";
  * @returns   A Zod schema object for validating login form data
 */
 export const LoginSchema = z.object({
-    email: z.string().email({ message: "Invalid email address" }),
-    password: z.string().min(1, { message: "Password is required" })
+    email: z.string().email({ message: "LOGIN_INVALID_EMAIL" }),
+    password: z.string().min(1, { message: "LOGIN_PASSWORD_REQUIRED" })
 });

@@ -21,6 +21,26 @@
     "logout": "تسجيل الخروج",
     "language": "اللغة"
   },
+  "Login": {
+    "title": "مرحبًا بعودتك",
+    "emailLabel": "البريد الإلكتروني",
+    "emailPlaceholder": "البريد الإلكتروني",
+    "passwordLabel": "كلمة المرور",
+    "passwordPlaceholder": "كلمة المرور",
+    "forgotPassword": "هل نسيت كلمة المرور؟",
+    "signIn": "تسجيل الدخول",
+    "loading": "جارٍ التحميل...",
+    "language": "اللغة",
+    "languageEnglish": "الإنجليزية",
+    "languageArabic": "العربية",
+    "showPassword": "إظهار كلمة المرور",
+    "hidePassword": "إخفاء كلمة المرور",
+    "toastSuccess": "تم تسجيل الدخول بنجاح",
+    "toastFailed": "فشل تسجيل الدخول",
+    "toastInvalidCredentials": "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    "errorInvalidEmail": "البريد الإلكتروني غير صالح",
+    "errorPasswordRequired": "كلمة المرور مطلوبة"
+  },
   "Common": {
     "actions": "الإجراءات",
     "save": "حفظ",

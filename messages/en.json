@@ -21,6 +21,26 @@
     "logout": "Logout",
     "language": "Language"
   },
+  "Login": {
+    "title": "Welcome Back",
+    "emailLabel": "Email",
+    "emailPlaceholder": "Email",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Password",
+    "forgotPassword": "Forgot Password?",
+    "signIn": "Sign In",
+    "loading": "Loading...",
+    "language": "Language",
+    "languageEnglish": "English",
+    "languageArabic": "Arabic",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "toastSuccess": "Login successful",
+    "toastFailed": "Login failed",
+    "toastInvalidCredentials": "Invalid email or password",
+    "errorInvalidEmail": "Invalid email address",
+    "errorPasswordRequired": "Password is required"
+  },
   "Common": {
     "actions": "Actions",
     "save": "Save",
