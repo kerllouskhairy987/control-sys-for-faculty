@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/utils/verifyToken';
 
 const LOGIN_PATH = '/login';
+const PUBLIC_PATHS = [LOGIN_PATH, '/forgot-password', '/reset-password'];
 const STUDENT_HOME = '/student/dashboard';
 const ADMIN_HOME = '/admin';
 
@@ -19,9 +20,10 @@ function clearAuthCookies(response: NextResponse) {
 export function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
     const token = request.cookies.get('jwt')?.value;
+    const isPublicPath = PUBLIC_PATHS.includes(pathname);
 
     if (!token) {
-        if (pathname === LOGIN_PATH) {
+        if (isPublicPath) {
             return NextResponse.next();
         }
 
@@ -39,7 +41,7 @@ export function middleware(request: NextRequest) {
 
     const isStudent = decodedToken.roles === 'Student';
 
-    if (pathname === LOGIN_PATH) {
+    if (isPublicPath) {
         return redirectTo(isStudent ? STUDENT_HOME : ADMIN_HOME, request);
     }
 
