@@ -3,13 +3,16 @@
 import { useCallback, useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { getAllAdvisors } from '@/server/FacultyAction';
+import { getAllAdvisors, getAllFacultyMember } from '@/server/FacultyAction';
 import { getAllDepartment } from '@/server/DepartmentActions';
 import { Advisor, Department } from '@/types';
 import Pagination from '@/components/ui/Pagination';
 import { ProfessorsTable } from '@/components/admin/table/ProfessorsTable';
 import { FacultyModal } from '@/components/admin/modals/FacultyModal';
 import { useTranslations } from '@/i18n/IntlProvider';
+import { Roles } from '@/enums';
+
+type ProfessorSource = 'facultyMembers' | 'advisors';
 
 export default function ProfessorsPage() {
     const t = useTranslations('Professors');
@@ -24,6 +27,7 @@ export default function ProfessorsPage() {
     const [departments, setDepartments] = useState<Department[]>([]);
     const [selectedDepartmentId, setSelectedDepartmentId] = useState('');
     const [searchQuery, setSearchQuery] = useState('');
+    const [selectedSource, setSelectedSource] = useState<ProfessorSource>('facultyMembers');
 
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,7 +36,11 @@ export default function ProfessorsPage() {
     const fetchData = useCallback(async () => {
         try {
             setIsLoading(true);
-            const data = await getAllAdvisors({
+            const getProfessors = selectedSource === 'advisors'
+                ? getAllAdvisors
+                : getAllFacultyMember;
+
+            const data = await getProfessors({
                 search: searchQuery || undefined,
                 departmentId: selectedDepartmentId || undefined,
                 page,
@@ -40,7 +48,14 @@ export default function ProfessorsPage() {
             });
 
             if (data && Array.isArray(data.items)) {
-                setProfessorsData(data.items);
+                const items = selectedSource === 'advisors'
+                    ? data.items.map((professor: Advisor) => ({
+                        ...professor,
+                        roles: professor.roles || [Roles.Advisor],
+                    }))
+                    : data.items;
+
+                setProfessorsData(items);
                 setTotalPages(data.totalPages || 1);
                 setTotalCount(data.totalCount || 0);
             } else {
@@ -54,7 +69,7 @@ export default function ProfessorsPage() {
         } finally {
             setIsLoading(false);
         }
-    }, [searchQuery, selectedDepartmentId, page, pageSize]);
+    }, [searchQuery, selectedDepartmentId, selectedSource, page, pageSize]);
 
     useEffect(() => {
         fetchData();
@@ -94,7 +109,24 @@ export default function ProfessorsPage() {
             {/* Filters */}
             <div className="bg-white rounded-lg shadow p-6 space-y-4">
                 <h3 className="font-semibold text-gray-900">{tc('filters')}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            {t('labelView')}
+                        </label>
+                        <select
+                            value={selectedSource}
+                            onChange={(e) => {
+                                setSelectedSource(e.target.value as ProfessorSource);
+                                setPage(1);
+                            }}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition text-black bg-white"
+                        >
+                            <option value="facultyMembers">{t('allFacultyMembers')}</option>
+                            <option value="advisors">{t('allAdvisors')}</option>
+                        </select>
+                    </div>
+
                     {/* Search query */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">

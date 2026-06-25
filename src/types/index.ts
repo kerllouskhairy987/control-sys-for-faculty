@@ -62,7 +62,10 @@ export interface Advisor {
     name: string,
     degree: string,
     departmentName: string,
-    email: string
+    email: string,
+    isAdvisor?: boolean,
+    role?: string,
+    roles?: string | string[],
 }
 
 /**

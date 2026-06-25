@@ -1,9 +1,10 @@
 'use client';
 
-import { Edit2 } from 'lucide-react';
+import { BookOpen, Edit2, Users } from 'lucide-react';
 import { Advisor } from '@/types';
 import Link from 'next/link';
 import { useTranslations } from '@/i18n/IntlProvider';
+import { hasAdvisorRole } from '@/components/admin/professors/utils';
 
 interface ProfessorsTableProps {
     data: Advisor[] | null;
@@ -70,32 +71,53 @@ export function ProfessorsTable({
                                 </td>
                             </tr>
                         ) : (
-                            data.map((advisor) => (
-                                <tr key={advisor.id} className="hover:bg-gray-50 transition">
-                                    <td className="px-6 py-4 text-sm font-medium text-gray-900">
-                                        {advisor.name}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
-                                        {advisor.email || tc('na')}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
-                                        {advisor.degree || tc('na')}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm text-gray-600">
-                                        {advisor.departmentName || tc('na')}
-                                    </td>
-                                    <td className="px-6 py-4 text-sm">
-                                        <div className="flex items-center gap-2">
-                                            <Link
-                                                href={`/admin/faculty/${advisor.id}`}
-                                                className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                                            >
-                                                <Edit2 size={16} />
-                                            </Link>
-                                        </div>
-                                    </td>
-                                </tr>
-                            ))
+                            data.map((advisor) => {
+                                const canViewStudents = hasAdvisorRole(advisor);
+
+                                return (
+                                    <tr key={advisor.id} className="hover:bg-gray-50 transition">
+                                        <td className="px-6 py-4 text-sm font-medium text-gray-900">
+                                            {advisor.name}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-600">
+                                            {advisor.email || tc('na')}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-600">
+                                            {advisor.degree || tc('na')}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-600">
+                                            {advisor.departmentName || tc('na')}
+                                        </td>
+                                        <td className="px-6 py-4 text-sm">
+                                            <div className="flex items-center gap-2">
+                                                <Link
+                                                    href={`/admin/faculty/${advisor.id}`}
+                                                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition"
+                                                    title={tc('edit')}
+                                                >
+                                                    <Edit2 size={16} />
+                                                </Link>
+                                                <Link
+                                                    href={`/admin/professors/${advisor.id}/courses`}
+                                                    className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-700 bg-indigo-100 hover:bg-indigo-200 rounded-lg transition whitespace-nowrap"
+                                                >
+                                                    <BookOpen size={14} />
+                                                    {t('viewCourses')}
+                                                </Link>
+                                                {canViewStudents && (
+                                                    <Link
+                                                        href={`/admin/professors/${advisor.id}/students`}
+                                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-emerald-700 bg-emerald-100 hover:bg-emerald-200 rounded-lg transition whitespace-nowrap"
+                                                    >
+                                                        <Users size={14} />
+                                                        {t('viewStudents')}
+                                                    </Link>
+                                                )}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                );
+                            })
                         )}
                     </tbody>
                 </table>

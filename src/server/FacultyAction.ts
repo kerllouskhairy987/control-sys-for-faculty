@@ -283,6 +283,86 @@ export async function getSingleFacultyMember(id: string) {
 }
 
 /**
+ * @desc     get faculty courses
+ * @access   admin
+*/
+export async function getFacultyCourses(id: string) {
+    try {
+        // get token form cookies
+        const token = await getTokenFromCookie();
+
+        const res = await fetch(`${process.env.ENDPOINTS_URL}/api/Faculty/${id}/courses`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            next: { tags: ['facultyCourses'] }
+        })
+
+        if (!res.ok) {
+            return {
+                success: false,
+                message: "Failed to load faculty courses",
+                formData: null,
+                error: null
+            }
+        }
+
+        const data = await res.json();
+        return data;
+
+    } catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            message: "Internal server error",
+            formData: null,
+            error: null
+        }
+    }
+}
+
+/**
+ * @desc     get advisor students
+ * @access   admin
+*/
+export async function getAdvisorStudents(id: string) {
+    try {
+        // get token form cookies
+        const token = await getTokenFromCookie();
+
+        const res = await fetch(`${process.env.ENDPOINTS_URL}/api/Faculty/${id}/advisees`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            next: { tags: ['advisorStudents'] }
+        })
+
+        if (!res.ok) {
+            return {
+                success: false,
+                message: "Failed to load advisor students",
+                formData: null,
+                error: null
+            }
+        }
+
+        const data = await res.json();
+        return data;
+
+    } catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            message: "Internal server error",
+            formData: null,
+            error: null
+        }
+    }
+}
+
+/**
  * @desc     update degree for Single faculty member
  * @access   admin
 */
@@ -456,44 +536,3 @@ export async function updateStatusFacultyMember({ facultyMemberId, newStatus }: 
     }
 }
 
-
-/**
- * @desc     dismiss specific student
- * @access   admin
-*/
-// export async function dismissStudent(id: string) {
-//     try {
-//         // get token form cookies
-//         const token = await getTokenFromCookie();
-
-//         const res = await fetch(`${process.env.ENDPOINTS_URL}/api/Students/${id}/dismiss`, {
-//             method: "PUT",
-//             headers: {
-//                 "Content-Type": "application/json",
-//                 "Authorization": `Bearer ${token}`
-//             }
-//         })
-
-//         if (!res.ok) {
-//             return {
-//                 success: false,
-//                 message: "An Error Occurred, Please Try Again!",
-//                 error: null
-//             }
-//         }
-
-//         return {
-//             success: true,
-//             message: "Student Dismissed Successfully",
-//             error: null
-//         }
-
-//     } catch (error) {
-//         console.log(error);
-//         return {
-//             success: false,
-//             message: "Internal Server Error!",
-//             error: null
-//         }
-//     }
-// }
