@@ -7,7 +7,7 @@ import {
   MapPin,
   CalendarDays,
   Hourglass,
-  CalendarX2,
+  CircleAlert,
 } from "lucide-react";
 
 export interface Exam {
@@ -39,7 +39,7 @@ export function ExamTimeline({ exams }: { exams: Exam[] }) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border-2 border-dashed border-muted rounded-xl bg-muted/10 animate-in fade-in duration-500">
         <div className="w-16 h-16 rounded-full bg-muted/30 flex items-center justify-center mb-4">
-          <CalendarX2 className="w-8 h-8 opacity-50" />
+          <CircleAlert className="w-8 h-8 opacity-50" />
         </div>
         <h3 className="text-lg font-medium text-foreground mb-1">
           Not Scheduled Yet

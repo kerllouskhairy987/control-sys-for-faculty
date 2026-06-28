@@ -36,7 +36,7 @@ export function SidebarMain({
 
           return (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild isActive={isActive}>
+              <SidebarMenuButton asChild isActive={isActive} size={"lg"}>
                 <Link href={item.url}>
                   {item.icon}
                   <span>{item.title}</span>

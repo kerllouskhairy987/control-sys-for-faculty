@@ -3,8 +3,8 @@
 import * as React from "react"
 import { Calendar, ChartColumn, LayoutDashboard, LifeBuoyIcon, ListTodo, SendIcon, Table2, GraduationCap } from "lucide-react"
 
-import { SidebarFooter } from "@/components/student/sidebarFooter"
-import { SidebarMain } from "./sidebarMain"
+import { SidebarFooter } from "@/components/student/sidebar-footer"
+import { SidebarMain } from "./sidebar-main"
 import {
   Sidebar,
   SidebarContent,
@@ -22,19 +22,14 @@ const data = {
       icon: <LayoutDashboard />,
     },
     {
-      title: "Study Schedule",
-      url: "/student/study-schedule",
-      icon: <Calendar />,
-    },
-    {
       title: "Courses Registration",
       url: "/student/courses-registration",
       icon: <ListTodo />,
     },
     {
-      title: "Exams Schedule",
-      url: "/student/exams-schedule",
-      icon: <Table2 />,
+      title: "Study Schedule",
+      url: "/student/study-schedule",
+      icon: <Calendar />,
     },
     {
       title: "Grades",
@@ -63,9 +58,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="/student">
+              <a href="/student/dashboard">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  
                   <GraduationCap className="size-4" /> 
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">

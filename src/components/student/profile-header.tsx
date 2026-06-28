@@ -23,12 +23,11 @@ export function ProfileHeader({ isEditing, onEdit }: ProfileHeaderProps) {
         {!isEditing && (
           <Button
             onClick={onEdit}
-            variant="default"
-            size="lg"
-            className="gap-2"
+            variant="outline"
+            className="flex items-center gap-2"
           >
-            <Pencil className="h-2 w-2" />
-            Edit
+            <Pencil className="h-4 w-4" />
+            Edit Profile
           </Button>
         )}
       </div>
