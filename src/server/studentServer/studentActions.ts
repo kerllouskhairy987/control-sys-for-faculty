@@ -466,3 +466,90 @@ export async function getStudentRegistrations(studentId: string) {
     };
   }
 }
+
+// ** Fetshes all advisors to student.
+export async function getAllAdvisors() {
+  const BASE_URL = process.env.ENDPOINTS_URL;
+  const token = await getTokenFromCookie();
+
+  if (!token) {
+    return { success: false, message: "Unauthorized, Please Login First!" };
+  }
+
+  try {
+    const res = await fetch(`${BASE_URL}/api/Faculty/advisors`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      cache: "force-cache",
+    });
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      return {
+        success: false,
+        message:
+          errorData.message ||
+          `Failed to fetch student registrations: ${res.status}`,
+      };
+    }
+
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}
+
+export async function assignAdvisorToStudent(
+  studentId: string,
+  advisorId: string,
+) {
+  const BASE_URL = process.env.ENDPOINTS_URL;
+  const token = await getTokenFromCookie();
+
+  if (!token) {
+    return { success: false, message: "Unauthorized, Please Login First!" };
+  }
+
+  try {
+    const res = await fetch(
+      `${BASE_URL}/api/Students/${studentId}/assign-advisor`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          advisorId: advisorId,
+        }),
+      },
+    );
+
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      return {
+        success: false,
+        message:
+          errorData.message ||
+          `Failed to assign advisor: ${res.status}`,
+      };
+    }
+
+    return {
+      success: true,
+      message: "Advisor assigned successfully",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Unknown error",
+    };
+  }
+}

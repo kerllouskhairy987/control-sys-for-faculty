@@ -1,10 +1,18 @@
-"use client"
+"use client";
 
-import * as React from "react"
-import { Calendar, ChartColumn, LayoutDashboard, LifeBuoyIcon, ListTodo, SendIcon, Table2, GraduationCap, UserPlus2 } from "lucide-react"
+import * as React from "react";
+import {
+  ChartColumn,
+  LayoutDashboard,
+  LifeBuoyIcon,
+  ListTodo,
+  SendIcon,
+  GraduationCap,
+  Users,
+} from "lucide-react";
 
-import { SidebarFooter } from "@/components/student/sidebar-footer"
-import { SidebarMain } from "./sidebar-main"
+import { SidebarFooter } from "@/components/student/sidebar-footer";
+import { SidebarMain } from "@/components/student/sidebar-main";
 import {
   Sidebar,
   SidebarContent,
@@ -12,33 +20,28 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 const data = {
   sidebarMain: [
     {
       title: "Dashboard",
-      url: "/student/dashboard",
+      url: "/professor/dashboard",
       icon: <LayoutDashboard />,
     },
     {
-      title: "Courses Registration",
-      url: "/student/courses-registration",
+      title: "Students",
+      url: "/professor/students",
+      icon: <Users />,
+    },
+    {
+      title: "Courses",
+      url: "/professor/courses",
       icon: <ListTodo />,
     },
     {
-      title: "Assign Advisor",
-      url: "/student/assign-advisor",
-      icon: <UserPlus2 />,
-    },
-    {
-      title: "Study Schedule",
-      url: "/student/study-schedule",
-      icon: <Calendar />,
-    },
-    {
       title: "Grades",
-      url: "/student/grades",
+      url: "/professor/grades",
       icon: <ChartColumn />,
     },
   ],
@@ -63,24 +66,26 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton size="lg" asChild>
-              <a href="/student/dashboard">
+              <a href="/professor/dashboard">
                 <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
-                  <GraduationCap className="size-4" /> 
+                  <GraduationCap className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
                   <span className="truncate font-bold">Control System</span>
-                  <span className="truncate text-xs text-muted-foreground">Faculty of Engineering</span>
+                  <span className="truncate text-xs text-muted-foreground">
+                    Faculty of Engineering
+                  </span>
                 </div>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      
+
       <SidebarContent>
         <SidebarMain items={data.sidebarMain} />
         <SidebarFooter items={data.sidebarFooter} className="mt-auto" />
       </SidebarContent>
     </Sidebar>
-  )
+  );
 }
