@@ -23,6 +23,12 @@ export function Header({ title = 'Dashboard', decoded }: HeaderProps) {
     const locale = useLocale();
     const router = useRouter();
     const t = useTranslations('Header');
+    const isAdmin = decoded?.roles
+        ?.split(',')
+        .map((role) => role.trim())
+        .includes('Admin');
+    const displayName = isAdmin ? t('adminUser') : decoded?.email?.split('@')[0] || t('adminUser');
+    const displayRole = isAdmin ? t('administrator') : decoded?.roles || t('administrator');
 
 
     const handleLocaleChange = (newLocale: string) => {
@@ -63,7 +69,7 @@ export function Header({ title = 'Dashboard', decoded }: HeaderProps) {
                                 <User size={16} className="text-white" />
                             </div>
                             <span className="hidden sm:block text-sm font-medium text-gray-700">
-                                {t('adminUser')}
+                                {displayName}
                             </span>
                         </button>
 
@@ -71,7 +77,7 @@ export function Header({ title = 'Dashboard', decoded }: HeaderProps) {
                         {isProfileDropdownOpen && (
                             <div className="absolute end-0 mt-2 w-48 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
                                 <div className="p-3 border-b border-gray-200">
-                                    <p className="text-sm font-semibold text-gray-800">{t('administrator')}</p>
+                                    <p className="text-sm font-semibold text-gray-800">{displayRole}</p>
                                     <p className="text-xs text-gray-500">{decoded?.email}</p>
                                 </div>
 

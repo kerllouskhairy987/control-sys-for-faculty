@@ -5,31 +5,31 @@ import Link from 'next/link';
 import { ArrowLeft, BookOpen } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { getFacultyCourses } from '@/server/FacultyAction';
-import { Course, CourseOffering } from '@/types';
-import { useTranslations } from '@/i18n/IntlProvider';
-import { extractItems } from './utils';
+import { useLocale, useTranslations } from '@/i18n/IntlProvider';
 
-type FacultyCourse = Partial<Course & CourseOffering> & {
-    offeringId?: string;
-    courseCode?: string;
-    courseTitle?: string;
-    instructorName?: string;
-    term?: string;
-    year?: number;
+type ProfessorCourse = {
+    offeringId: string;
+    courseCode: string;
+    courseTitle: string;
+    semester: 'Fall' | 'Spring' | 'Summer' | string;
+    year: number;
+    enrolledCount: number;
+    capacity: number;
 };
 
 interface ProfessorCoursesPageProps {
     professorId: string;
     professorName?: string;
+    backHref?: string;
+    backLabel?: string;
 }
 
-export default function ProfessorCoursesPage({ professorId, professorName }: ProfessorCoursesPageProps) {
-    const t = useTranslations('Professors');
+export default function ProfessorCoursesPage({ professorId, professorName, backHref = '/admin/professors', backLabel }: ProfessorCoursesPageProps) {
+    const t = useTranslations('Professor');
+    const tp = useTranslations('Professors');
     const tc = useTranslations('Common');
-    const coursesT = useTranslations('Courses');
-    const courseOfferingsT = useTranslations('CourseOfferings');
-
-    const [courses, setCourses] = useState<FacultyCourse[]>([]);
+    const locale = useLocale();
+    const [courses, setCourses] = useState<ProfessorCourse[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [hasError, setHasError] = useState(false);
 
@@ -38,17 +38,11 @@ export default function ProfessorCoursesPage({ professorId, professorName }: Pro
             try {
                 setIsLoading(true);
                 setHasError(false);
-
                 const data = await getFacultyCourses(professorId);
-
                 if (data && typeof data === 'object' && 'success' in data && data.success === false) {
-                    setHasError(true);
-                    setCourses([]);
-                    toast.error(data.message || t('errorLoadCourses'));
-                    return;
+                    throw new Error((data as { message?: string }).message || t('errorLoadCourses'));
                 }
-
-                setCourses(extractItems<FacultyCourse>(data));
+                setCourses(data?.courses);
             } catch (error) {
                 console.error(error);
                 setHasError(true);
@@ -62,20 +56,35 @@ export default function ProfessorCoursesPage({ professorId, professorName }: Pro
         if (professorId) fetchCourses();
     }, [professorId, t]);
 
+    const translateSemester = (semester: string) => {
+        switch (semester) {
+            case 'Fall':
+                return t('semesterFall');
+            case 'Spring':
+                return t('semesterSpring');
+            case 'Summer':
+                return t('semesterSummer');
+            default:
+                return semester;
+        }
+    };
+
     return (
         <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <div>
-                    <Link
-                        href="/admin/professors"
-                        className="flex items-center gap-2 text-sm text-gray-500 hover:text-[#00284d] transition mb-2 text-start"
-                    >
-                        <ArrowLeft size={16} />
-                        {t('backToProfessors')}
-                    </Link>
-                    <h2 className="text-3xl font-bold text-gray-900 text-start">{t('coursesTitle')}</h2>
+                    {backHref && (
+                        <Link
+                            href={backHref}
+                            className="flex items-center gap-2 text-sm text-gray-500 hover:text-[#00284d] transition mb-2 text-start"
+                        >
+                            <ArrowLeft size={16} />
+                            {backLabel || tp('backToProfessors')}
+                        </Link>
+                    )}
+                    <h2 className="text-3xl font-bold text-gray-900 text-start">{tp('coursesTitle')}</h2>
                     <p className="mt-1 text-gray-600 text-start">
-                        {t('coursesSubtitle', { professorName: professorName || tc('na') })}
+                        {tp('coursesSubtitle', { professorName: professorName || tc('na') })}
                     </p>
                 </div>
             </div>
@@ -85,24 +94,12 @@ export default function ProfessorCoursesPage({ professorId, professorName }: Pro
                     <table className="w-full">
                         <thead className="bg-gray-50 border-b border-gray-200">
                             <tr>
-                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
-                                    {coursesT('colCode')}
-                                </th>
-                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
-                                    {coursesT('colTitle')}
-                                </th>
-                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
-                                    {courseOfferingsT('colInstructor')}
-                                </th>
-                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
-                                    {coursesT('colCredits')}
-                                </th>
-                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
-                                    {courseOfferingsT('colTerm')}
-                                </th>
-                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">
-                                    {courseOfferingsT('colYear')}
-                                </th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('courseCode')}</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('courseTitle')}</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('semester')}</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('year')}</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('enrolledStudents')}</th>
+                                <th className="px-6 py-3 text-start text-sm font-semibold text-gray-900">{t('capacity')}</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-gray-100">
@@ -127,32 +124,32 @@ export default function ProfessorCoursesPage({ professorId, professorName }: Pro
                                     <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
                                         <div className="flex flex-col items-center gap-2">
                                             <BookOpen size={36} className="text-gray-300" />
-                                            <p className="font-medium">{t('noCourses')}</p>
+                                            <p className="font-medium">{tp('noCourses')}</p>
                                         </div>
                                     </td>
                                 </tr>
                             ) : (
-                                courses.map((course, index) => (
-                                    <tr key={course.offeringId || course.id || index} className="hover:bg-gray-50 transition">
+                                courses.map((course) => (
+                                    <tr key={course.offeringId} className="hover:bg-gray-50 transition">
                                         <td className="px-6 py-4 text-sm text-gray-600 text-start">
                                             <span className="inline-block px-2 py-0.5 bg-gray-100 rounded font-mono text-xs">
-                                                {course.courseCode || course.code || tc('na')}
+                                                {course.courseCode}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4 text-sm font-medium text-gray-900 text-start">
-                                            {course.courseTitle || course.title || tc('na')}
+                                            {course.courseTitle}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-600 text-start">
-                                            {course.instructorName || course.departmentName || tc('na')}
+                                            {translateSemester(course.semester)}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-600 text-start">
-                                            {course.credits ?? tc('na')}
+                                            {course.year}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-600 text-start">
-                                            {course.term || tc('na')}
+                                            {new Intl.NumberFormat(locale).format(course.enrolledCount)}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-600 text-start">
-                                            {course.year || tc('na')}
+                                            {new Intl.NumberFormat(locale).format(course.capacity)}
                                         </td>
                                     </tr>
                                 ))

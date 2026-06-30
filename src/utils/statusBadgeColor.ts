@@ -12,12 +12,24 @@ interface StatusColorMap {
 }
 
 export function getStatusColors(status: StudentStatus): StatusColorMap {
-    const colorMap: Record<StudentStatus, StatusColorMap> = {
+    const colorMap: Record<string, StatusColorMap> = {
         GoodStanding: {
             bg: 'bg-green-50',
             text: 'text-green-700',
             border: 'border-green-200',
             badge: 'bg-green-100 text-green-800',
+        },
+        Probation: {
+            bg: 'bg-yellow-50',
+            text: 'text-yellow-700',
+            border: 'border-yellow-200',
+            badge: 'bg-yellow-100 text-yellow-800',
+        },
+        Graduated: {
+            bg: 'bg-blue-50',
+            text: 'text-blue-700',
+            border: 'border-blue-200',
+            badge: 'bg-blue-100 text-blue-800',
         },
         string: {
             bg: 'bg-yellow-50',
@@ -33,7 +45,7 @@ export function getStatusColors(status: StudentStatus): StatusColorMap {
         },
     };
 
-    return colorMap[status];
+    return colorMap[status] ?? colorMap.string;
 }
 
 export function getStatusBadgeClass(status: StudentStatus): string {
@@ -52,10 +64,10 @@ export function getStatusBgClass(status: StudentStatus): string {
  * Get status color for chart purposes
  */
 export function getStatusChartColor(status: StudentStatus): string {
-    const colors: Record<StudentStatus, string> = {
+    const colors: Record<string, string> = {
         Active: '#10b981',     // green
         Warning: '#f59e0b',    // amber
         Dismissed: '#ef4444',  // red
     };
-    return colors[status];
+    return colors[status] ?? '#6b7280';
 }

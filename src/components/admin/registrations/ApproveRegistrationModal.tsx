@@ -13,6 +13,7 @@ interface ApproveRegistrationModalProps {
     isOpen: boolean;
     registrationId: string | null;
     studentId: string | null;
+    advisorId?: string;
     onClose: () => void;
     onSuccess: () => void;
 }
@@ -20,7 +21,7 @@ interface ApproveRegistrationModalProps {
 export function ApproveRegistrationModal({
     isOpen,
     registrationId,
-    studentId,
+    advisorId: fixedAdvisorId,
     onClose,
     onSuccess,
 }: ApproveRegistrationModalProps) {
@@ -34,6 +35,11 @@ export function ApproveRegistrationModal({
 
     useEffect(() => {
         if (!isOpen) return;
+
+        if (fixedAdvisorId) {
+            setAdvisorId(fixedAdvisorId);
+            return;
+        }
 
         const fetchAdvisors = async () => {
             try {
@@ -50,7 +56,7 @@ export function ApproveRegistrationModal({
 
         fetchAdvisors();
         setAdvisorId('');
-    }, [isOpen, tc]);
+    }, [fixedAdvisorId, isOpen, tc]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -112,27 +118,28 @@ export function ApproveRegistrationModal({
 
                     {/* Body */}
                     <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                        {/* Advisor Select */}
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1 text-start">
-                                {t('labelAdvisor')} *
-                            </label>
-                            <select
-                                value={advisorId}
-                                onChange={(e) => setAdvisorId(e.target.value)}
-                                disabled={isSubmitting || isLoadingAdvisors}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed text-start"
-                            >
-                                <option value="">
-                                    {isLoadingAdvisors ? t('loadingAdvisors') : t('selectAdvisor')}
-                                </option>
-                                {advisors.map((advisor) => (
-                                    <option key={advisor.id} value={advisor.id}>
-                                        {advisor.name}
+                        {!fixedAdvisorId && (
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1 text-start">
+                                    {t('labelAdvisor')} *
+                                </label>
+                                <select
+                                    value={advisorId}
+                                    onChange={(e) => setAdvisorId(e.target.value)}
+                                    disabled={isSubmitting || isLoadingAdvisors}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#00284d] focus:border-transparent transition disabled:bg-gray-100 disabled:cursor-not-allowed text-start"
+                                >
+                                    <option value="">
+                                        {isLoadingAdvisors ? t('loadingAdvisors') : t('selectAdvisor')}
                                     </option>
-                                ))}
-                            </select>
-                        </div>
+                                    {advisors.map((advisor) => (
+                                        <option key={advisor.id} value={advisor.id}>
+                                            {advisor.name}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
 
                         {/* Buttons */}
                         <div className="flex gap-3 pt-4 border-t border-gray-200">

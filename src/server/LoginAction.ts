@@ -13,6 +13,7 @@ export interface loginStates {
     message: string;
     formData: FormData;
     error: loginError | null;
+    token?: string;
 }
 
 export async function loginAction(
@@ -37,6 +38,7 @@ export async function loginAction(
             message: "Login failed",
             formData,
             error: errors as loginError,
+            token: undefined,
         };
     }
 
@@ -50,7 +52,6 @@ export async function loginAction(
             body: JSON.stringify(rawData),
         });
         const data = await res.json();
-        console.log("Login data",data)
 
         if (!res.ok) {
             return {
@@ -58,6 +59,7 @@ export async function loginAction(
                 message: data.name || "Invalid email or password",
                 formData,
                 error: null,
+                token: undefined,
             };
         }
 
@@ -73,6 +75,7 @@ export async function loginAction(
             message: "Login successful",
             formData: new FormData(), // Clear form data on success
             error: null,
+            token: data.token,
         };
     } catch (error) {
         console.log(error)
@@ -81,6 +84,7 @@ export async function loginAction(
             message: "internal server error",
             formData,
             error: null,
+            token: undefined,
         }
     }
 }

@@ -273,8 +273,7 @@ export function CourseOfferingModal({
                                 disabled={isLoading}
                                 className="flex-1 px-4 py-2 bg-[#00284d] text-white rounded-lg hover:bg-[#003465] transition disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
                             >
-                                {isLoading && <Loader />}
-                                Create
+                                {isLoading ? <Loader /> : "Create"}
                             </button>
                         </div>
                     </form>

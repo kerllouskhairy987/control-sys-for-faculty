@@ -2,6 +2,7 @@
 
 import getTokenFromCookie from '@/utils/getCookie';
 import { GradeSubmission } from '@/types';
+import { getAdvisorOrProfData } from './FacultyAction';
 
 /**
  * @desc     Get all registrations
@@ -69,25 +70,36 @@ export async function getAllRegistrations({
  * @desc     Get pending registrations
  * @access   admin
  */
-export async function getPendingRegistrations() {
+export async function getPendingRegistrations(advisorId: string) {
     try {
         const token = await getTokenFromCookie();
-
         if (!token) {
             console.log('No token found');
             return null;
         }
 
-        const res = await fetch(`${process.env.ENDPOINTS_URL}/api/registrations/pending`, {
-            method: 'GET',
-            headers: { Authorization: `Bearer ${token}` },
-            next: { tags: ['registrations-pending'] },
+        // get advisor or prof data
+        const dataAdvisorOrProf = await getAdvisorOrProfData(advisorId);
+
+        const params = new URLSearchParams({
+            advisorId: dataAdvisorOrProf.id,
         });
+
+        const res = await fetch(
+            `${process.env.ENDPOINTS_URL}/api/registrations/pending?${params.toString()}`,
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                next: {
+                    tags: ['registrations-pending'],
+                },
+            }
+        );
 
         if (!res.ok) return null;
 
         const data = await res.json();
-        console.log("-------------------------------", data)
         return data;
     } catch (error) {
         console.log(error);
@@ -107,8 +119,11 @@ export async function approveRegistration(id: string, advisorId: string) {
             return { success: false, message: 'Unauthorized' };
         }
 
+        // get advisor or prof data
+        const dataAdvisorOrProf = await getAdvisorOrProfData(id);
+
         const res = await fetch(
-            `${process.env.ENDPOINTS_URL}/api/registrations/${id}/approve`,
+            `${process.env.ENDPOINTS_URL}/api/registrations/${dataAdvisorOrProf.id}/approve`,
             {
                 method: 'PUT',
                 headers: {
@@ -120,7 +135,6 @@ export async function approveRegistration(id: string, advisorId: string) {
         );
 
         const data = await res.json();
-        console.log("approved data", data);
 
         if (!res.ok) {
             return { success: false, message: data?.name || "Failed to approve registration" };
@@ -145,6 +159,8 @@ export async function dropRegistration(id: string, studentId: string) {
             return { success: false, message: 'Unauthorized' };
         }
 
+        // console.log(id,'kerolos----------------', studentId, 'Kerolos ----------------------', token)
+
         const res = await fetch(
             `${process.env.ENDPOINTS_URL}/api/registrations/${id}/drop`,
             {
@@ -157,9 +173,14 @@ export async function dropRegistration(id: string, studentId: string) {
             }
         );
 
+        // console.log("res---------------------", res)
+
         if (!res.ok) {
             return { success: false, message: 'Failed to drop registration' };
         }
+
+        // const data = await res.json();
+        // console.log('data +++++++++++++++++++++++', data)
 
         return { success: true, message: 'Registration dropped successfully' };
     } catch (error) {
@@ -175,6 +196,8 @@ export async function dropRegistration(id: string, studentId: string) {
 export async function withdrawRegistration(id: string, studentId: string) {
     try {
         const token = await getTokenFromCookie();
+        // console.log(id, 'kerolos----------------', studentId, 'Kerolos ----------------------', token)
+
 
         if (!token) {
             return { success: false, message: 'Unauthorized' };
@@ -192,9 +215,13 @@ export async function withdrawRegistration(id: string, studentId: string) {
             }
         );
 
+        // console.log('res +++++++++++++++++++++++', res)
         if (!res.ok) {
             return { success: false, message: 'Failed to withdraw registration' };
         }
+
+        const data = await res.json();
+        // console.log('data +++++++++++++++++++++++', data)
 
         return { success: true, message: 'Registration withdrawn successfully' };
     } catch (error) {

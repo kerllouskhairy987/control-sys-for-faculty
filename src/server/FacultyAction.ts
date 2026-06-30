@@ -1,6 +1,7 @@
 "use server";
 
 import getTokenFromCookie from "@/utils/getCookie";
+import type { JwtPayload } from "@/types";
 import { facultyMemberSchema, updateDegreeFacultyMemberSchema, updateDepartmentFacultyMemberSchema, updateStatusFacultyMemberSchema } from "@/validation/faculty";
 import { revalidatePath } from "next/cache";
 
@@ -256,6 +257,36 @@ export async function createNewFacultyMember(prevState: unknown, formData: FormD
  * @desc     get Single Faculty Member
  * @access   admin
 */
+export async function getAdvisorOrProfData(id: string) {
+    try {
+        // get token form cookies
+        const token = await getTokenFromCookie();
+
+        const res = await fetch(`${process.env.ENDPOINTS_URL}/api/Faculty/by-user/${id}`, {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`
+            },
+            next: { tags: ['singleFacultyMember'] }
+        })
+
+        if (!res.ok) {
+            return null;
+        }
+
+        const data = await res.json();
+        return data;
+
+    } catch (error) {
+        console.log(error);
+        return { message: "Internal Server Error" }
+    }
+}
+
+/**
+ * @desc     get Single Faculty Member
+ * @access   admin
+*/
 export async function getSingleFacultyMember(id: string) {
     try {
         // get token form cookies
@@ -291,7 +322,10 @@ export async function getFacultyCourses(id: string) {
         // get token form cookies
         const token = await getTokenFromCookie();
 
-        const res = await fetch(`${process.env.ENDPOINTS_URL}/api/Faculty/${id}/courses`, {
+        // get advisor or prof data
+        const dataAdvisorOrProf = await getAdvisorOrProfData(id);
+
+        const res = await fetch(`${process.env.ENDPOINTS_URL}/api/Faculty/${dataAdvisorOrProf.id}/courses`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -331,7 +365,10 @@ export async function getAdvisorStudents(id: string) {
         // get token form cookies
         const token = await getTokenFromCookie();
 
-        const res = await fetch(`${process.env.ENDPOINTS_URL}/api/Faculty/${id}/advisees`, {
+        // get advisor or prof data
+        const dataAdvisorOrProf = await getAdvisorOrProfData(id);
+
+        const res = await fetch(`${process.env.ENDPOINTS_URL}/api/Faculty/${dataAdvisorOrProf.id}/advisees`, {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`
@@ -384,7 +421,6 @@ export async function updateDegreeFacultyMember({ facultyMemberId, newDegree }: 
     try {
         // get token form cookies
         const token = await getTokenFromCookie();
-        console.log("token", token)
 
         const res = await fetch(`${process.env.ENDPOINTS_URL}/api/Faculty/${facultyMemberId}`, {
             method: "PUT",
@@ -394,7 +430,6 @@ export async function updateDegreeFacultyMember({ facultyMemberId, newDegree }: 
             },
             body: JSON.stringify({ newDegree: Number(newDegree) })
         })
-        console.log("res", res)
 
 
         if (!res.ok) {
@@ -535,4 +570,3 @@ export async function updateStatusFacultyMember({ facultyMemberId, newStatus }: 
         }
     }
 }
-

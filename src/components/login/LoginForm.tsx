@@ -9,10 +9,18 @@ import { EyeIcon, EyeOff, Globe } from "lucide-react";
 import Link from "next/link";
 import { verifyToken } from "@/utils/verifyToken";
 import { useDir, useLocale, useTranslations } from "@/i18n/IntlProvider";
+import { Roles } from "@/enums";
 
 interface IProps {
     token: string;
 }
+
+const hasRole = (roles: string, role: string) => {
+    return roles
+        .split(',')
+        .map((item) => item.trim())
+        .includes(role);
+};
 
 const LoginForm = ({ token }: IProps) => {
     const [showPassword, setShowPassword] = useState(false);
@@ -26,6 +34,7 @@ const LoginForm = ({ token }: IProps) => {
         message: "",
         formData: new FormData(),
         error: null,
+        token: undefined,
     };
     const [state, action, isPending] = useActionState(loginAction, initialState)
 
@@ -51,16 +60,16 @@ const LoginForm = ({ token }: IProps) => {
             toast.success(t("toastSuccess"));
             
             // verify token and get roles, then set roles state
-            const decodedToken = verifyToken(token);
+            const decodedToken = verifyToken(state.token || token);
             const roles = decodedToken?.roles || "Student";
 
             // redirect based on its roles
-            if (roles === "Student") {
+            if (hasRole(roles, Roles.Student)) {
                 router.replace("/")
-            } else if (roles === "Admin" || roles === "Advisor") {
+            } else if (hasRole(roles, Roles.Admin)) {
                 router.replace("/admin")
-            } else if (roles === "Teacher") {
-                router.replace("/teacher")
+            } else if (hasRole(roles, Roles.Advisor) || hasRole(roles, Roles.Teacher) || hasRole(roles, Roles.Professor)) {
+                router.replace("/professor/dashboard")
             } else {
                 router.replace("/")
             }
@@ -68,7 +77,7 @@ const LoginForm = ({ token }: IProps) => {
         if (!state.success && state.message && !isPending) {
             toast.error(t("toastFailed"));
         }
-    }, [state.success, state.message, isPending, router, token, t]);
+    }, [state.success, state.message, state.token, isPending, router, token, t]);
 
     return (
         <div className="min-h-screen w-full bg-[url('/login_img.png')] bg-cover bg-center flex items-center justify-center" dir={dir}>

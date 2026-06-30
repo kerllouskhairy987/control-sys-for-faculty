@@ -36,6 +36,16 @@ export enum StudentsStatus {
 export enum Roles {
     Admin = "Admin",
     Student = "Student",
+    Professor = "Professor",
     Teacher = "Teacher",
     Advisor = "Advisor"
+}
+
+/**
+ * @desc    semester enums
+*/
+export enum Semester {
+    Fall = "Fall",
+    Spring = "Spring",
+    Summer = "Summer"
 }
