@@ -88,7 +88,7 @@ export function NavUser() {
     );
   }
 
-  const displayName = (user.userName || user.name || "Student")
+  const displayName = (user.userName || user.name || "Professor")
     .split(" ")
     .slice(0, 2)
     .join(" ");
@@ -117,7 +117,7 @@ export function NavUser() {
               <div className="grid flex-1 text-left text-sm leading-tight md:grid">
                 <span className="truncate font-medium">{displayName}</span>
                 <span className="truncate text-xs text-muted-foreground capitalize">
-                  {user.role || "student"}
+                  {user.role || "professor"}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
@@ -133,7 +133,7 @@ export function NavUser() {
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
                 <Link
-                  href="/student/profile"
+                  href="/professor/profile"
                   className="cursor-pointer flex items-center gap-2"
                 >
                   <UserIcon className="h-4 w-4" />

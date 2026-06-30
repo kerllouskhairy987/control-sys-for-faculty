@@ -32,14 +32,14 @@ export function PersonalInfo({
           </Label>
           {isEditing ? (
             <Input
-              id="name"
-              name="name"
-              value={formData.name}
+              id="fullName"
+              name="fullName"
+              value={formData.fullName}
               onChange={onChange}
             />
           ) : (
             <div className="p-2.5 bg-muted/50 border rounded-md text-sm">
-              {studentData.name}
+              {studentData.fullName}
             </div>
           )}
         </div>

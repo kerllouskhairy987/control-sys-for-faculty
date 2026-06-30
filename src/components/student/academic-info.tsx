@@ -23,23 +23,11 @@ export function AcademicInfo({ studentData }: { studentData: any }) {
         <div className="space-y-2">
           <Label className="flex items-center gap-2">Program</Label>
           <div className="p-2.5 bg-muted border rounded-md text-sm text-muted-foreground cursor-not-allowed">
-            {studentData.department}
+            {studentData.programName}
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label className="flex items-center gap-2">Email</Label>
-          <div className="p-2.5 bg-muted border rounded-md text-sm text-muted-foreground cursor-not-allowed">
-            {studentData.educationEmail}
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label className="flex items-center gap-2">Password</Label>
-          <div className="p-2.5 bg-muted border rounded-md text-sm text-muted-foreground cursor-not-allowed">
-            {studentData.password}
-          </div>
-        </div>
+       
       </div>
     </div>
   );

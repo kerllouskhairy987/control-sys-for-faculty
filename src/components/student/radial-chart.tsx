@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChartContainer } from "@/components/ui/chart";
+import { ActivityIcon } from "lucide-react";
 
 const chartConfig = {
   credits: {
@@ -27,16 +28,13 @@ const chartConfig = {
   },
 };
 
-// تم تعديل استقبال الـ Props ليكون { studentData, progressPercentage }
-export function ChartRadialText({ studentData, progressPercentage }: { studentData: { completedCredits: number; requiredCredits: number }; progressPercentage: number }) {
-  // حساب الزاوية بناءً على النسبة المئوية
+export function ChartRadialText({ studentData, progressPercentage } : { studentData: any; progressPercentage: number }) {
   const chartEndAngle = 90 - progressPercentage * 3.6;
 
-  // تجهيز الداتا ديناميكياً من الـ props
   const chartData = [
     {
       name: "completed",
-      credits: studentData.completedCredits,
+      credits: studentData.completedCredits || 0,
       fill: "var(--color-completed)",
     },
   ];
@@ -44,15 +42,15 @@ export function ChartRadialText({ studentData, progressPercentage }: { studentDa
   return (
     <Card className="bg-muted/40 border-muted flex flex-col h-full">
       <CardHeader className="pb-0">
-        <CardTitle className="text-lg">Degree Progress</CardTitle>
-        <CardDescription>
-          Total credits required: {studentData.requiredCredits}
-        </CardDescription>
+        <CardTitle className="flex items-center gap-2 text-lg">
+          <ActivityIcon className="w-5 h-5 text-primary" />
+          Credits Progress
+        </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-[200px]"
+          className="mx-auto aspect-square max-h-50"
         >
           <RadialBarChart
             data={chartData}
@@ -85,7 +83,7 @@ export function ChartRadialText({ studentData, progressPercentage }: { studentDa
                           y={viewBox.cy}
                           className="fill-foreground text-4xl font-bold font-mono"
                         >
-                          {Math.round(progressPercentage)}%
+                          {Math.round(progressPercentage || 0)}%
                         </tspan>
                         <tspan
                           x={viewBox.cx}
@@ -102,6 +100,9 @@ export function ChartRadialText({ studentData, progressPercentage }: { studentDa
             </PolarRadiusAxis>
           </RadialBarChart>
         </ChartContainer>
+        <CardDescription className="text-center">
+          From {studentData.totalProgramCredits} Credits required
+        </CardDescription>
       </CardContent>
     </Card>
   );

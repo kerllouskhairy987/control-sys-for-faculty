@@ -18,16 +18,16 @@ export function StudentInfoCard({ studentData }: { studentData: any }) {
           <div>
             <p className="text-sm text-muted-foreground">Academic ID</p>
             <p className="text-xl font-mono font-medium">
-              {studentData.academicId}
+              {studentData.academicNumber}
             </p>
           </div>
           <div>
             <p className="text-sm text-muted-foreground">Program</p>
-            <p className="font-medium">{studentData.program}</p>
+            <p className="font-medium">{studentData.programName}</p>
           </div>
           <div>
-            <p className="text-sm text-muted-foreground">Academic Level</p>
-            <Badge variant="secondary" className="mt-1">
+            <p className="text-sm text-muted-foreground">Level</p>
+            <Badge variant="outline" className="mt-1">
               {studentData.level}
             </Badge>
           </div>

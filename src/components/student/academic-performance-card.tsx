@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { AlertCircle, CheckCircle2, GraduationCap } from "lucide-react";
 
 export function AcademicPerformanceCard({ studentData }: { studentData: any }) {
-  const isGoodStanding = studentData.cgpa >= 2.0;
+  const isDismissed = studentData.status === "dismissed";
 
   return (
     <Card className="bg-muted/40 border-muted relative overflow-hidden">
@@ -30,26 +30,26 @@ export function AcademicPerformanceCard({ studentData }: { studentData: any }) {
           </div>
 
           <div className="flex flex-col gap-2">
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col gap-1">
               <span className="text-sm text-muted-foreground">Status</span>
               <Badge
-                variant={isGoodStanding ? "default" : "destructive"}
+                variant={isDismissed ? "destructive" : "default"}
                 className="flex gap-1"
               >
-                {isGoodStanding ? (
-                  <CheckCircle2 className="w-3 h-3" />
-                ) : (
+                {isDismissed ? (
                   <AlertCircle className="w-3 h-3" />
+                ) : (
+                  <CheckCircle2 className="w-3 h-3" />
                 )}
                 {studentData.status}
               </Badge>
             </div>
-            <div className="flex justify-between items-center">
+            <div className="flex flex-col gap-1">
               <span className="text-sm text-muted-foreground">
                 Allowed Load
               </span>
               <span className="font-mono font-medium">
-                {studentData.allowedLoad} Cr. Hrs
+                {studentData.maxCreditsAllowed} Credits
               </span>
             </div>
           </div>
