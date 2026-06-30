@@ -11,11 +11,14 @@ import {
   getStudentInformation,
   updateStudentInformation,
 } from "@/server/studentServer/studentActions";
+import { StudentProfileData } from "@/types";
+import { useTranslations } from "@/i18n/IntlProvider";
 
 export default function Profile() {
+  const t = useTranslations("Student");
   const [isEditing, setIsEditing] = useState(false);
-  const [studentData, setStudentData] = useState<any>(null);
-  const [formData, setFormData] = useState<any>(null);
+  const [studentData, setStudentData] = useState<StudentProfileData | null>(null);
+  const [formData, setFormData] = useState<StudentProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +48,7 @@ export default function Profile() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev: any) => (prev ? { ...prev, [name]: value } : prev));
+    setFormData((prev) => (prev ? { ...prev, [name]: value } : prev));
   };
 
   const handleSave = async () => {
@@ -53,9 +56,10 @@ export default function Profile() {
       setIsSaving(true);
       setError(null);
 
+      if (!formData || !studentData) return;
       const response = await updateStudentInformation(
         formData.fullName,
-        formData.nationalId,
+        formData.nationalId as string,
         studentData.id,
       );
 
@@ -67,7 +71,7 @@ export default function Profile() {
       setIsEditing(false);
       setError(null);
     } catch (err) {
-      setError("Error saving student data: " + err);
+      setError("Error saving student data: " + (err instanceof Error ? err.message : String(err)));
     } finally {
       setIsSaving(false);
     }

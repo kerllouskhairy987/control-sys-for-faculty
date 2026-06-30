@@ -1,3 +1,4 @@
+import { CourseGrade } from "@/components/student/grades-table";
 import { FacultyStatus } from "@/enums";
 
 /**
@@ -416,4 +417,65 @@ export interface RegistrationGrade {
     finalExam: number;
     totalGrade: number;
     letterGrade: string;
+    semester: string;
+    sgpa: number;
+    termCredits: number;
+    courses: CourseGrade[];
+}
+
+export interface StudentCurrentCourseSession {
+    id: number;
+    time: string;
+    code: string;
+    title: string;
+    type: string;
+    location: string;
+    instructor: string;
+    status?: string;
+    courseTitle?: string;
+    courseCode?: string;
+    instructorName?: string;
+    credits?: number;
+}
+
+export interface CurrentUser {
+    id?: string;
+    userName?: string;
+    name?: string;
+    email?: string;
+    role?: string;
+}
+
+
+export interface StudentCurrentSemesterResponse {
+    term?: string;
+    year?: number;
+    classes?: StudentCurrentCourseSession[];
+    Sunday?: StudentCurrentCourseSession[];
+    Monday?: StudentCurrentCourseSession[];
+    Tuesday?: StudentCurrentCourseSession[];
+    Wednesday?: StudentCurrentCourseSession[];
+    Thursday?: StudentCurrentCourseSession[];
+    Friday?: StudentCurrentCourseSession[];
+    Saturday?: StudentCurrentCourseSession[];
+}
+
+export interface StudentProfileData extends Student {
+    maxCreditsAllowed?: number;
+    level?: string;
+    totalProgramCredits?: number;
+    completedCredits?: number;
+}
+
+export interface StudentAdvisor {
+    id: string;
+    name: string;
+    degree?: string;
+    departmentName?: string;
+    email?: string;
+}
+
+export interface StudentRegistrationStatus {
+    courseOfferingId: string;
+    status: string;
 }

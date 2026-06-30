@@ -21,22 +21,22 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  AvailableCourse,
+  RegistrationPeriod,
+  StudentRegistrationStatus,
+} from "@/types";
+import { useTranslations } from "@/i18n/IntlProvider";
 
-export interface Course {
-  offeringId: string;
-  courseCode: string;
-  courseTitle: string;
+type RegistrationCourse = AvailableCourse & {
   credits: number;
-  instructorName: string;
-  availableSeats: number;
-  isFull: boolean;
-}
+};
 
 interface CourseCatalogProps {
-  catalog: Course[];
-  registeredStatuses: Record<string, string>;
-  onAddCourse: (course: Course) => Promise<boolean>;
-  periodInfo?: any;
+  catalog: RegistrationCourse[];
+  registeredStatuses: Record<string, StudentRegistrationStatus["status"]>;
+  onAddCourse: (course: RegistrationCourse) => Promise<boolean>;
+  periodInfo?: RegistrationPeriod | null;
 }
 
 export function CourseCatalog({
@@ -45,6 +45,7 @@ export function CourseCatalog({
   onAddCourse,
   periodInfo,
 }: CourseCatalogProps) {
+  const t = useTranslations("Student");
   const [searchTerm, setSearchTerm] = useState("");
   const [loadingCourseId, setLoadingCourseId] = useState<string | null>(null);
 
@@ -54,14 +55,15 @@ export function CourseCatalog({
       course.courseCode.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 
-  const handleRegisterClick = async (course: Course) => {
+  const handleRegisterClick = async (course: RegistrationCourse) => {
     setLoadingCourseId(course.offeringId);
     await onAddCourse(course);
     setLoadingCourseId(null);
   };
 
   const formatDate = (dateString?: string) => {
-    if (!dateString) return "N/A";
+    if (!dateString) return t("na");
+
     return new Date(dateString).toLocaleDateString("en-US", {
       weekday: "short",
       year: "numeric",
@@ -77,7 +79,7 @@ export function CourseCatalog({
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground w-4 h-4" />
           <Input
             type="text"
-            placeholder="Search by course code or name..."
+            placeholder={t("searchPlaceholder")}
             className="pl-9 pr-4 py-4.5 text-base bg-muted/50 border-primary/5 rounded-lg"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
@@ -102,7 +104,7 @@ export function CourseCatalog({
                       variant="secondary"
                       className="text-[10px] capitalize tracking-wider"
                     >
-                      Dr {course.instructorName}
+                      {t("instructorLabel")} {course.instructorName}
                     </Badge>
 
                     {course.isFull && !isSelected ? (
@@ -114,7 +116,7 @@ export function CourseCatalog({
                             </div>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>This course is fully booked.</p>
+                            <p>{t("courseFullTooltip")}</p>
                           </TooltipContent>
                         </Tooltip>
                       </div>
@@ -127,14 +129,14 @@ export function CourseCatalog({
                         variant="outline"
                         className="bg-orange-500/10 text-orange-600 border-orange-500/20 flex items-center gap-1"
                       >
-                        <Clock size={12} /> Pending
+                        <Clock size={12} /> {t("statusPending")}
                       </Badge>
                     ) : status === "approved" ? (
                       <Badge
                         variant="outline"
                         className="bg-emerald-500/10 text-emerald-600 border-emerald-500/20 flex items-center gap-1"
                       >
-                        <CheckCircle2 size={12} /> Approved
+                        <CheckCircle2 size={12} /> {t("statusApproved")}
                       </Badge>
                     ) : (
                       <Button
@@ -163,13 +165,16 @@ export function CourseCatalog({
                   <div className="flex items-center justify-between font-mono text-sm text-muted-foreground">
                     <div className="flex items-center gap-2">
                       <span>{course.courseCode}</span>
-                      <span>•</span>
-                      <span>{course.credits} Credits</span>
+                      <span>â€¢</span>
+                      <span>{course.credits} {t("creditsLabel")}</span>
                     </div>
 
                     <div className="flex items-center gap-1.5 text-xs bg-muted/50 px-2 py-1 rounded-md">
                       <Users size={14} className="opacity-70" />
-                      <span>{course.availableSeats} Seats</span>
+                      <span>
+                        {Math.max(course.capacity - course.enrolled, 0)}{" "}
+                        {t("seatsLabel")}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -180,51 +185,51 @@ export function CourseCatalog({
       </div>
 
       <Card className="w-full lg:w-1/3 order-1 lg:order-2 sticky top-4 shrink-0 pt-0">
-        <CardHeader className="flex items-center gap-2 text-primary bg-primary/5 py-3">
+        <CardHeader className="flex flex-row items-center gap-2 text-primary bg-primary/5 py-3">
           <CircleAlert className="w-6 h-6 font-semibold" />
           <h3 className="text-lg font-semibold text-foreground">
-            Registration Information
+            {t("registrationInfoTitle")}
           </h3>
         </CardHeader>
-
         {periodInfo ? (
-          <CardContent className="space-y-5">
-            <p className="text-muted-foreground capitalize">
-              {periodInfo.name}
-            </p>
-            <div>
-              <p className="mb-1">Academic Term</p>
-              <div className="flex items-center gap-2">
-                <Badge variant="secondary" className="text-sm">
+          <CardContent className="p-4 space-y-4">
+            <div className="flex items-start gap-3">
+              <CalendarDays className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+              <div>
+                <p className="text-sm font-medium">{t("academicTerm")}</p>
+                <p className="text-xs text-muted-foreground capitalize">
                   {periodInfo.term} {periodInfo.year}
-                </Badge>
+                </p>
               </div>
             </div>
-
-            <div>
-              <p className="mb-1">Starts On</p>
-              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <Badge variant="secondary" className="text-sm">
-                  <CalendarDays className="w-4 h-4 text-primary/70" />
-                  {formatDate(periodInfo.startDateUtc)}
-                </Badge>
-              </div>
-            </div>
-
-            <div>
-              <p className="mb-1">Ends On</p>
-              <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                <Badge variant="secondary" className="text-sm">
-                  <CalendarDays className="w-4 h-4 text-destructive/70" />
-                  {formatDate(periodInfo.endDateUtc)}
-                </Badge>
+            <div className="flex items-start gap-3">
+              <Clock className="w-5 h-5 text-muted-foreground shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <div className="flex flex-row justify-between items-center text-xs">
+                  <span className="text-muted-foreground pr-4">
+                    {t("startsOn")}:
+                  </span>
+                  <span className="font-medium text-foreground">
+                    {formatDate(periodInfo.startDateUtc)}
+                  </span>
+                </div>
+                <div className="flex flex-row justify-between items-center text-xs">
+                  <span className="text-muted-foreground pr-4">
+                    {t("endsOn")}:
+                  </span>
+                  <span className="font-medium text-foreground">
+                    {formatDate(periodInfo.endDateUtc)}
+                  </span>
+                </div>
               </div>
             </div>
           </CardContent>
         ) : (
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            Please check back later for course registration updates.
-          </p>
+          <CardContent className="p-4">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              {t("courseRegistrationUpdates")}
+            </p>
+          </CardContent>
         )}
       </Card>
     </div>

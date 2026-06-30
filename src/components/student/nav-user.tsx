@@ -24,10 +24,13 @@ import { getCurrentUser, logout } from "@/server/studentServer/studentActions";
 import toast from "react-hot-toast";
 import { ModeToggle } from "../ui/mode-toggle";
 import { Separator } from "../ui/separator";
+import { CurrentUser } from "@/types";
+import { useTranslations } from "@/i18n/IntlProvider";
 
 export function NavUser() {
   const router = useRouter();
-  const [user, setUser] = useState<any>(null);
+  const t = useTranslations("Student");
+  const [user, setUser] = useState<CurrentUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -55,15 +58,15 @@ export function NavUser() {
       const res = await logout();
 
       if (res.success) {
-        toast.success("Logged out successfully");
+        toast.success(t("loggedOutSuccessfully"));
       } else {
-        toast.error(res.message || "Failed to logout");
+        toast.error(res.message || t("failedToLogout"));
       }
 
       router.push("/login");
     } catch (error) {
       console.error("Logout failed", error);
-      toast.error("An unexpected error occurred during logout.");
+      toast.error(t("unexpectedLogoutError"));
       router.push("/login");
     } finally {
       setIsLoggingOut(false);
@@ -84,11 +87,11 @@ export function NavUser() {
 
   if (!user) {
     return (
-      <div className="text-sm text-muted-foreground font-medium p-2">Guest</div>
+      <div className="text-sm text-muted-foreground font-medium p-2">{t("guest")}</div>
     );
   }
 
-  const displayName = (user.userName || user.name || "Student")
+  const displayName = (user.userName || user.name || t("student"))
     .split(" ")
     .slice(0, 2)
     .join(" ");
@@ -117,7 +120,7 @@ export function NavUser() {
               <div className="grid flex-1 text-left text-sm leading-tight md:grid">
                 <span className="truncate font-medium">{displayName}</span>
                 <span className="truncate text-xs text-muted-foreground capitalize">
-                  {user.role || "student"}
+                  {user.role || t("studentRole")}
                 </span>
               </div>
               <ChevronsUpDown className="ml-auto size-4 text-muted-foreground" />
@@ -137,7 +140,7 @@ export function NavUser() {
                   className="cursor-pointer flex items-center gap-2"
                 >
                   <UserIcon className="h-4 w-4" />
-                  <span>Profile</span>
+                  <span>{t("profile")}</span>
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuGroup>
@@ -150,7 +153,7 @@ export function NavUser() {
               disabled={isLoggingOut}
             >
               <LogOutIcon className="h-4 w-4" />
-              <span>Logout</span>
+              <span>{t("logout")}</span>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

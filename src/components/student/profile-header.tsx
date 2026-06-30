@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
+import { useTranslations } from "@/i18n/IntlProvider";
 
 interface ProfileHeaderProps {
   isEditing: boolean;
@@ -9,15 +10,16 @@ interface ProfileHeaderProps {
 }
 
 export function ProfileHeader({ isEditing, onEdit }: ProfileHeaderProps) {
+  const t = useTranslations("Student");
   return (
     <div>
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight">
-            Student Profile
+            {t("studentProfile")}
           </h2>
           <p className="text-base text-muted-foreground">
-            Manage your personal and academic information
+            {t("studentProfileSubtitle")}
           </p>
         </div>
         {!isEditing && (
@@ -27,7 +29,7 @@ export function ProfileHeader({ isEditing, onEdit }: ProfileHeaderProps) {
             className="flex items-center gap-2"
           >
             <Pencil className="h-4 w-4" />
-            Edit Profile
+            {t("editProfile")}
           </Button>
         )}
       </div>

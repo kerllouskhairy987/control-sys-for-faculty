@@ -3,6 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Clock, MapPin, User, BookOpen } from "lucide-react";
+import { useTranslations } from "@/i18n/IntlProvider";
+type BadgeVariant = "default" | "secondary" | "destructive" | "outline" | "ghost" | "link";
 
 export interface Session {
   id: number;
@@ -35,12 +37,13 @@ export function ScheduleTimeline({
   sessions: Session[];
   day: string;
 }) {
+  const t = useTranslations("Student");
 
   if (sessions.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border-2 border-dashed rounded-xl bg-muted/20">
+        <div className="flex flex-col items-center justify-center py-12 text-muted-foreground border-2 border-dashed rounded-xl bg-muted/20">
         <BookOpen className="w-12 h-12 mb-4 opacity-20" />
-        <p>No classes scheduled for {day}. Enjoy your day off!</p>
+        <p>{t("noClassesScheduled", { day })}</p>
       </div>
     );
   }
@@ -57,7 +60,7 @@ export function ScheduleTimeline({
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Badge
-                    variant={getTypeColor(session.type) as any}
+                    variant={getTypeColor(session.type) as BadgeVariant}
                     className="font-mono text-[10px] uppercase tracking-wider"
                   >
                     {session.type}

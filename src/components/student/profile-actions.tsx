@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { X, Loader2, Save } from "lucide-react";
+import { useTranslations } from "@/i18n/IntlProvider";
 
 interface ProfileActionsProps {
   isEditing: boolean;
@@ -16,6 +17,7 @@ export function ProfileActions({
   onSave,
   onCancel,
 }: ProfileActionsProps) {
+  const t = useTranslations("Student");
   if (!isEditing) return null;
 
   return (
@@ -28,7 +30,7 @@ export function ProfileActions({
         className="flex items-center gap-2"
       >
         <X className="h-4 w-4" />
-        Cancel
+        {t("cancel")}
       </Button>
 
       <Button
@@ -40,12 +42,12 @@ export function ProfileActions({
         {isSaving ? (
           <>
             <Loader2 className="h-4 w-4 animate-spin" />
-            Saving...
+            {t("saving")}
           </>
         ) : (
           <>
             <Save className="h-4 w-4" />
-            Save Edit
+            {t("saveEdit")}
           </>
         )}
       </Button>

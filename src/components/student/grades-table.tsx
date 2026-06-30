@@ -30,7 +30,10 @@ export interface SemesterRecord {
   courses: CourseGrade[];
 }
 
+import { useTranslations } from "@/i18n/IntlProvider";
+
 export function SemesterGradesTable({ term }: { term: SemesterRecord }) {
+  const t = useTranslations("Student");
   const getGradeBadgeColor = (grade: string) => {
     if (grade.startsWith("A"))
       return "bg-emerald-500/15 text-emerald-600 hover:bg-emerald-500/25 border-emerald-500/20";
@@ -52,7 +55,7 @@ export function SemesterGradesTable({ term }: { term: SemesterRecord }) {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <FileText className="w-5 h-5 text-primary print:hidden" />
-            <CardTitle className="text-xl print:text-black print:text-2xl">
+            <CardTitle className="text-xl text-foreground print:text-black print:text-2xl">
               {term.semester}
             </CardTitle>
           </div>
@@ -61,7 +64,7 @@ export function SemesterGradesTable({ term }: { term: SemesterRecord }) {
               variant="outline"
               className="text-sm font-normal print:border-none print:text-black print:p-0"
             >
-              {term.termCredits} Credits
+              {term.termCredits} {t("credits")}
             </Badge>
             <Badge
               variant="secondary"
@@ -79,29 +82,29 @@ export function SemesterGradesTable({ term }: { term: SemesterRecord }) {
           <Table className="print:w-full">
             <TableHeader className="bg-muted/10 print:bg-gray-100">
               <TableRow className="hover:bg-transparent print:border-b-2 print:border-gray-300">
-                <TableHead className="w-25 pl-6 font-mono text-xs print:text-black print:font-bold">
-                  CODE
+                <TableHead className="w-25 pl-6 font-mono text-xs text-foreground print:text-black print:font-bold">
+                  {t("academicId")}
                 </TableHead>
-                <TableHead className="min-w-50 print:text-black print:font-bold">
-                  Course Name
+                <TableHead className="min-w-50 text-foreground print:text-black print:font-bold">
+                  {t("courseName")}
                 </TableHead>
-                <TableHead className="text-center text-xs print:text-black print:font-bold">
+                <TableHead className="text-center text-xs text-foreground print:text-black print:font-bold">
                   Cr.
                 </TableHead>
-                <TableHead className="text-center text-xs hidden sm:table-cell print:table-cell print:text-black print:font-bold">
+                <TableHead className="text-center text-xs hidden sm:table-cell text-foreground print:table-cell print:text-black print:font-bold">
                   Work (40)
                 </TableHead>
-                <TableHead className="text-center text-xs hidden sm:table-cell print:table-cell print:text-black print:font-bold">
+                <TableHead className="text-center text-xs hidden sm:table-cell text-foreground print:table-cell print:text-black print:font-bold">
                   Final (60)
                 </TableHead>
-                <TableHead className="text-center text-xs print:text-black print:font-bold">
+                <TableHead className="text-center text-xs text-foreground print:text-black print:font-bold">
                   Total
                 </TableHead>
-                <TableHead className="text-center text-xs print:text-black print:font-bold">
+                <TableHead className="text-center text-xs text-foreground print:text-black print:font-bold">
                   Points
                 </TableHead>
-                <TableHead className="text-right pr-6 print:text-black print:font-bold">
-                  Grade
+                <TableHead className="text-right pr-6 text-foreground print:text-black print:font-bold">
+                  {t("grade")}
                 </TableHead>
               </TableRow>
             </TableHeader>
@@ -111,25 +114,25 @@ export function SemesterGradesTable({ term }: { term: SemesterRecord }) {
                   key={course.id}
                   className="hover:bg-muted/30 transition-colors print:border-b print:border-gray-200"
                 >
-                  <TableCell className="pl-6 font-mono text-sm text-muted-foreground print:text-black">
+                  <TableCell className="pl-6 font-mono text-sm text-foreground/70 print:text-black">
                     {course.id}
                   </TableCell>
-                  <TableCell className="font-medium print:text-black">
+                  <TableCell className="font-medium text-foreground print:text-black">
                     {course.name}
                   </TableCell>
-                  <TableCell className="text-center text-muted-foreground print:text-black">
+                  <TableCell className="text-center text-foreground/70 print:text-black">
                     {course.credits}
                   </TableCell>
-                  <TableCell className="text-center hidden sm:table-cell text-muted-foreground print:table-cell print:text-black">
+                  <TableCell className="text-center hidden sm:table-cell text-foreground/70 print:table-cell print:text-black">
                     {course.work}
                   </TableCell>
-                  <TableCell className="text-center hidden sm:table-cell text-muted-foreground print:table-cell print:text-black">
+                  <TableCell className="text-center hidden sm:table-cell text-foreground/70 print:table-cell print:text-black">
                     {course.final}
                   </TableCell>
-                  <TableCell className="text-center font-mono font-medium print:text-black">
+                  <TableCell className="text-center font-mono font-medium text-foreground print:text-black">
                     {course.total}
                   </TableCell>
-                  <TableCell className="text-center font-mono text-muted-foreground print:text-black">
+                  <TableCell className="text-center font-mono text-foreground/70 print:text-black">
                     {course.points.toFixed(1)}
                   </TableCell>
                   <TableCell className="text-right pr-6">

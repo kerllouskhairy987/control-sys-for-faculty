@@ -9,6 +9,8 @@ import {
   Hourglass,
   CircleAlert,
 } from "lucide-react";
+import { useTranslations } from "@/i18n/IntlProvider";
+type BadgeVariant = "default" | "secondary" | "destructive" | "outline" | "ghost" | "link";
 
 export interface Exam {
   id: number;
@@ -35,6 +37,7 @@ const getExamTypeColor = (type: string) => {
 };
 
 export function ExamTimeline({ exams }: { exams: Exam[] }) {
+  const t = useTranslations("Student");
   if (exams.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border-2 border-dashed border-muted rounded-xl bg-muted/10 animate-in fade-in duration-500">
@@ -42,11 +45,10 @@ export function ExamTimeline({ exams }: { exams: Exam[] }) {
           <CircleAlert className="w-8 h-8 opacity-50" />
         </div>
         <h3 className="text-lg font-medium text-foreground mb-1">
-          Not Scheduled Yet
+          {t("notScheduledYet")}
         </h3>
         <p className="text-sm text-center max-w-sm">
-          The schedule for these exams has not been announced by the faculty
-          administration yet. Please check back later.
+          {t("examSchedulePending")}
         </p>
       </div>
     );
@@ -64,7 +66,7 @@ export function ExamTimeline({ exams }: { exams: Exam[] }) {
               <div>
                 <div className="flex items-center gap-2 mb-2">
                   <Badge
-                    variant={getExamTypeColor(exam.type) as any}
+                    variant={getExamTypeColor(exam.type) as BadgeVariant}
                     className="font-mono text-[10px] uppercase tracking-wider"
                   >
                     {exam.type}

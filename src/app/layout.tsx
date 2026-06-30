@@ -38,6 +38,7 @@ export default async function RootLayout({
     <html
       lang={locale}
       dir={dir}
+      suppressHydrationWarning
       className={cn(
         "h-full",
         "antialiased",

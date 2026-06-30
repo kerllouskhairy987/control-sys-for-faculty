@@ -15,21 +15,29 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ChartContainer } from "@/components/ui/chart";
+import { ChartConfig, ChartContainer } from "@/components/ui/chart";
 import { ActivityIcon } from "lucide-react";
+import { StudentProfileData } from "@/types";
+import { useTranslations } from "@/i18n/IntlProvider";
 
-const chartConfig = {
-  credits: {
-    label: "Credits",
-  },
-  completed: {
-    label: "Completed",
-    color: "hsl(var(--primary))",
-  },
-};
-
-export function ChartRadialText({ studentData, progressPercentage } : { studentData: any; progressPercentage: number }) {
+export function ChartRadialText({
+  studentData,
+  progressPercentage,
+}: {
+  studentData: StudentProfileData;
+  progressPercentage: number;
+}) {
+  const t = useTranslations("Student");
   const chartEndAngle = 90 - progressPercentage * 3.6;
+  const chartConfig = {
+    credits: {
+      label: t("credits"),
+    },
+    completed: {
+      label: t("completed"),
+      color: "hsl(var(--primary))",
+    },
+  } satisfies ChartConfig;
 
   const chartData = [
     {
@@ -44,7 +52,7 @@ export function ChartRadialText({ studentData, progressPercentage } : { studentD
       <CardHeader className="pb-0">
         <CardTitle className="flex items-center gap-2 text-lg">
           <ActivityIcon className="w-5 h-5 text-primary" />
-          Credits Progress
+          {t("creditsProgress")}
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
@@ -90,7 +98,7 @@ export function ChartRadialText({ studentData, progressPercentage } : { studentD
                           y={(viewBox.cy || 0) + 24}
                           className="fill-muted-foreground text-xs"
                         >
-                          Completed
+                          {t("completed")}
                         </tspan>
                       </text>
                     );
@@ -101,7 +109,9 @@ export function ChartRadialText({ studentData, progressPercentage } : { studentD
           </RadialBarChart>
         </ChartContainer>
         <CardDescription className="text-center">
-          From {studentData.totalProgramCredits} Credits required
+          {t("creditsRequired", {
+            credits: studentData.totalProgramCredits ?? 0,
+          })}
         </CardDescription>
       </CardContent>
     </Card>

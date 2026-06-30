@@ -44,8 +44,8 @@ export function ProfessorSidebar({ decoded, isOpen = true, onClose }: ProfessorS
             )}
 
             <aside
-                className={`fixed ${sideAnchor} top-0 h-screen bg-linear-to-b from-[#00284d] to-[#003465] text-white shadow-xl transition-all duration-300 z-50 ${
-                    isExpanded ? 'w-64 lg:w-64' : 'w-20 lg:w-20'
+                className={`fixed ${sideAnchor}  h-screen overflow-y-scroll top-0 bg-linear-to-b from-[#00284d] to-[#003465] text-white shadow-xl transition-all duration-300 z-50 ${
+                    isExpanded ? 'w-64 lg:w-64' : 'w-fit'
                 }`}
             >
                 <div className="flex items-center justify-between p-4 border-b border-white/20">

@@ -10,11 +10,14 @@ import {
 } from "@/server/studentServer/studentActions";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { StudentCurrentSemesterResponse, StudentProfileData } from "@/types";
+import { useTranslations } from "@/i18n/IntlProvider";
 
 export default function StudentDashboard() {
-  const [studentData, setStudentData] = useState<any>(null);
-  const [courses, setCourses] = useState<any>(null);
+  const [studentData, setStudentData] = useState<StudentProfileData | null>(null);
+  const [courses, setCourses] = useState<StudentCurrentSemesterResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const t = useTranslations("Student");
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -48,7 +51,7 @@ export default function StudentDashboard() {
   }, []);
 
   const progressPercentage = studentData?.totalProgramCredits
-    ? (studentData.completedCredits / studentData.totalProgramCredits) * 100
+    ? (studentData?.completedCredits || 0 / studentData.totalProgramCredits) * 100
     : 0;
 
   return (
@@ -96,7 +99,7 @@ export default function StudentDashboard() {
         <>
           <div className="w-fit mb-4 animate-in slide-in-from-bottom-2 duration-500">
             <span className="text-primary font-medium text-lg tracking-tight">
-              Welcome back,
+              {t("welcomeBack")}
             </span>
             <h1 className="text-3xl md:text-4xl font-bold tracking-tight mt-1 capitalize">
               {studentData.fullName}

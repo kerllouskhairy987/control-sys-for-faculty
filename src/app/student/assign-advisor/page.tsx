@@ -17,9 +17,12 @@ import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Search, Mail, UserPlus, Loader2, CheckCircle2 } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { Advisor } from "@/types";
+import { useTranslations } from "@/i18n/IntlProvider";
 
 export default function AdvisorsPage() {
-  const [advisors, setAdvisors] = useState<any[]>([]);
+  const t = useTranslations("Student");
+  const [advisors, setAdvisors] = useState<Advisor[]>([]);
   const [studentId, setStudentId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -46,7 +49,7 @@ export default function AdvisorsPage() {
         if (studentRes && studentRes.id) {
           setStudentId(studentRes.id);
         }
-      } catch (err) {
+      } catch {
         setError("Failed to load necessary data.");
       } finally {
         setIsLoading(false);
@@ -61,7 +64,7 @@ export default function AdvisorsPage() {
     advisorName: string,
   ) => {
     if (!studentId) {
-      toast.error("Student information is missing. Please refresh the page");
+      toast.error(t("studentInfoMissing"));
       return;
     }
 
@@ -72,14 +75,14 @@ export default function AdvisorsPage() {
     if (res.success) {
       setSuccessId(advisorId);
       toast.success(
-        `You have successfully assigned Dr. ${advisorName} as your advisor.`,
+        t("advisorAssignedSuccess", { advisorName }),
       );
 
       setTimeout(() => {
         setSuccessId(null);
       }, 3000);
     } else {
-      toast.error(res.message || "Failed to assign advisor. Please try again.");
+      toast.error(res.message || t("advisorAssignedFailed"));
     }
 
     setAssigningId(null);
@@ -97,17 +100,16 @@ export default function AdvisorsPage() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-foreground">
-            Academic Advisors
+            {t("academicAdvisors")}
           </h1>
           <p className="text-muted-foreground mt-1">
-            Assign an academic advisor to guide you through your
-            program.
+            {t("assignAdvisorDesc")}
           </p>
         </div>
         <div className="relative w-full md:w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Search by name or department..."
+            placeholder={t("searchByNameOrDept")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="pl-9 bg-card"
@@ -181,17 +183,17 @@ export default function AdvisorsPage() {
                       {isAssigning ? (
                         <>
                           <Loader2 className="w-4 h-4 animate-spin" />
-                          Assigning...
+                          {t("assigning")}
                         </>
                       ) : isSuccess ? (
                         <>
                           <CheckCircle2 className="w-4 h-4 text-green-500" />
-                          Assigned
+                          {t("assigned")}
                         </>
                       ) : (
                         <>
                           <UserPlus className="w-4 h-4" />
-                          Assign
+                          {t("assign")}
                         </>
                       )}
                     </Button>
@@ -214,7 +216,7 @@ export default function AdvisorsPage() {
           ) : (
             <div className="col-span-full py-12 text-center text-muted-foreground border-2 border-dashed rounded-xl">
               <UserPlus className="w-12 h-12 mx-auto opacity-20 mb-3" />
-              <p>No advisors found matching your search.</p>
+              <p>{t("noAdvisorsFound")}</p>
             </div>
           )}
         </div>

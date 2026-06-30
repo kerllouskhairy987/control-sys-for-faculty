@@ -9,12 +9,15 @@ import {
   getStudentCourses,
   getStudentInformation,
 } from "@/server/studentServer/studentActions";
+import { StudentCurrentSemesterResponse, StudentProfileData, StudentCurrentCourseSession } from "@/types";
+import { useTranslations } from "@/i18n/IntlProvider";
 
 const WEEK_DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday"];
 
 export default function StudySchedule() {
-  const [scheduleData, setScheduleData] = useState<Record<string, any[]>>({});
-  const [studentInfo, setStudentInfo] = useState<any>(null);
+  const t = useTranslations("Student");
+  const [scheduleData, setScheduleData] = useState<StudentCurrentSemesterResponse | null>(null);
+  const [studentInfo, setStudentInfo] = useState<StudentProfileData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +30,7 @@ export default function StudySchedule() {
         const student = await getStudentInformation();
 
         if (!student || student.success === false) {
-          setError(student?.message || "Failed to load student identity");
+          setError(student?.message || t("failedToLoadStudentIdentity"));
           setIsLoading(false);
           return;
         }
@@ -37,7 +40,7 @@ export default function StudySchedule() {
         const response = await getStudentCourses(student.id);
 
         if (response && response.success === false) {
-          setError(response.message || "Failed to load schedule");
+          setError(response.message || t("failedToLoadSchedule"));
           setIsLoading(false);
           return;
         }
@@ -46,7 +49,7 @@ export default function StudySchedule() {
         setScheduleData(schedule);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Unexpected error occurred",
+          err instanceof Error ? err.message : t("unexpectedError"),
         );
       } finally {
         setIsLoading(false);
@@ -54,7 +57,7 @@ export default function StudySchedule() {
     };
 
     fetchSchedule();
-  }, []);
+  }, [t]);
 
   const currentDayIndex = new Date().getDay();
   const defaultTab =
@@ -70,7 +73,7 @@ export default function StudySchedule() {
           {/* Header Skeleton */}
           <div className="mb-8 space-y-2 mt-2">
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-              Study Schedule
+              {t("studySchedule")}
             </h1>
             <Skeleton className="h-5 w-64" />
           </div>
@@ -98,12 +101,12 @@ export default function StudySchedule() {
       )}
 
       {/* 3. Main Content */}
-      {!isLoading && !error && (
+      {!isLoading && !error && scheduleData && (
         <div className="animate-in slide-in-from-bottom-4 duration-700">
           {/* Header */}
           <div className="mb-8">
             <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-              Study Schedule
+              {t("studySchedule")}
             </h1>
             <p className="text-muted-foreground mt-1 capitalize">
               {scheduleData?.term} {scheduleData?.year} •{" "}
@@ -113,45 +116,52 @@ export default function StudySchedule() {
 
           <Tabs defaultValue={defaultTab}>
             <TabsList className="grid w-full grid-cols-5 mb-8 bg-muted/50 rounded-lg border">
-              {WEEK_DAYS.map((day) => (
-                <TabsTrigger
-                  key={day}
-                  value={day}
-                  className="text-xs sm:text-sm data-[state=active]:shadow-sm rounded-md transition-all"
-                  disabled={
-                    !scheduleData[day] || scheduleData[day].length === 0
-                  }
-                >
-                  <span className="hidden sm:inline">{day}</span>
-                  <span className="sm:hidden">{day.substring(0, 3)}</span>
-                </TabsTrigger>
-              ))}
+              {WEEK_DAYS.map((day) => {
+                const dayData = scheduleData[day as keyof StudentCurrentSemesterResponse] as StudentCurrentCourseSession[] | undefined;
+                const hasClasses = Array.isArray(dayData) && dayData.length > 0;
+                
+                return (
+                  <TabsTrigger
+                    key={day}
+                    value={day}
+                    className="text-xs sm:text-sm data-[state=active]:shadow-sm rounded-md transition-all"
+                    disabled={!hasClasses}
+                  >
+                    <span className="hidden sm:inline">{day}</span>
+                    <span className="sm:hidden">{day.substring(0, 3)}</span>
+                  </TabsTrigger>
+                );
+              })}
             </TabsList>
 
-            {WEEK_DAYS.map((day) => (
-              <TabsContent
-                key={day}
-                value={day}
-                className="focus-visible:outline-none"
-              >
-                {scheduleData[day] && scheduleData[day].length > 0 ? (
-                  <ScheduleTimeline sessions={scheduleData[day]} day={day} />
-                ) : (
-                  <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border-2 border-dashed border-muted rounded-xl bg-muted/10 animate-in fade-in duration-500">
-                    <div className="w-16 h-16 rounded-full bg-muted/30 flex items-center justify-center mb-4">
-                      <CircleAlert className="w-8 h-8 opacity-50" />
+            {WEEK_DAYS.map((day) => {
+              const dayData = scheduleData[day as keyof StudentCurrentSemesterResponse] as StudentCurrentCourseSession[] | undefined;
+              const hasClasses = Array.isArray(dayData) && dayData.length > 0;
+
+              return (
+                <TabsContent
+                  key={day}
+                  value={day}
+                  className="focus-visible:outline-none"
+                >
+                  {hasClasses ? (
+                    <ScheduleTimeline sessions={dayData} day={day} />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border-2 border-dashed border-muted rounded-xl bg-muted/10 animate-in fade-in duration-500">
+                      <div className="w-16 h-16 rounded-full bg-muted/30 flex items-center justify-center mb-4">
+                        <CircleAlert className="w-8 h-8 opacity-50" />
+                      </div>
+                      <h3 className="text-lg font-medium text-foreground mb-1">
+                        {t("noClassesScheduled", { day })}
+                      </h3>
+                      <p className="text-sm text-center max-w-sm">
+                        {t("noClassesHint")}
+                      </p>
                     </div>
-                    <h3 className="text-lg font-medium text-foreground mb-1">
-                      No Classes Scheduled {day}
-                    </h3>
-                    <p className="text-sm text-center max-w-sm">
-                      Please check back later or contact your academic advisor
-                      for more information.
-                    </p>
-                  </div>
-                )}
-              </TabsContent>
-            ))}
+                  )}
+                </TabsContent>
+              );
+            })}
           </Tabs>
         </div>
       )}

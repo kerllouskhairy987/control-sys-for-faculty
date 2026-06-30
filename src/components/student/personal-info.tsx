@@ -4,11 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { User } from "lucide-react";
+import { StudentProfileData } from "@/types";
+import { useTranslations } from "@/i18n/IntlProvider";
 
 interface PersonalInfoProps {
   isEditing: boolean;
-  studentData: any;
-  formData: any;
+  studentData: StudentProfileData;
+  formData: StudentProfileData;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
@@ -18,17 +20,18 @@ export function PersonalInfo({
   formData,
   onChange,
 }: PersonalInfoProps) {
+  const t = useTranslations("Student");
   return (
     <div className="space-y-4">
       <h3 className="font-semibold flex items-center gap-2 text-lg">
         <User className="h-4 w-4 text-primary" />
-        Personal Information
+        {t("personalInformation")}
       </h3>
       <Separator />
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label htmlFor="name" className="flex items-center gap-2">
-            Full Name
+            {t("fullName")}
           </Label>
           {isEditing ? (
             <Input
@@ -46,7 +49,7 @@ export function PersonalInfo({
 
         <div className="space-y-2">
           <Label htmlFor="nationalId" className="flex items-center gap-2">
-            National ID
+            {t("nationalId")}
           </Label>
           {isEditing ? (
             <Input

@@ -63,8 +63,8 @@ export function Sidebar({ isOpen = true, onClose }: SidebarProps) {
 
             {/* Sidebar */}
             <aside
-                className={`fixed ${sideAnchor} top-0 h-screen bg-linear-to-b from-[#00284d] to-[#003465] text-white shadow-xl transition-all duration-300 z-50 ${
-                    isExpanded ? 'w-64 lg:w-64' : 'w-20 lg:w-20'
+                className={`fixed ${sideAnchor} top-0 h-screen overflow-y-scroll bg-linear-to-b from-[#00284d] to-[#003465] text-white shadow-xl transition-all duration-300 z-50 ${
+                    isExpanded ? 'w-64 lg:w-64' : 'w-fit'
                 }`}
             >
                 {/* Header */}

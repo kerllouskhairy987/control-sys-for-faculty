@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CourseCatalog, Course } from "@/components/student/course-catalog";
+import { CourseCatalog } from "@/components/student/course-catalog";
 import { CircleAlert } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -13,15 +13,67 @@ import {
   getStudentRegistrations,
 } from "@/server/studentServer/studentActions";
 import toast from "react-hot-toast";
+import {
+  AvailableCourse,
+  RegistrationPeriod,
+  StudentRegistrationStatus,
+} from "@/types";
+
+import { useTranslations } from "@/i18n/IntlProvider";
+
+function hasSuccessFlag(value: { success?: boolean; message?: string }): value is {
+  success: false;
+  message?: string;
+} {
+  return value.success === false;
+}
+
+type CourseListResponse =
+  | RegistrationCourse[]
+  | {
+      data?: RegistrationCourse[];
+      courses?: RegistrationCourse[];
+      items?: RegistrationCourse[];
+    }
+  | RegistrationCourse
+  | null;
+
+type RegistrationListResponse =
+  | StudentRegistrationStatus[]
+  | { data?: StudentRegistrationStatus[]; items?: StudentRegistrationStatus[] }
+  | StudentRegistrationStatus
+  | null;
+
+type RegistrationCourse = AvailableCourse & {
+  credits: number;
+};
+
+function normalizeCourses(response: CourseListResponse): RegistrationCourse[] {
+  if (!response) return [];
+  if (Array.isArray(response)) return response;
+  if ("data" in response && Array.isArray(response.data)) return response.data;
+  if ("courses" in response && Array.isArray(response.courses)) return response.courses;
+  if ("items" in response && Array.isArray(response.items)) return response.items;
+  return "offeringId" in response ? [response] : [];
+}
+
+function normalizeRegistrations(response: RegistrationListResponse): StudentRegistrationStatus[] {
+  if (!response) return [];
+  if (Array.isArray(response)) return response;
+  if ("data" in response && Array.isArray(response.data)) return response.data;
+  if ("items" in response && Array.isArray(response.items)) return response.items;
+  return "courseOfferingId" in response ? [response] : [];
+}
 
 export default function CoursesRegistration() {
-  const [catalog, setCatalog] = useState<Course[]>([]);
-  const [selectedCourses, setSelectedCourses] = useState<Course[]>([]);
+  const t = useTranslations("Student");
+  const [catalog, setCatalog] = useState<RegistrationCourse[]>([]);
+  const [selectedCourses, setSelectedCourses] = useState<RegistrationCourse[]>([]);
   const [registeredStatuses, setRegisteredStatuses] = useState<
-    Record<string, string>
+    Record<string, StudentRegistrationStatus["status"]>
   >({});
 
-  const [periodInfo, setPeriodInfo] = useState<any>(null);
+  const [periodInfo, setPeriodInfo] = useState<RegistrationPeriod | null>(null);
 
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -63,7 +115,7 @@ export default function CoursesRegistration() {
 
           const studentInfo = await getStudentInformation();
 
-          if (!studentInfo || studentInfo.success === false) {
+          if (!studentInfo || hasSuccessFlag(studentInfo)) {
             setError(studentInfo?.message || "Failed to load student identity");
             setIsLoading(false);
             return;
@@ -84,9 +136,7 @@ export default function CoursesRegistration() {
             year,
           );
 
-          const fetchedCourses: Course[] = Array.isArray(availableResponse)
-            ? availableResponse
-            : availableResponse?.data || availableResponse?.courses || [];
+          const fetchedCourses = normalizeCourses(availableResponse);
 
           setCatalog(fetchedCourses);
 
@@ -94,19 +144,16 @@ export default function CoursesRegistration() {
             studentInfo.id,
           );
 
-          let regsArray = [];
-          if (Array.isArray(registrationsResponse)) {
-            regsArray = registrationsResponse;
-          } else if (
-            registrationsResponse?.data &&
-            Array.isArray(registrationsResponse.data)
-          ) {
-            regsArray = registrationsResponse.data;
-          }
+          const regsArray = normalizeRegistrations(
+            registrationsResponse,
+          );
 
-          const initialStatuses: Record<string, string> = {};
+          const initialStatuses: Record<
+            string,
+            StudentRegistrationStatus["status"]
+          > = {};
 
-          regsArray.forEach((reg: any) => {
+          regsArray.forEach((reg) => {
             if (reg.courseOfferingId && reg.status) {
               initialStatuses[reg.courseOfferingId] = reg.status;
             }
@@ -131,15 +178,15 @@ export default function CoursesRegistration() {
     fetchRegistrationData();
   }, []);
 
-  const handleAddCourse = async (course: Course) => {
+  const handleAddCourse = async (course: RegistrationCourse) => {
     if (course.isFull) {
-      toast.error("This course is fully booked.");
+      toast.error(t("courseFullError"));
       return false;
     }
 
     if (currentCredits + course.credits > maxCredits) {
       toast.error(
-        `Sorry, you reached the maximum credit load (${maxCredits} Cr.) for this semester.`,
+        t("maxCreditsError", { maxCredits }),
       );
       return false;
     }
@@ -149,7 +196,7 @@ export default function CoursesRegistration() {
     const response = await registerCourse(studentId, course.offeringId);
 
     if (response.success) {
-      toast.success(response.message || "Course registered successfully!");
+      toast.success(response.message || t("courseRegisteredSuccess"));
 
       setSelectedCourses((prev) => [...prev, course]);
       setRegisteredStatuses((prev) => ({
@@ -159,15 +206,15 @@ export default function CoursesRegistration() {
 
       setTimeout(async () => {
         const freshRegs = await getStudentRegistrations(studentId);
-        let freshArray = [];
-        if (Array.isArray(freshRegs)) {
-          freshArray = freshRegs;
-        } else if (freshRegs?.data && Array.isArray(freshRegs.data)) {
-          freshArray = freshRegs.data;
-        }
+        const freshArray = normalizeRegistrations(
+          freshRegs,
+        );
 
-        const updatedStatuses: Record<string, string> = {};
-        freshArray.forEach((reg: any) => {
+        const updatedStatuses: Record<
+          string,
+          StudentRegistrationStatus["status"]
+        > = {};
+        freshArray.forEach((reg) => {
           if (reg.courseOfferingId && reg.status) {
             updatedStatuses[reg.courseOfferingId] = reg.status;
           }
@@ -181,7 +228,7 @@ export default function CoursesRegistration() {
 
       return true;
     } else {
-      toast.error(response.message || "Failed to register course.");
+      toast.error(response.message || t("courseRegisteredFailed"));
       return false;
     }
   };
@@ -190,10 +237,10 @@ export default function CoursesRegistration() {
     <div className="p-4 animate-in fade-in duration-500">
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-bold tracking-tight">
-          Courses Registration
+          {t("coursesRegistration")}
         </h1>
         <p className="text-muted-foreground">
-          Select your courses for the current semester.
+          {t("coursesRegistrationDesc")}
         </p>
       </div>
 
@@ -237,7 +284,7 @@ export default function CoursesRegistration() {
                   <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border-2 border-dashed border-muted rounded-xl bg-muted/10">
                     <CircleAlert className="w-8 h-8 opacity-50 mb-4" />
                     <h3 className="text-lg font-medium text-foreground mb-1">
-                      No Courses Available
+                      {t("noCoursesAvailable")}
                     </h3>
                   </div>
                 )}
@@ -246,7 +293,7 @@ export default function CoursesRegistration() {
               <div className="flex flex-col items-center justify-center py-16 text-muted-foreground border-2 border-dashed border-muted rounded-xl bg-muted/10">
                 <CircleAlert className="w-8 h-8 opacity-50 mb-4" />
                 <h3 className="text-lg font-medium text-foreground mb-1">
-                  Registration Is Closed
+                  {t("registrationIsClosed")}
                 </h3>
               </div>
             )}
